@@ -4,12 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0E0C0A">
-<title>LX ID — Egyptian National ID & Retirement Toolkit</title>
+<title>LX ID</title>
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="icon-32.png" type="image/png" sizes="32x32">
+<link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650;9..144,760&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
 <style>
 :root{
   --bg:#F7F3EC; --bg-deep:#EFE9DD;
@@ -65,7 +68,8 @@ body{
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E")}
 .dark .grain{opacity:.9}
 ::selection{background:var(--amber-soft);color:var(--amber-text)}
-.material-symbols-rounded{font-variation-settings:'FILL' 0,'wght' 320,'GRAD' -25,'opsz' 22;line-height:1;font-family:'Material Symbols Rounded'}
+.material-symbols-rounded{display:inline-flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0;vertical-align:middle}
+.material-symbols-rounded svg{width:1em;height:1em;display:block}
 .disp{font-family:'Fraunces',serif;letter-spacing:-0.015em;font-optical-sizing:auto}
 .mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
 .pagetitle{font-family:'Fraunces',serif;letter-spacing:-0.02em;font-size:var(--fs-xl);font-weight:600;margin:0;color:var(--ink)}
@@ -73,10 +77,10 @@ body{
 .eyebrow{font-size:var(--fs-xs);font-weight:650;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3)}
 .num{font-variant-numeric:tabular-nums}
 
-.glass{background:var(--milk);border:1px solid var(--edge);backdrop-filter:blur(28px) saturate(1.7);-webkit-backdrop-filter:blur(28px) saturate(1.7)}
+.glass{background:var(--milk);border:1px solid var(--edge);backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3)}
 .card{
   background:var(--milk);border:1px solid var(--edge);border-radius:var(--r1);box-shadow:var(--sh-2),inset 0 1px 0 rgba(255,255,255,0.35);
-  backdrop-filter:blur(30px) saturate(1.8);-webkit-backdrop-filter:blur(30px) saturate(1.8);
+  backdrop-filter:blur(18px) saturate(1.35);-webkit-backdrop-filter:blur(18px) saturate(1.35);
 }
 .dark .card{box-shadow:var(--sh-2)}
 .card-solid{background:var(--milk-strong);border:1px solid var(--edge-strong);border-radius:var(--r1);box-shadow:var(--sh-2)}
@@ -112,16 +116,38 @@ body{
 .field-area{font-family:'JetBrains Mono',monospace;line-height:1.7;resize:vertical}
 .field-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239C8F78' stroke-width='2.4'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.85rem center;padding-right:2.4rem}
 
+input[type="date"].field-input{color-scheme:light;position:relative}
+.dark input[type="date"].field-input{color-scheme:dark}
+input[type="date"].field-input::-webkit-calendar-picker-indicator{
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239C8F78' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='5' width='17' height='15' rx='3'/%3E%3Cpath d='M3.5 10h17'/%3E%3Cpath d='M8 3v4M16 3v4'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:center;background-size:1.05rem;width:1.6rem;height:1.6rem;padding:0;margin-left:.4rem;
+  border-radius:8px;cursor:pointer;opacity:.85;transition:opacity .15s ease,background-color .15s ease;
+}
+input[type="date"].field-input::-webkit-calendar-picker-indicator:hover{opacity:1;background-color:var(--milk)}
+input[type="date"].field-input::-webkit-datetime-edit{padding:0}
+input[type="date"].field-input::-webkit-datetime-edit-fields-wrapper{padding:0}
+
+.destrow{display:flex;align-items:center;gap:.5rem;margin:-.3rem 0 .15rem;}
+.destrow .eyebrow{flex-shrink:0}
+.dest-input{width:auto;flex:1;min-width:0;padding:.5rem .75rem;font-size:.78rem;font-weight:650;letter-spacing:.01em}
+.dest-reset{width:2.1rem;height:2.1rem;flex-shrink:0}
+.dest-reset .material-symbols-rounded{transition:transform .35s cubic-bezier(.16,1,.3,1)}
+.dest-reset:active .material-symbols-rounded{transform:rotate(180deg)}
+
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--edge-strong);border-radius:99px}
 
-.topbar{position:sticky;top:0;z-index:40;background:var(--bg);background:color-mix(in srgb, var(--bg) 78%, transparent);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--edge)}
-.brandmark{position:relative;width:38px;height:38px;border-radius:13px;background:linear-gradient(150deg,var(--amber),var(--amber-hi));display:flex;align-items:center;justify-content:center;box-shadow:var(--sh-glow);flex-shrink:0;overflow:hidden}
-.brandmark::after{content:'';position:absolute;inset:-8px;border-radius:20px;background:radial-gradient(circle,var(--amber-soft),transparent 72%);z-index:-1}
+.topbar{position:sticky;top:0;z-index:40;background:var(--bg);background:color-mix(in srgb, var(--bg) 78%, transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--edge)}
+.brandmark{position:relative;width:38px;height:38px;border-radius:12px;background:linear-gradient(165deg,#2A2015,#120E0A);display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden;
+  border:1px solid rgba(255,250,240,0.09);box-shadow:inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -10px 16px -10px rgba(0,0,0,0.55), 0 10px 22px -10px rgba(20,14,8,0.55)}
+.brandmark::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 28% 18%,rgba(255,250,240,0.20),transparent 58%)}
+.brandmark::after{content:'';position:absolute;inset:-9px;border-radius:19px;background:radial-gradient(circle,var(--amber-soft),transparent 72%);z-index:-1;opacity:.65}
+.brandmark svg{position:relative;z-index:1;width:1.2rem;height:1.2rem;overflow:visible}
+.brandmark svg circle{fill:none;stroke:#F1E7D6;stroke-linecap:round}
 
 .bottomnav{position:fixed;left:0;right:0;bottom:0;z-index:50;padding:.6rem .75rem calc(.6rem + env(safe-area-inset-bottom));
-  background:var(--bg);background:color-mix(in srgb, var(--bg) 82%, transparent);backdrop-filter:blur(24px) saturate(1.6);-webkit-backdrop-filter:blur(24px) saturate(1.6);
+  background:var(--bg);background:color-mix(in srgb, var(--bg) 82%, transparent);backdrop-filter:blur(16px) saturate(1.25);-webkit-backdrop-filter:blur(16px) saturate(1.25);
   border-top:1px solid var(--edge);display:flex;gap:.25rem}
 @media(min-width:1024px){.bottomnav{display:none}}
 .navitem{flex:1;display:flex;flex-direction:column;align-items:center;gap:.2rem;padding:.4rem 0;border:none;background:transparent;color:var(--ink-3);cursor:pointer;border-radius:14px;transition:color .2s;min-width:0;overflow:hidden}
@@ -195,7 +221,7 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
 .idseg:hover{transform:translateY(-3px);border-color:var(--edge-strong)}
 .idseg .tag{font-size:.5rem;font-weight:700;opacity:.6;margin-top:.15rem;letter-spacing:.02em;text-transform:uppercase}
 
-.idcard{position:relative;border-radius:var(--r1);overflow:hidden;background:var(--milk-strong);backdrop-filter:blur(30px) saturate(1.8);-webkit-backdrop-filter:blur(30px) saturate(1.8);border:1px solid var(--edge-strong);box-shadow:var(--sh-3)}
+.idcard{position:relative;border-radius:var(--r1);overflow:hidden;background:var(--milk-strong);backdrop-filter:blur(18px) saturate(1.35);-webkit-backdrop-filter:blur(18px) saturate(1.35);border:1px solid var(--edge-strong);box-shadow:var(--sh-3)}
 .idstripe{height:3px;position:relative;overflow:hidden;background:linear-gradient(100deg,var(--amber),var(--amber-hi))}
 .idstripe::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.5) 50%,transparent 80%);background-size:220% 100%;animation:shimmer 7s ease-in-out infinite}
 @keyframes shimmer{0%{background-position:150% 0}55%{background-position:-50% 0}100%{background-position:-50% 0}}
@@ -251,7 +277,14 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
 <header class="topbar">
   <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding-top:.85rem;padding-bottom:.85rem;position:relative;z-index:1;">
     <div class="row" style="gap:.7rem;">
-      <div class="brandmark"><span class="material-symbols-rounded" style="color:#FBF3E8;font-size:1.2rem;">fingerprint</span></div>
+      <div class="brandmark">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="12" r="8.6" stroke-width="1.5" opacity="1" stroke-dasharray="38 60" transform="rotate(-40 12 12)"/>
+          <circle cx="12" cy="12" r="6" stroke-width="1.4" opacity=".82" stroke-dasharray="27 40" transform="rotate(20 12 12)"/>
+          <circle cx="12" cy="12" r="3.6" stroke-width="1.3" opacity=".64" stroke-dasharray="16 30" transform="rotate(70 12 12)"/>
+          <circle cx="12" cy="12" r="1" fill="#F1E7D6" stroke="none"/>
+        </svg>
+      </div>
       <div>
         <div class="disp" style="font-size:1.05rem;font-weight:650;line-height:1.1;">LX ID</div>
         <div style="font-size:.68rem;color:var(--ink-3);font-weight:600;">National ID &amp; Retirement Toolkit</div>
@@ -463,6 +496,12 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
         <div class="row" style="gap:.5rem;"><span class="chip">1</span><h3 class="cardtitle">Birth date</h3></div>
         <button onclick="copyFormula('code-birth',event)" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>Copy</button>
       </div>
+      <div class="destrow">
+        <span class="material-symbols-rounded" style="font-size:1rem;color:var(--ink-3);">arrow_forward</span>
+        <label class="eyebrow" style="white-space:nowrap;">Paste in</label>
+        <input id="dest-birth" class="field-input mono focusable dest-input" oninput="onDestInput('birth')">
+        <button class="iconbtn focusable dest-reset" title="Auto-assign location" onclick="resetDest('birth')"><span class="material-symbols-rounded" style="font-size:1.05rem;">sync</span></button>
+      </div>
       <pre class="codeblock" id="code-birth"></pre>
     </div>
 
@@ -471,6 +510,12 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
         <div class="row" style="gap:.5rem;"><span class="chip">2</span><h3 class="cardtitle">Gender</h3></div>
         <button onclick="copyFormula('code-gender',event)" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>Copy</button>
       </div>
+      <div class="destrow">
+        <span class="material-symbols-rounded" style="font-size:1rem;color:var(--ink-3);">arrow_forward</span>
+        <label class="eyebrow" style="white-space:nowrap;">Paste in</label>
+        <input id="dest-gender" class="field-input mono focusable dest-input" oninput="onDestInput('gender')">
+        <button class="iconbtn focusable dest-reset" title="Auto-assign location" onclick="resetDest('gender')"><span class="material-symbols-rounded" style="font-size:1.05rem;">sync</span></button>
+      </div>
       <pre class="codeblock" id="code-gender"></pre>
     </div>
 
@@ -478,6 +523,12 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
       <div class="row-between">
         <div class="row" style="gap:.5rem;"><span class="chip">3</span><h3 class="cardtitle">Retirement age &amp; date</h3></div>
         <button onclick="copyFormula('code-retirement',event)" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>Copy</button>
+      </div>
+      <div class="destrow">
+        <span class="material-symbols-rounded" style="font-size:1rem;color:var(--ink-3);">arrow_forward</span>
+        <label class="eyebrow" style="white-space:nowrap;">Paste in</label>
+        <input id="dest-retirement" class="field-input mono focusable dest-input" oninput="onDestInput('retirement')">
+        <button class="iconbtn focusable dest-reset" title="Auto-assign location" onclick="resetDest('retirement')"><span class="material-symbols-rounded" style="font-size:1.05rem;">sync</span></button>
       </div>
       <pre class="codeblock" id="code-retirement"></pre>
     </div>
@@ -564,6 +615,72 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
 </div>
 
 <script>
+/* ---- Icon system: hand-drawn line icons replacing the Material Symbols web
+   font. Zero network requests, zero FOUT, renders the instant the DOM parses. ---- */
+const ICON_DEFS={
+  arrow_forward:'<path d="M4 12h14M13 6l6 6-6 6"/>',
+  auto_awesome:'<path d="M12 3l1.4 4.3L18 9l-4.6 1.7L12 15l-1.4-4.3L6 9l4.6-1.7L12 3z"/><path d="M19 14.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7.7-2z"/>',
+  auto_fix_high:'<path d="M4.5 19.5L16 8"/><path d="M14.5 3.2l.8 1.7 1.7.8-1.7.8-.8 1.7-.8-1.7-1.7-.8 1.7-.8.8-1.7z"/><path d="M19 10.5l.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5.5-1.1z"/>',
+  cake:'<path d="M4 21v-6a2 2 0 012-2h12a2 2 0 012 2v6"/><path d="M4 21h16"/><path d="M8 13V9M12 13V9M16 13V9"/><circle cx="8" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="7" r="1" fill="currentColor" stroke="none"/>',
+  calendar_month:'<rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17"/><path d="M8 3v4M16 3v4"/>',
+  cancel:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5l5 5M14.5 9.5l-5 5"/>',
+  check:'<path d="M4.5 12.5l4.5 4.5L19.5 6.5"/>',
+  check_circle:'<circle cx="12" cy="12" r="9"/><path d="M8 12.3l2.6 2.6L16.3 9"/>',
+  cloud_upload:'<path d="M7.5 18a4.2 4.2 0 01-.7-8.3 5.3 5.3 0 0110.2-1.8A4.5 4.5 0 0117 18H7.5z"/><path d="M12 11v7M9 14l3-3 3 3"/>',
+  content_copy:'<rect x="9" y="9" width="11.5" height="11.5" rx="2.2"/><path d="M5.5 14.5V5.7A2.2 2.2 0 017.7 3.5H16"/>',
+  content_paste:'<rect x="5.5" y="4.5" width="13" height="16.5" rx="2.2"/><path d="M9 4.5V4a1.5 1.5 0 011.5-1.5h3A1.5 1.5 0 0115 4v.5"/>',
+  content_paste_go:'<rect x="4.5" y="4.5" width="12" height="16.5" rx="2.2"/><path d="M8 4.5V4A1.5 1.5 0 019.5 2.5h3A1.5 1.5 0 0114 4v.5"/><path d="M14.5 15h5M16.5 12.5L19.5 15l-3 2.5"/>',
+  contrast:'<circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 010 18V3z" fill="currentColor" stroke="none"/>',
+  csv:'<path d="M6.5 3h7l4 4v13a1.2 1.2 0 01-1.2 1.2H6.5A1.2 1.2 0 015.3 20V4.2A1.2 1.2 0 016.5 3z"/><path d="M13.5 3v4h4"/><path d="M8.3 15.2v3.6M11.8 15.2v3.6M15.3 15.2v3.6"/>',
+  dark_mode:'<path d="M20 14.2A8.2 8.2 0 019.8 4a6.3 6.3 0 1010.2 10.2z" fill="currentColor" stroke="none"/>',
+  light_mode:'<circle cx="12" cy="12" r="4.3"/><path d="M12 2.5v2.3M12 19.2v2.3M4.4 4.4l1.6 1.6M18 18l1.6 1.6M2.5 12h2.3M19.2 12h2.3M4.4 19.6L6 18M18 6l1.6-1.6"/>',
+  date_range:'<rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17"/><path d="M8 3v4M16 3v4"/><rect x="7" y="13" width="4" height="3.2" rx=".8" fill="currentColor" stroke="none"/>',
+  delete:'<path d="M5 7h14"/><path d="M9.5 11v6M14.5 11v6"/><path d="M7 7l.9 12A2 2 0 009.9 21h4.2a2 2 0 002-1.8L17 7"/><path d="M9.3 7V4.8A1.3 1.3 0 0110.6 3.5h2.8a1.3 1.3 0 011.3 1.3V7"/>',
+  download:'<path d="M12 3v11.5M7.2 10.3L12 15l4.8-4.7"/><path d="M4.5 19h15"/>',
+  error:'<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.3"/><circle cx="12" cy="16.3" r="1" fill="currentColor" stroke="none"/>',
+  event_repeat:'<rect x="3.5" y="5" width="12.5" height="15" rx="3"/><path d="M3.5 10h12.5"/><path d="M7 3v4"/><path d="M16.5 14.5a3.3 3.3 0 015.5-2.3M22 12v-3.2M22 12h-3.2"/><path d="M20.7 17.5a3.3 3.3 0 01-5.5 2.3M15.5 20v-3.2M15.5 20h3.2"/>',
+  fingerprint:'<circle cx="12" cy="12" r="8.4" stroke-dasharray="35 60" transform="rotate(-40 12 12)"/><circle cx="12" cy="12" r="5.6" stroke-dasharray="24 40" transform="rotate(25 12 12)"/><circle cx="12" cy="12" r="3" stroke-dasharray="12 30" transform="rotate(80 12 12)"/><circle cx="12" cy="12" r=".9" fill="currentColor" stroke="none"/>',
+  functions:'<path d="M16.5 4.5H9.2a1 1 0 00-.9 1.5l3.2 5.8-3.4 6.2a1 1 0 00.9 1.5h7.5"/><path d="M8 12.2h4.4"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 10.7v5.3"/><circle cx="12" cy="7.8" r="1" fill="currentColor" stroke="none"/>',
+  layers_clear:'<path d="M12 4l7.5 4.3L12 12.6 4.5 8.3 12 4z"/><path d="M4.7 12.3L12 16.5l7.3-4.2M4.7 15.8L12 20l7.3-4.2"/>',
+  man:'<circle cx="10" cy="14" r="6"/><path d="M14.6 9.4L20 4M20 4h-4.4M20 4v4.4"/>',
+  woman:'<circle cx="12" cy="9" r="6"/><path d="M12 15v6.5M8.8 18.6h6.4"/>',
+  play_arrow:'<path d="M7 4.5l13 7.5-13 7.5v-15z" fill="currentColor" stroke="none"/>',
+  science:'<path d="M10 3h4"/><path d="M10.5 3v5.3l-5 8.7a1.8 1.8 0 001.6 2.7h9.8a1.8 1.8 0 001.6-2.7l-5-8.7V3"/><path d="M8.3 15h7.4"/>',
+  search:'<circle cx="10.8" cy="10.8" r="6.8"/><path d="M20 20l-4.2-4.2"/>',
+  sync:'<path d="M4.5 12a7.5 7.5 0 0113-5M17 3.7v4.3h-4.3"/><path d="M19.5 12a7.5 7.5 0 01-13 5M7 20.3V16h4.3"/>',
+  table_rows:'<rect x="3.5" y="4.5" width="17" height="15" rx="2.2"/><path d="M3.5 9.7h17M3.5 14.8h17"/>',
+  upload_file:'<path d="M6.5 3h7l4 4v13a1.2 1.2 0 01-1.2 1.2H6.5A1.2 1.2 0 015.3 20V4.2A1.2 1.2 0 016.5 3z"/><path d="M13.5 3v4h4"/><path d="M12 18v-5.3M9.6 15.1l2.4-2.4 2.4 2.4"/>',
+  view_week:'<rect x="3.5" y="4.5" width="4.3" height="15" rx="1.2"/><rect x="9.8" y="4.5" width="4.3" height="15" rx="1.2"/><rect x="16.1" y="4.5" width="4.3" height="15" rx="1.2"/>'
+};
+function iconSvgWrap(inner){
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">'+inner+'</svg>';
+}
+function hydrateIcon(el){
+  if(el.querySelector&&el.querySelector('svg')) return;
+  const name=(el.textContent||'').trim();
+  const def=ICON_DEFS[name];
+  if(!def) return;
+  el.innerHTML=iconSvgWrap(def);
+}
+function hydrateIcons(root){
+  (root||document).querySelectorAll('.material-symbols-rounded').forEach(hydrateIcon);
+}
+hydrateIcons();
+// Self-healing: any icon span added or re-texted later (toasts, table rows,
+// command palette, gender badges, theme toggle, etc.) gets hydrated the moment
+// it lands in the DOM — no per-call-site plumbing needed.
+new MutationObserver(muts=>{
+  muts.forEach(m=>{
+    if(m.target&&m.target.nodeType===1&&m.target.classList&&m.target.classList.contains('material-symbols-rounded')) hydrateIcon(m.target);
+    m.addedNodes.forEach(node=>{
+      if(node.nodeType!==1) return;
+      if(node.classList&&node.classList.contains('material-symbols-rounded')) hydrateIcon(node);
+      if(node.querySelectorAll) hydrateIcons(node);
+    });
+  });
+}).observe(document.body,{childList:true,subtree:true,characterData:true});
+
 const GOVERNORATES={'01':'Cairo','02':'Alexandria','03':'Port Said','04':'Suez','11':'Damietta','12':'Dakahlia','13':'Sharqia','14':'Qalyubia','15':'Kafr El Sheikh','16':'Gharbia','17':'Monufia','18':'Beheira','19':'Ismailia','21':'Giza','22':'Beni Suef','23':'Fayoum','24':'Minya','25':'Asyut','26':'Sohag','27':'Qena','28':'Aswan','29':'Luxor','31':'Red Sea','32':'New Valley','33':'Matrouh','34':'North Sinai','35':'South Sinai','88':'Foreign'};
 const DAY_NAMES=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const MONTH_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
@@ -1319,6 +1436,80 @@ function exportInspectorBatch(format){
   showToast('File downloaded','download_done');
 }
 
+const destOrder=['birth','gender','retirement'];
+let destDirty={birth:false,gender:false,retirement:false};
+const destTableDefaults={birth:'Birth Date',gender:'Gender',retirement:'Retirement Date'};
+
+function colLetterToIndex(letters){
+  letters=(letters||'').toUpperCase().replace(/[^A-Z]/g,'');
+  if(!letters) return 1;
+  let idx=0;
+  for(const ch of letters) idx=idx*26+(ch.charCodeAt(0)-64);
+  return idx;
+}
+function colIndexToLetter(idx){
+  let s='';
+  while(idx>0){const rem=(idx-1)%26;s=String.fromCharCode(65+rem)+s;idx=Math.floor((idx-1)/26);}
+  return s||'A';
+}
+
+function onDestInput(field){
+  destDirty[field]=true;
+  recomputeDestinations();
+  saveDestState();
+}
+function resetDest(field){
+  destDirty[field]=false;
+  recomputeDestinations();
+  saveDestState();
+}
+function saveDestState(){
+  const vals={};
+  destOrder.forEach(f=>{vals[f]=document.getElementById('dest-'+f).value;});
+  saveState({destDirty:Object.assign({},destDirty),destValues:vals});
+}
+
+// Keeps the 3 destination fields from ever colliding: manually-set (dirty) fields
+// are left untouched, everything else auto-flows around them in sequence.
+function recomputeDestinations(){
+  if(formulaMode==='range'){
+    const idRef=document.getElementById('cfg-cell-id').value||'A2';
+    const m=idRef.match(/[A-Za-z]+/);
+    const idCol=colLetterToIndex(m?m[0]:'A');
+    const used=new Set();
+    destOrder.forEach(f=>{
+      if(destDirty[f]){
+        const v=document.getElementById('dest-'+f).value||'';
+        const mm=v.match(/[A-Za-z]+/);
+        if(mm) used.add(colLetterToIndex(mm[0]));
+      }
+    });
+    let next=idCol+1;
+    destOrder.forEach(f=>{
+      if(destDirty[f]) return;
+      while(used.has(next)) next++;
+      document.getElementById('dest-'+f).value=colIndexToLetter(next);
+      used.add(next);next++;
+    });
+  }else{
+    const used=new Set();
+    destOrder.forEach(f=>{
+      if(destDirty[f]){
+        const v=(document.getElementById('dest-'+f).value||'').trim().toLowerCase();
+        if(v) used.add(v);
+      }
+    });
+    destOrder.forEach(f=>{
+      if(destDirty[f]) return;
+      const base=destTableDefaults[f];
+      let name=base,n=2;
+      while(used.has(name.toLowerCase())){name=base+' '+n;n++;}
+      document.getElementById('dest-'+f).value=name;
+      used.add(name.toLowerCase());
+    });
+  }
+}
+
 function setFormulaMode(mode){
   formulaMode=mode;
   document.getElementById('mode-btn-table').classList.toggle('active',mode==='table');
@@ -1384,6 +1575,8 @@ function updateFormulas(){
   document.getElementById('code-birth').textContent=birthFormula;
   document.getElementById('code-gender').textContent=genderFormula;
   document.getElementById('code-retirement').textContent=retireFormula;
+
+  recomputeDestinations();
 }
 
 function copyFormula(elementId,evt){
@@ -1581,6 +1774,13 @@ function restoreCachedState(){
   if(state.formulaColId) document.getElementById('cfg-col-id').value=state.formulaColId;
   if(state.formulaCellId) document.getElementById('cfg-cell-id').value=state.formulaCellId;
   if(state.formulaMode) setFormulaMode(state.formulaMode);
+  if(state.destDirty) destDirty=Object.assign({birth:false,gender:false,retirement:false},state.destDirty);
+  if(state.destValues){
+    destOrder.forEach(f=>{
+      if(destDirty[f]&&state.destValues[f]) document.getElementById('dest-'+f).value=state.destValues[f];
+    });
+  }
+  recomputeDestinations();
   if(state.inspectorValue) document.getElementById('inspector-input').value=state.inspectorValue;
   if(state.inspectorBatchInput){document.getElementById('inspector-batch-input').value=state.inspectorBatchInput;updateInspectorBatchCount();}
   if(Array.isArray(state.workDays)&&state.workDays.length) workDaySet=new Set(state.workDays);
