@@ -1,0 +1,1645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0E0C0A">
+<title>LX ID — Egyptian National ID & Retirement Toolkit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650;9..144,760&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root{
+  --bg:#F7F3EC; --bg-deep:#EFE9DD;
+  --milk:rgba(255,255,255,0.55); --milk-strong:rgba(255,255,255,0.75); --milk-border:rgba(255,255,255,0.9);
+  --edge:rgba(40,32,24,0.08); --edge-strong:rgba(40,32,24,0.14);
+  --ink:#221B14; --ink-2:#655A48; --ink-3:#9C8F78;
+  --amber:#C6733F; --amber-hi:#AD5F30; --amber-soft:#F0DEC8; --amber-text:#8A4B26;
+  --rose:#C4587B; --rose-soft:#F3DCE4; --rose-text:#9C3E5C;
+  --azure:#3E7CB1; --azure-soft:#D9E7F2; --azure-text:#2C5C87;
+  --mint:#4F8A63; --mint-soft:#DCEBDF;
+  --sun:#B98A24; --sun-soft:#F1E3BE;
+  --scarlet:#B94B3C; --scarlet-soft:#F3DBD3;
+  --r1:26px; --r2:18px; --r3:13px; --r4:9px;
+  --sh-1:0 1px 2px rgba(34,27,20,0.04);
+  --sh-2:0 18px 40px -20px rgba(34,27,20,0.16), 0 2px 6px -2px rgba(34,27,20,0.06);
+  --sh-3:0 30px 60px -22px rgba(34,27,20,0.24);
+  --sh-glow:0 8px 20px -6px rgba(198,115,63,0.38);
+}
+.dark{
+  --bg:#0D0B09; --bg-deep:#070605;
+  --milk:rgba(255,250,242,0.05); --milk-strong:rgba(255,250,242,0.09); --milk-border:rgba(255,250,242,0.10);
+  --edge:rgba(255,246,232,0.08); --edge-strong:rgba(255,246,232,0.14);
+  --ink:#F3ECDE; --ink-2:#B3A48A; --ink-3:#75695512;
+  --ink-3:#786C58;
+  --amber:#E2A06E; --amber-hi:#EDB183; --amber-soft:rgba(226,160,110,0.16); --amber-text:#F0BC8F;
+  --rose:#E38BAA; --rose-soft:rgba(227,139,170,0.15); --rose-text:#EFA6C0;
+  --azure:#7BAEDD; --azure-soft:rgba(123,174,221,0.15); --azure-text:#9AC3E7;
+  --mint:#8FC49E; --mint-soft:rgba(143,196,158,0.15);
+  --sun:#E0BD73; --sun-soft:rgba(224,189,115,0.15);
+  --scarlet:#E28A79; --scarlet-soft:rgba(226,138,121,0.15);
+  --sh-1:0 1px 2px rgba(0,0,0,0.4);
+  --sh-2:0 20px 48px -20px rgba(0,0,0,0.65), inset 0 1px 0 rgba(255,255,255,0.03);
+  --sh-3:0 40px 80px -24px rgba(0,0,0,0.75);
+  --sh-glow:0 10px 26px -6px rgba(226,160,110,0.30);
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+:root{
+  --fs-2xs:.625rem; --fs-xs:.6875rem; --fs-sm:.75rem; --fs-base:.8125rem; --fs-md:.9375rem; --fs-lg:1.0625rem; --fs-xl:1.5rem; --fs-2xl:1.9rem;
+}
+body{
+  margin:0;background:var(--bg);color:var(--ink);font-family:'Inter',-apple-system,BlinkMacSystemFont,sans-serif;
+  min-height:100vh;position:relative;letter-spacing:-0.008em;transition:background .4s ease,color .4s ease;
+  padding-bottom:calc(74px + env(safe-area-inset-bottom));
+}
+.field{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.orb{position:absolute;border-radius:50%;filter:blur(80px)}
+.orb-a{width:36rem;height:36rem;top:-14rem;right:-10rem;background:radial-gradient(circle,var(--amber-soft),transparent 70%);opacity:.5}
+.orb-b{width:30rem;height:30rem;bottom:-12rem;left:-12rem;background:radial-gradient(circle,var(--amber-soft),transparent 70%);opacity:.24}
+.orb-c{width:22rem;height:22rem;top:40%;left:60%;background:radial-gradient(circle,var(--amber-soft),transparent 72%);opacity:.14}
+.dark .orb{filter:blur(100px)}
+.grain{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E")}
+.dark .grain{opacity:.9}
+::selection{background:var(--amber-soft);color:var(--amber-text)}
+.material-symbols-rounded{font-variation-settings:'FILL' 0,'wght' 320,'GRAD' -25,'opsz' 22;line-height:1;font-family:'Material Symbols Rounded'}
+.disp{font-family:'Fraunces',serif;letter-spacing:-0.015em;font-optical-sizing:auto}
+.mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+.pagetitle{font-family:'Fraunces',serif;letter-spacing:-0.02em;font-size:var(--fs-xl);font-weight:600;margin:0;color:var(--ink)}
+.cardtitle{font-family:'Fraunces',serif;letter-spacing:-0.01em;font-size:var(--fs-md);font-weight:600;margin:0;color:var(--ink)}
+.eyebrow{font-size:var(--fs-xs);font-weight:650;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3)}
+.num{font-variant-numeric:tabular-nums}
+
+.glass{background:var(--milk);border:1px solid var(--edge);backdrop-filter:blur(28px) saturate(1.7);-webkit-backdrop-filter:blur(28px) saturate(1.7)}
+.card{
+  background:var(--milk);border:1px solid var(--edge);border-radius:var(--r1);box-shadow:var(--sh-2),inset 0 1px 0 rgba(255,255,255,0.35);
+  backdrop-filter:blur(30px) saturate(1.8);-webkit-backdrop-filter:blur(30px) saturate(1.8);
+}
+.dark .card{box-shadow:var(--sh-2)}
+.card-solid{background:var(--milk-strong);border:1px solid var(--edge-strong);border-radius:var(--r1);box-shadow:var(--sh-2)}
+.pad{padding:1.25rem}
+@media(min-width:768px){.pad{padding:1.75rem}}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;font-weight:600;border-radius:999px;
+  padding:.72rem 1.15rem;font-size:.825rem;cursor:pointer;border:none;white-space:nowrap;letter-spacing:-0.006em;
+  transition:transform .18s cubic-bezier(.16,1,.3,1),box-shadow .2s ease,background .2s ease,color .2s ease,opacity .15s ease}
+.btn:active{transform:scale(.96)}
+.btn:disabled{opacity:.35;cursor:not-allowed}
+.btn-primary{background:linear-gradient(155deg,var(--amber),var(--amber-hi));color:#FBF3E8;box-shadow:var(--sh-glow)}
+.btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 14px 30px -8px rgba(198,115,63,0.5)}
+.btn-ghost{background:transparent;color:var(--ink-2)}
+.btn-ghost:hover:not(:disabled){background:var(--milk-strong);color:var(--ink)}
+.btn-soft{background:var(--amber-soft);color:var(--amber-text)}
+.btn-soft:hover:not(:disabled){background:var(--amber);color:#FBF3E8}
+.btn.copied{background:var(--mint) !important;color:#0B1B10 !important}
+.btn-sm{padding:.5rem .85rem;font-size:.75rem}
+.btn-block{width:100%}
+
+.iconbtn{width:2.6rem;height:2.6rem;border-radius:999px;display:inline-flex;align-items:center;justify-content:center;overflow:hidden;
+  background:transparent;border:none;color:var(--ink-2);cursor:pointer;transition:background .2s cubic-bezier(.16,1,.3,1),color .2s,transform .15s}
+.iconbtn:hover{background:var(--milk-strong);color:var(--ink);transform:scale(1.06)}
+.iconbtn:active{transform:scale(.92)}
+
+.field-input,.field-area,.field-select{
+  background:var(--milk-strong);border:1px solid var(--edge);color:var(--ink);border-radius:var(--r3);
+  padding:.8rem 1rem;font-size:.85rem;width:100%;outline:none;transition:border-color .15s,box-shadow .15s;
+  -webkit-appearance:none;appearance:none;
+}
+.field-input:focus,.field-area:focus,.field-select:focus{border-color:var(--amber);box-shadow:0 0 0 4px var(--amber-soft)}
+.field-area{font-family:'JetBrains Mono',monospace;line-height:1.7;resize:vertical}
+.field-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239C8F78' stroke-width='2.4'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.85rem center;padding-right:2.4rem}
+
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--edge-strong);border-radius:99px}
+
+.topbar{position:sticky;top:0;z-index:40;background:var(--bg);background:color-mix(in srgb, var(--bg) 78%, transparent);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--edge)}
+.brandmark{position:relative;width:38px;height:38px;border-radius:13px;background:linear-gradient(150deg,var(--amber),var(--amber-hi));display:flex;align-items:center;justify-content:center;box-shadow:var(--sh-glow);flex-shrink:0;overflow:hidden}
+.brandmark::after{content:'';position:absolute;inset:-8px;border-radius:20px;background:radial-gradient(circle,var(--amber-soft),transparent 72%);z-index:-1}
+
+.bottomnav{position:fixed;left:0;right:0;bottom:0;z-index:50;padding:.6rem .75rem calc(.6rem + env(safe-area-inset-bottom));
+  background:var(--bg);background:color-mix(in srgb, var(--bg) 82%, transparent);backdrop-filter:blur(24px) saturate(1.6);-webkit-backdrop-filter:blur(24px) saturate(1.6);
+  border-top:1px solid var(--edge);display:flex;gap:.25rem}
+@media(min-width:1024px){.bottomnav{display:none}}
+.navitem{flex:1;display:flex;flex-direction:column;align-items:center;gap:.2rem;padding:.4rem 0;border:none;background:transparent;color:var(--ink-3);cursor:pointer;border-radius:14px;transition:color .2s;min-width:0;overflow:hidden}
+.navitem .material-symbols-rounded{font-size:1.35rem;transition:transform .2s cubic-bezier(.16,1,.3,1);white-space:nowrap}
+.navitem span.lbl{font-size:.625rem;font-weight:650;letter-spacing:-0.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.navitem.active{color:var(--amber-text)}
+.navitem.active .material-symbols-rounded{transform:translateY(-1px) scale(1.08)}
+.dark .navitem.active{color:var(--amber)}
+
+.toptabs{display:none}
+@media(min-width:1024px){
+  .toptabs{display:inline-flex;background:var(--milk-strong);border:1px solid var(--edge);border-radius:20px;padding:4px;gap:2px;position:relative;box-shadow:inset 0 1px 3px rgba(34,27,20,0.05)}
+  .toptab{padding:.62rem 1.15rem;border-radius:14px;font-size:.82rem;font-weight:620;color:var(--ink-2);position:relative;z-index:1;
+    display:inline-flex;align-items:center;gap:.5rem;cursor:pointer;border:none;background:transparent}
+  .toptab.active{color:var(--amber-text)}
+  .dark .toptab.active{color:var(--amber)}
+  .topindicator{position:absolute;top:4px;bottom:4px;background:var(--milk);border:1px solid var(--milk-border);border-radius:14px;
+    transition:left .35s cubic-bezier(.4,0,.2,1),width .35s cubic-bezier(.4,0,.2,1);box-shadow:var(--sh-1);z-index:0;left:0;width:0}
+}
+
+.pill{padding:.5rem .95rem;border-radius:12px;font-size:.75rem;font-weight:620;color:var(--ink-2);border:none;background:transparent;cursor:pointer;display:inline-flex;align-items:center;gap:.4rem;transition:all .2s}
+.pill.active{background:var(--milk-strong);color:var(--ink);box-shadow:var(--sh-1)}
+.pillrow{display:inline-flex;background:var(--milk);border-radius:14px;padding:4px;gap:2px;border:1px solid var(--edge)}
+
+.chip{display:inline-flex;align-items:center;gap:.35rem;font-size:.7rem;font-weight:620;padding:.3rem .65rem;border-radius:999px;background:var(--milk-strong);border:1px solid var(--edge);color:var(--ink-2)}
+.chip-accent{background:var(--amber-soft);color:var(--amber-text);border-color:transparent}
+
+.gender-badge{display:inline-flex;align-items:center;gap:.4rem;font-size:.72rem;font-weight:650;padding:.32rem .7rem .32rem .5rem;border-radius:999px}
+.gender-badge .material-symbols-rounded{font-size:1rem}
+.gender-m{background:var(--azure-soft);color:var(--azure-text)}
+.gender-f{background:var(--rose-soft);color:var(--rose-text)}
+
+.statdot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.statdot.ok{background:var(--mint)}
+.statdot.bad{background:var(--scarlet)}
+.statdot.warn{background:var(--sun)}
+.statuspill{display:inline-flex;align-items:center;gap:.4rem;font-size:.75rem;font-weight:650}
+
+.kpi{padding:1rem 1.1rem;border-radius:var(--r2);background:var(--milk);border:1px solid var(--edge)}
+.kpi .num{font-size:1.7rem;line-height:1}
+.kpi .lbl{font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.07em;font-weight:650;color:var(--ink-3);margin-bottom:.3rem}
+
+table.dtable{width:100%;text-align:left;font-size:.8rem;border-collapse:collapse}
+table.dtable thead{color:var(--ink-3);font-weight:700;font-size:.62rem;text-transform:uppercase;letter-spacing:.06em}
+table.dtable th{padding:.75rem .9rem;border-bottom:1px solid var(--edge);white-space:nowrap;background:var(--bg);background:color-mix(in srgb, var(--bg) 92%, transparent);position:sticky;top:0}
+table.dtable td{padding:.65rem .9rem;border-bottom:1px solid var(--edge);white-space:nowrap}
+table.dtable tbody tr{transition:background .15s}
+table.dtable tbody tr:hover{background:var(--milk)}
+.rowcopy{opacity:0;transition:opacity .15s;cursor:pointer;color:var(--ink-3);font-size:1.05rem}
+table.dtable tbody tr:hover .rowcopy{opacity:1}
+.rowcopy:hover{color:var(--amber)}
+
+.codeblock{background:var(--ink);color:var(--bg);font-family:'JetBrains Mono',monospace;font-size:.74rem;line-height:1.75;padding:1.1rem;border-radius:var(--r2);overflow-x:auto;white-space:pre;border:1px solid var(--edge-strong)}
+.dark .codeblock{background:#0A0807;color:#F3ECDE}
+
+.dropzone{border:1.5px dashed var(--edge-strong);background:var(--milk);border-radius:var(--r1);padding:2.4rem 1.5rem;text-align:center;cursor:pointer;transition:all .25s}
+.dropzone:hover,.dropzone.dragging{border-color:var(--amber);background:var(--amber-soft)}
+
+#toasts{position:fixed;top:calc(1rem + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;align-items:center;pointer-events:none}
+.toast{background:var(--ink);color:var(--bg);padding:.7rem 1.1rem;border-radius:999px;box-shadow:var(--sh-3);display:flex;align-items:center;gap:.5rem;font-size:.8rem;font-weight:640;
+  animation:toastin .3s cubic-bezier(.16,1,.3,1)}
+.dark .toast{background:#161310;color:#F3ECDE}
+.toast.leaving{animation:toastout .2s ease-in forwards}
+@keyframes toastin{from{opacity:0;transform:translateY(-12px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes toastout{to{opacity:0;transform:scale(.94)}}
+
+.idseg{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:2.3rem;padding:.55rem .35rem;border-radius:12px;
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.95rem;color:var(--ink);cursor:default;
+  background:var(--milk-strong);border:1px solid var(--edge);
+  transition:transform .2s cubic-bezier(.16,1,.3,1),border-color .2s ease}
+.idseg:hover{transform:translateY(-3px);border-color:var(--edge-strong)}
+.idseg .tag{font-size:.5rem;font-weight:700;opacity:.6;margin-top:.15rem;letter-spacing:.02em;text-transform:uppercase}
+
+.idcard{position:relative;border-radius:var(--r1);overflow:hidden;background:var(--milk-strong);backdrop-filter:blur(30px) saturate(1.8);-webkit-backdrop-filter:blur(30px) saturate(1.8);border:1px solid var(--edge-strong);box-shadow:var(--sh-3)}
+.idstripe{height:3px;position:relative;overflow:hidden;background:linear-gradient(100deg,var(--amber),var(--amber-hi))}
+.idstripe::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.5) 50%,transparent 80%);background-size:220% 100%;animation:shimmer 7s ease-in-out infinite}
+@keyframes shimmer{0%{background-position:150% 0}55%{background-position:-50% 0}100%{background-position:-50% 0}}
+.idchip{width:2.5rem;height:1.85rem;border-radius:8px;background:linear-gradient(135deg,#E7CE9E,#C7A268);position:relative;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
+.idchip::before,.idchip::after{content:'';position:absolute;background:rgba(0,0,0,.16)}
+.idchip::before{left:33%;top:0;bottom:0;width:1px}
+.idchip::after{top:40%;left:0;right:0;height:1px}
+
+.emptybox{width:4.2rem;height:4.2rem;border-radius:999px;background:radial-gradient(circle at 35% 30%,var(--milk-strong),var(--milk));display:inline-flex;align-items:center;justify-content:center;margin-bottom:.8rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.emptybox .material-symbols-rounded{font-size:1.8rem;color:var(--amber-text);opacity:.8}
+
+.focusable:focus-visible{outline:none;box-shadow:0 0 0 4px var(--amber-soft);border-radius:8px}
+.wrap{max-width:78rem;margin:0 auto;padding:0 1rem}
+@media(min-width:768px){.wrap{padding:0 1.5rem}}
+@media(min-width:1280px){.wrap{padding:0 2rem}}
+
+.grid2{display:grid;grid-template-columns:1fr;gap:1rem;min-width:0}
+@media(min-width:1024px){.grid2{grid-template-columns:5fr 7fr;gap:1.25rem}}
+.grid2>*{min-width:0}
+.stack{display:flex;flex-direction:column;gap:.9rem;min-width:0}
+.row{display:flex;align-items:center;gap:.6rem;min-width:0}
+.row-between{display:flex;align-items:center;justify-content:space-between;gap:.75rem;flex-wrap:wrap;min-width:0}
+.scrollx{overflow-x:auto;-webkit-overflow-scrolling:touch;min-width:0}
+.card,.card-solid{min-width:0}
+.hide{display:none !important}
+
+.progress-ring circle{transition:stroke-dashoffset 1.1s cubic-bezier(.4,0,.2,1)}
+
+.cmdk-overlay{position:fixed;inset:0;z-index:200;background:rgba(15,12,9,.45);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:12vh 1rem 1rem;opacity:0;pointer-events:none;transition:opacity .2s ease}
+.cmdk-overlay.open{opacity:1;pointer-events:auto}
+.cmdk-box{width:100%;max-width:34rem;background:var(--bg);border:1px solid var(--edge-strong);border-radius:var(--r1);box-shadow:var(--sh-3);overflow:hidden;transform:translateY(-8px);transition:transform .2s cubic-bezier(.16,1,.3,1)}
+.cmdk-overlay.open .cmdk-box{transform:translateY(0)}
+.cmdk-input{width:100%;border:none;background:transparent;padding:1.1rem 1.25rem;font-size:.95rem;outline:none;color:var(--ink);border-bottom:1px solid var(--edge)}
+.cmdk-list{max-height:50vh;overflow-y:auto;padding:.5rem}
+.cmdk-group{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);padding:.6rem .75rem .3rem}
+.cmdk-item{display:flex;align-items:center;gap:.7rem;padding:.65rem .75rem;border-radius:12px;cursor:pointer;font-size:.85rem}
+.cmdk-item.active{background:var(--milk-strong)}
+.cmdk-empty{padding:2rem;text-align:center;color:var(--ink-3);font-size:.85rem}
+
+@media(max-width:1023px){
+  .desktop-only{display:none !important}
+}
+@media(min-width:1024px){
+  .mobile-only{display:none !important}
+}
+</style>
+</head>
+<body>
+<div class="field"><div class="orb orb-a"></div><div class="orb orb-b"></div><div class="orb orb-c"></div></div>
+<div class="grain"></div>
+<div id="toasts"></div>
+
+<header class="topbar">
+  <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding-top:.85rem;padding-bottom:.85rem;position:relative;z-index:1;">
+    <div class="row" style="gap:.7rem;">
+      <div class="brandmark"><span class="material-symbols-rounded" style="color:#FBF3E8;font-size:1.2rem;">fingerprint</span></div>
+      <div>
+        <div class="disp" style="font-size:1.05rem;font-weight:650;line-height:1.1;">LX ID</div>
+        <div style="font-size:.68rem;color:var(--ink-3);font-weight:600;">National ID &amp; Retirement Toolkit</div>
+      </div>
+    </div>
+    <nav class="toptabs desktop-only" id="toptabs">
+      <div class="topindicator" id="topindicator"></div>
+      <button class="toptab active" data-tab="processor" onclick="switchTab('processor')"><span class="material-symbols-rounded" style="font-size:1.1rem;">table_rows</span>Processor</button>
+      <button class="toptab" data-tab="inspector" onclick="switchTab('inspector')"><span class="material-symbols-rounded" style="font-size:1.1rem;">fingerprint</span>Inspector</button>
+      <button class="toptab" data-tab="formula" onclick="switchTab('formula')"><span class="material-symbols-rounded" style="font-size:1.1rem;">functions</span>Formulas</button>
+      <button class="toptab" data-tab="datetools" onclick="switchTab('datetools')"><span class="material-symbols-rounded" style="font-size:1.1rem;">calendar_month</span>Dates</button>
+    </nav>
+    <div class="row" style="gap:.25rem;">
+      <button class="iconbtn desktop-only focusable" onclick="openCmdk()" title="Command palette">
+        <span class="material-symbols-rounded" style="font-size:1.15rem;">search</span>
+      </button>
+      <button class="iconbtn focusable" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle light or dark theme">
+        <span class="material-symbols-rounded" id="theme-icon" style="font-size:1.2rem;">dark_mode</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap" style="position:relative;z-index:1;padding-top:1.1rem;">
+
+<section id="tab-processor" class="tabpanel">
+  <div class="row-between" style="margin-bottom:1rem;">
+    <div>
+      <h1 class="pagetitle">Batch Processor</h1>
+    </div>
+    <div class="pillrow">
+      <button class="pill active focusable" data-subtab="paste" onclick="switchSubTab('paste')"><span class="material-symbols-rounded" style="font-size:1rem;">content_paste</span>Paste</button>
+      <button class="pill focusable" data-subtab="upload" onclick="switchSubTab('upload')"><span class="material-symbols-rounded" style="font-size:1rem;">upload_file</span>Upload</button>
+    </div>
+  </div>
+
+  <div id="subtab-paste" class="subtabpanel">
+    <div class="grid2">
+      <div class="card pad stack">
+        <div class="row-between">
+          <label class="disp" style="font-weight:640;font-size:.95rem;">Paste ID list</label>
+          <span class="chip" id="paste-count">0 detected</span>
+        </div>
+        <textarea id="paste-input" rows="10" placeholder="29805121401234&#10;30101011509876&#10;27510202100001" class="field-area focusable" style="font-size:.78rem;"></textarea>
+        <div class="row" style="flex-wrap:wrap;gap:.5rem;">
+          <button onclick="pasteFromClipboard()" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">content_paste_go</span>Paste</button>
+          <button onclick="loadSampleData()" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">auto_awesome</span>Sample</button>
+          <button onclick="clearPasteData()" class="btn btn-ghost btn-sm focusable" style="margin-left:auto;"><span class="material-symbols-rounded" style="font-size:1rem;">delete</span>Clear</button>
+        </div>
+        <button onclick="processPasteData()" class="btn btn-primary btn-block focusable"><span class="material-symbols-rounded" style="font-size:1.1rem;">play_arrow</span>Process IDs</button>
+      </div>
+
+      <div class="card pad stack">
+        <div class="row-between">
+          <div>
+            <h3 class="cardtitle">Results</h3>
+            <p style="font-size:.75rem;color:var(--ink-2);margin:.15rem 0 0;" id="paste-summary">Awaiting input…</p>
+          </div>
+          <div class="row" style="gap:.4rem;">
+            <button onclick="copyPasteTable(event)" class="iconbtn focusable" id="btn-copy" disabled title="Copy all"><span class="material-symbols-rounded" style="font-size:1.15rem;">content_copy</span></button>
+            <button onclick="exportPaste('xlsx')" class="btn btn-soft btn-sm focusable" id="btn-xlsx" disabled><span class="material-symbols-rounded" style="font-size:1rem;">download</span>Excel</button>
+            <button onclick="exportPaste('csv')" class="btn btn-ghost btn-sm focusable" id="btn-csv" disabled><span class="material-symbols-rounded" style="font-size:1rem;">csv</span>CSV</button>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;">
+          <div class="kpi"><div class="lbl">Total</div><div class="num disp" id="kpi-total">0</div></div>
+          <div class="kpi"><div class="lbl">Valid</div><div class="num disp" style="color:var(--mint);" id="kpi-valid">0</div></div>
+          <div class="kpi"><div class="lbl">Errors</div><div class="num disp" style="color:var(--scarlet);" id="kpi-errors">0</div></div>
+        </div>
+        <div class="row" style="flex-wrap:wrap;gap:.5rem;">
+          <div class="pillrow">
+            <button class="pill active focusable" data-filter="all" onclick="setFilter('all')">All</button>
+            <button class="pill focusable" data-filter="valid" onclick="setFilter('valid')">Valid</button>
+            <button class="pill focusable" data-filter="error" onclick="setFilter('error')">Errors</button>
+          </div>
+          <input type="text" id="search-input" placeholder="Search…" class="field-input focusable" style="width:auto;flex:1;min-width:130px;padding:.5rem .8rem;font-size:.78rem;" oninput="renderPasteTable()">
+        </div>
+        <div class="scrollx" style="border-radius:16px;border:1px solid var(--edge);">
+          <div style="max-height:400px;overflow-y:auto;">
+            <table class="dtable">
+              <thead><tr><th></th><th>National ID</th><th>Status</th><th>Gender</th><th>Birth Date</th><th>Age</th><th>Retire Age</th><th>Retirement Date</th><th>Notes / Error</th></tr></thead>
+              <tbody id="paste-tbody"><tr><td colspan="9" style="text-align:center;padding:3rem 1rem;color:var(--ink-3);">Paste IDs on the left and click Process.</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="subtab-upload" class="subtabpanel hide">
+    <div class="dropzone focusable" id="drop-zone" tabindex="0" onclick="document.getElementById('file-input').click()">
+      <input type="file" id="file-input" accept=".xlsx,.xls,.csv" class="hide" onchange="handleFileUpload(event)">
+      <div class="stack" style="align-items:center;">
+        <div class="emptybox"><span class="material-symbols-rounded" style="font-size:1.9rem;">cloud_upload</span></div>
+        <div>
+          <h3 class="cardtitle">Drop a file or tap to browse</h3>
+          <p style="font-size:.78rem;color:var(--ink-2);margin:.25rem 0 0;">.xlsx, .xls, or .csv</p>
+        </div>
+      </div>
+    </div>
+    <div id="upload-mapping" class="card pad hide" style="margin-top:1.1rem;">
+      <div style="display:grid;grid-template-columns:1fr;gap:.9rem;">
+        <div>
+          <label class="eyebrow">National ID column</label>
+          <select id="column-select" class="field-select focusable"></select>
+        </div>
+        <div class="row-between" style="background:var(--milk);border-radius:14px;padding:.7rem .9rem;">
+          <div>
+            <p style="font-weight:650;font-size:.8rem;margin:0;" id="file-info-text">File: —</p>
+            <p style="font-size:.7rem;color:var(--ink-2);margin:.1rem 0 0;" id="file-rows-text">0 rows</p>
+          </div>
+        </div>
+        <button onclick="processUploadedFile()" class="btn btn-primary btn-block focusable"><span class="material-symbols-rounded" style="font-size:1.1rem;">auto_fix_high</span>Extract &amp; Process</button>
+      </div>
+    </div>
+    <div id="upload-results" class="card pad hide stack" style="margin-top:1.1rem;">
+      <div class="row-between">
+        <div>
+          <h3 class="cardtitle">File results</h3>
+          <p style="font-size:.75rem;color:var(--ink-2);margin:.15rem 0 0;" id="upload-summary">0 rows</p>
+        </div>
+        <div class="row" style="gap:.4rem;">
+          <button onclick="downloadUpload('xlsx')" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">download</span>Excel</button>
+          <button onclick="downloadUpload('csv')" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">csv</span>CSV</button>
+        </div>
+      </div>
+      <div class="scrollx" style="border-radius:16px;border:1px solid var(--edge);">
+        <div style="max-height:420px;overflow-y:auto;">
+          <table class="dtable"><thead id="upload-thead"></thead><tbody id="upload-tbody"></tbody></table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tab-inspector" class="tabpanel hide">
+  <div class="row-between" style="margin-bottom:1rem;">
+    <div>
+      <h1 class="pagetitle">ID Inspector</h1>
+    </div>
+    <div class="pillrow">
+      <button class="pill active focusable" data-mode="single" onclick="setInspectorMode('single')"><span class="material-symbols-rounded" style="font-size:1rem;">fingerprint</span>Single</button>
+      <button class="pill focusable" data-mode="batch" onclick="setInspectorMode('batch')"><span class="material-symbols-rounded" style="font-size:1rem;">table_rows</span>Batch</button>
+    </div>
+  </div>
+
+  <div id="inspector-single" class="stack">
+    <div class="card pad stack">
+      <div class="row" style="gap:.6rem;">
+        <input type="text" id="inspector-input" placeholder="Enter a 14-digit national ID…" class="field-input mono focusable" style="flex:1;font-size:.95rem;letter-spacing:.02em;" oninput="inspectID()">
+        <button onclick="pasteIntoInspector()" class="iconbtn focusable" title="Paste"><span class="material-symbols-rounded">content_paste_go</span></button>
+        <button onclick="loadSampleIntoInspector()" class="iconbtn focusable" title="Sample ID"><span class="material-symbols-rounded">auto_awesome</span></button>
+      </div>
+    </div>
+    <div id="inspector-result"></div>
+  </div>
+
+  <div id="inspector-batch" class="stack hide">
+    <div class="card pad stack">
+      <div class="row-between">
+        <label class="disp" style="font-weight:640;font-size:.95rem;">Paste IDs for deep analytics</label>
+        <span class="chip" id="inspector-batch-count">0 detected</span>
+      </div>
+      <textarea id="inspector-batch-input" rows="8" placeholder="One ID per line…" class="field-area focusable" style="font-size:.78rem;" oninput="updateInspectorBatchCount()"></textarea>
+      <div class="row" style="flex-wrap:wrap;gap:.5rem;">
+        <button onclick="processInspectorBatch()" class="btn btn-primary focusable"><span class="material-symbols-rounded" style="font-size:1.1rem;">play_arrow</span>Run Analytics</button>
+        <button onclick="loadSampleIntoInspectorBatch()" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">auto_awesome</span>Sample</button>
+      </div>
+    </div>
+    <div id="inspector-batch-result"></div>
+  </div>
+</section>
+<section id="tab-formula" class="tabpanel hide">
+  <div style="margin-bottom:1rem;">
+    <h1 class="pagetitle">Excel / Sheets Formulas</h1>
+  </div>
+
+  <div class="card pad stack" style="margin-bottom:1.1rem;">
+    <div class="row-between">
+      <label class="disp" style="font-weight:640;font-size:.9rem;">Reference mode</label>
+      <div class="pillrow">
+        <button class="pill active focusable" id="mode-btn-table" onclick="setFormulaMode('table')">Table column</button>
+        <button class="pill focusable" id="mode-btn-range" onclick="setFormulaMode('range')">Single cell</button>
+      </div>
+    </div>
+    <div id="inputs-table-mode" style="display:grid;grid-template-columns:1fr;gap:.7rem;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
+        <div>
+          <label class="eyebrow">Table name</label>
+          <input id="cfg-table-name" class="field-input focusable" style="font-size:.8rem;" value="" placeholder="Table1" oninput="updateFormulas()">
+        </div>
+        <div>
+          <label class="eyebrow">ID column name</label>
+          <input id="cfg-col-id" class="field-input focusable" style="font-size:.8rem;" value="" placeholder="National ID" oninput="updateFormulas()">
+        </div>
+      </div>
+    </div>
+    <div id="inputs-range-mode" class="hide" style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
+      <div>
+        <label class="eyebrow">ID cell reference</label>
+        <input id="cfg-cell-id" class="field-input mono focusable" style="font-size:.8rem;" value="" placeholder="A2" oninput="updateFormulas()">
+      </div>
+    </div>
+  </div>
+
+  <div class="stack">
+    <div class="card pad stack">
+      <div class="row-between">
+        <div class="row" style="gap:.5rem;"><span class="chip">1</span><h3 class="cardtitle">Birth date</h3></div>
+        <button onclick="copyFormula('code-birth',event)" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>Copy</button>
+      </div>
+      <pre class="codeblock" id="code-birth"></pre>
+    </div>
+
+    <div class="card pad stack">
+      <div class="row-between">
+        <div class="row" style="gap:.5rem;"><span class="chip">2</span><h3 class="cardtitle">Gender</h3></div>
+        <button onclick="copyFormula('code-gender',event)" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>Copy</button>
+      </div>
+      <pre class="codeblock" id="code-gender"></pre>
+    </div>
+
+    <div class="card pad stack">
+      <div class="row-between">
+        <div class="row" style="gap:.5rem;"><span class="chip">3</span><h3 class="cardtitle">Retirement age &amp; date</h3></div>
+        <button onclick="copyFormula('code-retirement',event)" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>Copy</button>
+      </div>
+      <pre class="codeblock" id="code-retirement"></pre>
+    </div>
+  </div>
+</section>
+<section id="tab-datetools" class="tabpanel hide">
+  <div class="row-between" style="margin-bottom:1rem;">
+    <div>
+      <h1 class="pagetitle">Date Tools</h1>
+    </div>
+  </div>
+  <div class="scrollx" style="margin-bottom:1.1rem;">
+    <div class="pillrow">
+      <button class="pill active focusable" data-datesub="between" onclick="switchDateSub('between')"><span class="material-symbols-rounded" style="font-size:1rem;">date_range</span>Between Dates</button>
+      <button class="pill focusable" data-datesub="age" onclick="switchDateSub('age')"><span class="material-symbols-rounded" style="font-size:1rem;">cake</span>Age</button>
+      <button class="pill focusable" data-datesub="weekday" onclick="switchDateSub('weekday')"><span class="material-symbols-rounded" style="font-size:1rem;">view_week</span>Weekday</button>
+      <button class="pill focusable" data-datesub="leapyears" onclick="switchDateSub('leapyears')"><span class="material-symbols-rounded" style="font-size:1rem;">event_repeat</span>Leap Years</button>
+    </div>
+  </div>
+
+  <div id="datesub-between" class="datesubpanel grid2">
+    <div class="card pad stack">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
+        <div><label class="eyebrow" style="display:block;margin-bottom:.35rem;">Start date</label><input type="date" id="dt-start" class="field-input focusable" oninput="computeBetweenDates()"></div>
+        <div><label class="eyebrow" style="display:block;margin-bottom:.35rem;">End date</label><input type="date" id="dt-end" class="field-input focusable" oninput="computeBetweenDates()"></div>
+      </div>
+      <div>
+        <label class="eyebrow" style="display:block;margin-bottom:.4rem;">Working days</label>
+        <div class="row" id="workday-picker" style="gap:.35rem;flex-wrap:wrap;"></div>
+      </div>
+    </div>
+    <div id="between-result" class="card pad"></div>
+  </div>
+
+  <div id="datesub-age" class="datesubpanel grid2 hide">
+    <div class="card pad stack">
+      <div><label class="eyebrow" style="display:block;margin-bottom:.35rem;">Birth date</label><input type="date" id="dt-birth" class="field-input focusable" oninput="computeAge()"></div>
+      <div><label class="eyebrow" style="display:block;margin-bottom:.35rem;">As of (optional)</label><input type="date" id="dt-asof" class="field-input focusable" oninput="computeAge()"></div>
+    </div>
+    <div id="age-result" class="card pad"></div>
+  </div>
+
+  <div id="datesub-weekday" class="datesubpanel grid2 hide">
+    <div class="card pad stack">
+      <div><label class="eyebrow" style="display:block;margin-bottom:.35rem;">Any date</label><input type="date" id="dt-weekday" class="field-input focusable" oninput="computeWeekday()"></div>
+    </div>
+    <div id="weekday-result" class="card pad"></div>
+  </div>
+
+  <div id="datesub-leapyears" class="datesubpanel stack hide">
+    <div class="grid2">
+      <div class="card pad stack">
+        <label class="eyebrow" style="display:block;margin-bottom:.35rem;">Single year</label>
+        <input type="number" id="ly-year" placeholder="e.g. 2028" class="field-input focusable" oninput="computeLeapSingle()">
+        <div id="leap-single-result"></div>
+      </div>
+      <div class="card pad stack">
+        <label class="eyebrow" style="display:block;margin-bottom:.35rem;">Year range</label>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">
+          <input type="number" id="ly-from" placeholder="2000" class="field-input focusable" oninput="computeLeapRange()">
+          <input type="number" id="ly-to" placeholder="2050" class="field-input focusable" oninput="computeLeapRange()">
+        </div>
+        <div id="leap-range-result"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<nav class="bottomnav mobile-only">
+  <button class="navitem active" data-tab="processor" onclick="switchTab('processor')"><span class="material-symbols-rounded">table_rows</span><span class="lbl">Processor</span></button>
+  <button class="navitem" data-tab="inspector" onclick="switchTab('inspector')"><span class="material-symbols-rounded">fingerprint</span><span class="lbl">Inspector</span></button>
+  <button class="navitem" data-tab="formula" onclick="switchTab('formula')"><span class="material-symbols-rounded">functions</span><span class="lbl">Formulas</span></button>
+  <button class="navitem" data-tab="datetools" onclick="switchTab('datetools')"><span class="material-symbols-rounded">calendar_month</span><span class="lbl">Dates</span></button>
+  <button class="navitem" onclick="openCmdk()"><span class="material-symbols-rounded">search</span><span class="lbl">Search</span></button>
+</nav>
+
+<div class="cmdk-overlay" id="cmdk-overlay" onclick="if(event.target===this)closeCmdk()">
+  <div class="cmdk-box">
+    <input class="cmdk-input" id="cmdk-input" placeholder="Type a command…" oninput="renderCmdkResults(this.value)">
+    <div class="cmdk-list" id="cmdk-list"></div>
+  </div>
+</div>
+
+<script>
+const GOVERNORATES={'01':'Cairo','02':'Alexandria','03':'Port Said','04':'Suez','11':'Damietta','12':'Dakahlia','13':'Sharqia','14':'Qalyubia','15':'Kafr El Sheikh','16':'Gharbia','17':'Monufia','18':'Beheira','19':'Ismailia','21':'Giza','22':'Beni Suef','23':'Fayoum','24':'Minya','25':'Asyut','26':'Sohag','27':'Qena','28':'Aswan','29':'Luxor','31':'Red Sea','32':'New Valley','33':'Matrouh','34':'North Sinai','35':'South Sinai','88':'Foreign'};
+const DAY_NAMES=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTH_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
+const VALID_CENTURY_DIGITS=[2,3];
+const RETIREMENT_LAW=[
+  {date:new Date(2032,6,1),age:61,label:'1 Jul 2032'},
+  {date:new Date(2034,6,1),age:62,label:'1 Jul 2034'},
+  {date:new Date(2036,6,1),age:63,label:'1 Jul 2036'},
+  {date:new Date(2038,6,1),age:64,label:'1 Jul 2038'},
+  {date:new Date(2040,6,1),age:65,label:'1 Jul 2040'}
+];
+const SAMPLE_IDS=['29805121401234','30101011509876','27510202100001','26501010100001','29202290001234','30501010100001'];
+const STORAGE_KEY='lxid-state-v7';
+
+let processedPasteResults=[];
+let uploadedSheetData=[];
+let processedUploadResults=[];
+let formulaMode='table';
+let currentFilter='all';
+let saveTimer=null;
+let workDaySet=new Set([0,1,2,3,4]);
+let activeToast=null;
+let inspectorMode='single';
+let inspectorBatchResults=[];
+let inspectorBatchFilter='all';
+
+function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);return raw?JSON.parse(raw):{};}catch(e){return{};}}
+function saveState(patch){try{const cur=loadState();localStorage.setItem(STORAGE_KEY,JSON.stringify(Object.assign({},cur,patch)));}catch(e){}}
+function saveStateDebounced(patch){clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveState(patch),350);}
+function clearAllCache(){localStorage.removeItem(STORAGE_KEY);showToast('Cached data cleared','delete_sweep');}
+
+function initTheme(){
+  const state=loadState();
+  const prefersDark=window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  const dark=state.theme?state.theme==='dark':(state.theme===undefined?true:prefersDark);
+  document.documentElement.classList.toggle('dark',dark);
+  document.getElementById('theme-icon').textContent=dark?'light_mode':'dark_mode';
+}
+function toggleTheme(){
+  const dark=!document.documentElement.classList.contains('dark');
+  document.documentElement.classList.toggle('dark',dark);
+  document.getElementById('theme-icon').textContent=dark?'light_mode':'dark_mode';
+  saveState({theme:dark?'dark':'light'});
+}
+
+function showToast(msg,icon){
+  const box=document.getElementById('toasts');
+  const t=document.createElement('div');
+  t.className='toast';
+  t.innerHTML=`<span class="material-symbols-rounded" style="font-size:1.05rem;">${icon||'info'}</span><span>${escapeHtml(msg)}</span>`;
+  box.appendChild(t);
+  if(activeToast) activeToast.remove();
+  activeToast=t;
+  setTimeout(()=>{t.classList.add('leaving');setTimeout(()=>{t.remove();if(activeToast===t)activeToast=null;},220);},2200);
+}
+function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+async function copyText(text,btnEl,label){
+  let ok=true;
+  try{await navigator.clipboard.writeText(text);}
+  catch(e){
+    try{const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);}
+    catch(e2){ok=false;}
+  }
+  if(ok&&btnEl) flashCopied(btnEl);
+  showToast(ok?(label||'Copied to clipboard'):'Could not access clipboard',ok?'check_circle':'block');
+}
+function flashCopied(btnEl){
+  if(!btnEl||btnEl.dataset.flashing==='1') return;
+  btnEl.dataset.flashing='1';
+  const original=btnEl.innerHTML;
+  const width=btnEl.offsetWidth;
+  btnEl.style.minWidth=width+'px';
+  btnEl.classList.add('copied');
+  btnEl.innerHTML='<span class="material-symbols-rounded" style="font-size:.95rem;">check</span> Copied';
+  setTimeout(()=>{btnEl.classList.remove('copied');btnEl.innerHTML=original;btnEl.style.minWidth='';btnEl.dataset.flashing='0';},1400);
+}
+
+function normalizeIDInput(raw){
+  let s=String(raw??'').trim();
+  s=s.replace(/[\u0660-\u0669]/g,d=>String(d.charCodeAt(0)-0x0660));
+  s=s.replace(/[\u06F0-\u06F9]/g,d=>String(d.charCodeAt(0)-0x06F0));
+  return s.replace(/\D/g,'');
+}
+function isArabicText(s){return /[\u0600-\u06FF]/.test(String(s??''));}
+
+function isFakePattern(cleaned){
+  if(/^(.)\1{13}$/.test(cleaned)) return true;
+  const fwd='0123456789012345678901234567890';
+  const bwd='987654321098765432109876543210';
+  if(fwd.includes(cleaned)||bwd.includes(cleaned)) return true;
+  if(/^(\d{2})\1{6}$/.test(cleaned)) return true;
+  return false;
+}
+
+function isLeapYear(y){return (y%4===0&&y%100!==0)||(y%400===0);}
+function daysInMonth(y,m){return new Date(y,m+1,0).getDate();}
+function pad2(n){return String(n).padStart(2,'0');}
+
+function addYears(date,years){
+  const y=date.getFullYear()+years,m=date.getMonth(),d=date.getDate();
+  const candidate=new Date(y,m,d);
+  if(candidate.getMonth()!==((m%12)+12)%12){
+    return new Date(y,m+1,0);
+  }
+  return candidate;
+}
+function daysBetween(a,b){return Math.round((stripTime(b)-stripTime(a))/86400000);}
+function stripTime(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate());}
+
+function getRetirementInfo(birthDate){
+  const turn60=addYears(birthDate,60);
+  let age=60,rule=`Turns 60 before 1 Jul 2032 → retirement age stays at 60`;
+  for(const t of RETIREMENT_LAW){
+    if(turn60.getTime()>=t.date.getTime()){age=t.age;rule=`Turns 60 on/after ${t.label} → retirement age is ${t.age} (Law 148/2019)`;}
+  }
+  const retireDate=addYears(birthDate,age);
+  return {age,turn60,retireDate,rule};
+}
+
+function calcAge(birthDate,asOf){
+  const now=asOf||new Date();
+  let years=now.getFullYear()-birthDate.getFullYear();
+  let months=now.getMonth()-birthDate.getMonth();
+  let days=now.getDate()-birthDate.getDate();
+  if(days<0){months--;days+=daysInMonth(now.getMonth()===0?now.getFullYear()-1:now.getFullYear(),(now.getMonth()+11)%12);}
+  if(months<0){years--;months+=12;}
+  const totalDays=Math.floor((stripTime(now)-stripTime(birthDate))/86400000);
+  return {years,months,days,totalDays};
+}
+
+function parseID(rawInput){
+  const trace=[];
+  const out={valid:false,error:'',trace,raw:String(rawInput??''),normalized:'',id:'',centuryDigit:'',centuryLabel:'',birthYear:null,birthMonth:null,birthDay:null,birthDateObj:null,birthDateStr:'',birthDayOfWeek:'',govCode:'',governorate:'',governorateKnown:false,serial:'',checkDigit:'',genderDigit:null,gender:'',retireAge:null,retireDateObj:null,retireDateStr:'',currentAgeYears:0,currentAgeMonths:0,currentAgeDays:0,yearsUntilRetire:0,daysUntilRetire:0,isEligible:false,careerPercent:0,fakePattern:false,retireRule:'',flags:[],checks:[]};
+
+  if(rawInput===null||rawInput===undefined){out.error='Empty value';trace.push('Input is null or undefined');return out;}
+  const originalStr=String(rawInput).trim();
+  if(originalStr===''){out.error='Empty value';trace.push('Input is empty after trim');return out;}
+  if(/[0-9]\.?[0-9]*e\+?\d+/i.test(originalStr)){out.error='Scientific notation detected — format the cell as text';trace.push('Input matches scientific notation pattern');return out;}
+
+  const cleaned=normalizeIDInput(originalStr);
+  out.normalized=cleaned;
+  trace.push(`Normalized "${originalStr}" → ${cleaned.length} digits (Arabic-Indic digits supported)`);
+
+  if(cleaned.length!==14){out.error=`Invalid length: ${cleaned.length} digits (expected 14)`;trace.push(`Length check failed: got ${cleaned.length}, need 14`);return out;}
+  if(isFakePattern(cleaned)){out.fakePattern=true;out.flags.push('fake-pattern');trace.push('Fake pattern detected: repeated or sequential digits');}
+
+  const centuryNum=parseInt(cleaned[0],10);
+  if(!VALID_CENTURY_DIGITS.includes(centuryNum)){out.error=`Invalid century digit '${cleaned[0]}' (must be 2 for 1900s or 3 for 2000s)`;trace.push(`Century digit '${cleaned[0]}' is not a currently-issued century block`);return out;}
+  const baseYear=(centuryNum-2)*100+1900;
+  out.centuryDigit=cleaned[0];
+  out.centuryLabel=`${baseYear}s`;
+  trace.push(`Century: digit '${cleaned[0]}' → base year computed as (${centuryNum}-2)×100+1900 = ${baseYear}`);
+
+  const yy=parseInt(cleaned.substring(1,3),10);
+  const mm=parseInt(cleaned.substring(3,5),10);
+  const dd=parseInt(cleaned.substring(5,7),10);
+  const birthYear=baseYear+yy;
+  out.birthYear=birthYear;out.birthMonth=mm;out.birthDay=dd;
+  trace.push(`Birth year: ${baseYear} + ${yy} = ${birthYear}`);
+
+  if(mm<1||mm>12){out.error=`Invalid month (${mm})`;trace.push(`Month check failed: ${mm} is out of range 1–12`);return out;}
+  const checkDate=new Date(birthYear,mm-1,dd);
+  if(checkDate.getFullYear()!==birthYear||checkDate.getMonth()!==mm-1||checkDate.getDate()!==dd){out.error=`Invalid day (${dd}) for ${MONTH_NAMES[mm-1]} ${birthYear}`;trace.push(`Date validation failed: ${dd}/${mm}/${birthYear} is not a real calendar date`);return out;}
+
+  const now=new Date();
+  if(checkDate>now){out.flags.push('future-birth');trace.push(`Warning: birth date ${birthYear}-${mm}-${dd} is in the future`);}
+
+  out.birthDateObj=checkDate;
+  out.birthDateStr=`${birthYear}-${pad2(mm)}-${pad2(dd)}`;
+  out.birthDayOfWeek=DAY_NAMES[checkDate.getDay()];
+  trace.push(`Birth date validated: ${out.birthDateStr} (${out.birthDayOfWeek})`);
+
+  out.govCode=cleaned.substring(7,9);
+  const govName=GOVERNORATES[out.govCode];
+  if(govName){out.governorate=govName;out.governorateKnown=true;trace.push(`Governorate: code '${out.govCode}' → ${govName}`);}
+  else{out.governorate='Unknown';out.governorateKnown=false;out.flags.push('unknown-governorate');trace.push(`Governorate code '${out.govCode}' not recognized — marked Unknown explicitly`);}
+
+  out.serial=cleaned.substring(9,12);
+  trace.push(`Serial (3 digits): ${out.serial}`);
+
+  out.genderDigit=parseInt(cleaned[12],10);
+  out.gender=out.genderDigit%2===1?'Male':'Female';
+  trace.push(`Gender: digit '${cleaned[12]}' at position 13 → ${out.gender} (odd = Male, even = Female)`);
+
+  out.checkDigit=cleaned[13];
+  trace.push(`Check digit (14th digit): ${out.checkDigit}`);
+
+  const retire=getRetirementInfo(checkDate);
+  out.retireAge=retire.age;
+  out.retireRule=retire.rule;
+  out.retireDateObj=retire.retireDate;
+  out.retireDateStr=`${retire.retireDate.getFullYear()}-${pad2(retire.retireDate.getMonth()+1)}-${pad2(retire.retireDate.getDate())}`;
+  trace.push(`Retirement (Law 148/2019): ${retire.rule}`);
+  trace.push(`Retirement date: ${out.retireDateStr}`);
+
+  const age=calcAge(checkDate,now);
+  out.currentAgeYears=age.years;out.currentAgeMonths=age.months;out.currentAgeDays=age.days;
+  trace.push(`Current age: ${age.years}y ${age.months}m ${age.days}d (as of ${now.toDateString()})`);
+
+  out.daysUntilRetire=daysBetween(now,retire.retireDate);
+  out.yearsUntilRetire=out.daysUntilRetire>0?Math.floor(out.daysUntilRetire/365.25):0;
+  out.isEligible=out.daysUntilRetire<=0;
+  out.careerPercent=Math.max(0,Math.min(100,Math.round((age.years/out.retireAge)*100)));
+  trace.push(`Career progress: ${age.years}/${out.retireAge} years = ${out.careerPercent}%`);
+  trace.push(`Retirement eligibility: ${out.isEligible?'Eligible now':out.yearsUntilRetire+' years remaining'}`);
+
+  out.checks=[
+    {label:'14-digit length',pass:true},
+    {label:'Century digit valid (2 or 3)',pass:true},
+    {label:'Real calendar date',pass:true},
+    {label:'Not a repeating/sequential pattern',pass:!out.fakePattern},
+    {label:'Governorate code recognized',pass:out.governorateKnown},
+    {label:'Birth date not in the future',pass:checkDate<=now}
+  ];
+  if(mm===2&&dd===29){out.checks.push({label:'Feb 29 birth date (leap-year edge case)',pass:true,note:true});trace.push('Note: Feb 29 birth date — an unusual but valid edge case, handled without drift');}
+  if(birthYear<1905){out.flags.push('very-early-birth-year');trace.push('Note: birth year is unusually early for a living person');}
+  if(yy===0&&mm===1&&dd===1){out.flags.push('jan-1-of-century');trace.push('Note: Jan 1 of the century block is a common placeholder date');}
+  out.checksPassed=out.checks.filter(c=>c.pass).length;
+  out.checksTotal=out.checks.length;
+  trace.push(`Structural checks: ${out.checksPassed}/${out.checksTotal} passed`);
+  trace.push('Note: these are format checks only and cannot confirm the ID is genuine or currently active — that requires verification against official records');
+
+  out.valid=true;
+  out.id=cleaned;
+  return out;
+}
+
+function genderBadge(gender,size){
+  const isM=gender==='Male';
+  const icon=isM?'man':'woman';
+  return `<span class="gender-badge ${isM?'gender-m':'gender-f'}"><span class="material-symbols-rounded" style="font-size:${size||'1rem'};">${icon}</span>${gender}</span>`;
+}
+
+function toCSV(headers,rows){
+  const esc=v=>{
+    const s=String(v??'');
+    return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+  };
+  let out='\uFEFF'+headers.map(esc).join(',')+'\r\n';
+  rows.forEach(r=>{out+=r.map(esc).join(',')+'\r\n';});
+  return out;
+}
+function downloadBlob(content,filename,mime){
+  const blob=new Blob([content],{type:mime});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function downloadXLSX(data,sheetName,filename){
+  const ws=XLSX.utils.json_to_sheet(data);
+  const wb=XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb,ws,sheetName);
+  XLSX.writeFile(wb,filename);
+}
+
+function switchTab(tabName){
+  document.querySelectorAll('.tabpanel').forEach(el=>el.classList.add('hide'));
+  document.getElementById('tab-'+tabName).classList.remove('hide');
+  document.querySelectorAll('.toptab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tabName));
+  document.querySelectorAll('.navitem[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tabName));
+  moveTopIndicator();
+  if(tabName==='formula') updateFormulas();
+  if(tabName==='inspector'){const inp=document.getElementById('inspector-input');if(inp.value.trim()) inspectID();}
+  saveState({activeTab:tabName});
+}
+function moveTopIndicator(){
+  const active=document.querySelector('.toptab.active');
+  const ind=document.getElementById('topindicator');
+  if(active&&ind){ind.style.left=active.offsetLeft+'px';ind.style.width=active.offsetWidth+'px';}
+}
+
+function switchSubTab(name){
+  document.querySelectorAll('.subtabpanel').forEach(el=>el.classList.add('hide'));
+  document.getElementById('subtab-'+name).classList.remove('hide');
+  document.querySelectorAll('.pill[data-subtab]').forEach(b=>b.classList.toggle('active',b.dataset.subtab===name));
+  saveState({activeSubtab:name});
+}
+
+function switchDateSub(name){
+  document.querySelectorAll('.datesubpanel').forEach(el=>el.classList.add('hide'));
+  document.getElementById('datesub-'+name).classList.remove('hide');
+  document.querySelectorAll('.pill[data-datesub]').forEach(b=>b.classList.toggle('active',b.dataset.datesub===name));
+  saveState({activeDateSub:name});
+}
+
+function setInspectorMode(mode){
+  inspectorMode=mode;
+  document.getElementById('inspector-single').classList.toggle('hide',mode!=='single');
+  document.getElementById('inspector-batch').classList.toggle('hide',mode!=='batch');
+  document.querySelectorAll('.pill[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
+  saveState({inspectorMode:mode});
+}
+
+function updateLiveCount(){
+  const raw=document.getElementById('paste-input').value;
+  const lines=raw.split('\n').map(l=>l.trim()).filter(Boolean);
+  document.getElementById('paste-count').textContent=`${lines.length} detected`;
+  saveStateDebounced({pasteInput:raw});
+}
+
+async function pasteFromClipboard(){
+  try{
+    const text=await navigator.clipboard.readText();
+    if(!text){showToast('Clipboard is empty','info');return;}
+    document.getElementById('paste-input').value=text;
+    updateLiveCount();
+    saveState({pasteInput:text});
+    showToast('Pasted from clipboard','content_paste_go');
+  }catch(e){showToast('Clipboard access denied — try Ctrl/Cmd+V','block');}
+}
+function loadSampleData(){
+  document.getElementById('paste-input').value=SAMPLE_IDS.join('\n');
+  updateLiveCount();
+  showToast('Sample IDs loaded','auto_awesome');
+}
+function clearPasteData(){
+  document.getElementById('paste-input').value='';
+  updateLiveCount();
+  processedPasteResults=[];
+  renderPasteTable();
+  updatePasteKPIs(0,0,0);
+  document.getElementById('paste-summary').textContent='Awaiting input…';
+  ['btn-copy','btn-xlsx','btn-csv'].forEach(id=>document.getElementById(id).disabled=true);
+  showToast('Cleared','delete');
+}
+
+function processPasteData(){
+  const raw=document.getElementById('paste-input').value;
+  const lines=raw.split('\n').map(l=>l.trim()).filter(Boolean);
+  if(lines.length===0){showToast('Paste at least one ID first','info');return;}
+  processedPasteResults=lines.map(l=>parseID(l));
+  const valid=processedPasteResults.filter(r=>r.valid).length;
+  const errors=processedPasteResults.length-valid;
+  updatePasteKPIs(processedPasteResults.length,valid,errors);
+  currentFilter='all';
+  document.querySelectorAll('.pill[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter==='all'));
+  document.getElementById('search-input').value='';
+  renderPasteTable();
+  const hasResults=processedPasteResults.length>0;
+  ['btn-copy','btn-xlsx','btn-csv'].forEach(id=>document.getElementById(id).disabled=!hasResults);
+  showToast(`Processed ${processedPasteResults.length} IDs`,'task_alt');
+}
+
+function setFilter(f){
+  currentFilter=f;
+  document.querySelectorAll('.pill[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter===f));
+  renderPasteTable();
+}
+
+function renderPasteTable(){
+  const tbody=document.getElementById('paste-tbody');
+  const searchTerm=(document.getElementById('search-input').value||'').toLowerCase();
+  let filtered=processedPasteResults;
+  if(currentFilter==='valid') filtered=filtered.filter(r=>r.valid);
+  if(currentFilter==='error') filtered=filtered.filter(r=>!r.valid);
+  if(searchTerm) filtered=filtered.filter(r=>(r.raw+' '+(r.id||'')+' '+(r.error||'')+' '+(r.governorate||'')).toLowerCase().includes(searchTerm));
+  if(filtered.length===0){
+    tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:3rem 1rem;color:var(--ink-3);">No matching results found.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML=filtered.map((r,idx)=>{
+    const rowId=`prow-${idx}`;
+    if(r.valid){
+      const fakeBadge=r.fakePattern?'<span class="chip" style="margin-left:.3rem;">Fake pattern</span>':'';
+      const govBadge=!r.governorateKnown?'<span class="chip" style="margin-left:.3rem;">Unknown gov</span>':'';
+      return `<tr>
+        <td><span class="material-symbols-rounded rowcopy" id="${rowId}" onclick='copyPasteRow(${JSON.stringify(JSON.stringify(r))},"${rowId}")'>content_copy</span></td>
+        <td class="mono" style="font-weight:650;">${r.id}${fakeBadge}${govBadge}</td>
+        <td><span class="statuspill"><span class="statdot ok"></span>Valid</span></td>
+        <td>${genderBadge(r.gender)}</td>
+        <td>${r.birthDateStr}</td>
+        <td>${r.currentAgeYears}y</td>
+        <td style="color:var(--amber-text);font-weight:650;">${r.retireAge} yrs</td>
+        <td style="color:var(--amber);font-weight:650;">${r.retireDateStr}</td>
+        <td style="font-size:.72rem;color:var(--ink-2);">${r.flags.length?r.flags.join(', '):'No anomalies'}</td>
+      </tr>`;
+    }
+    return `<tr>
+      <td><span class="material-symbols-rounded rowcopy" id="${rowId}" onclick='copyPasteRow(${JSON.stringify(JSON.stringify(r))},"${rowId}")'>content_copy</span></td>
+      <td class="mono" style="font-weight:650;">${r.raw}</td>
+      <td><span class="statuspill"><span class="statdot bad"></span>Error</span></td>
+      <td style="color:var(--ink-3);">—</td><td style="color:var(--ink-3);">—</td><td style="color:var(--ink-3);">—</td><td style="color:var(--ink-3);">—</td><td style="color:var(--ink-3);">—</td>
+      <td style="color:var(--scarlet);font-weight:600;">${r.error}</td>
+    </tr>`;
+  }).join('');
+}
+
+function copyPasteRow(rawJson,elId){
+  const r=JSON.parse(rawJson);
+  const line=r.valid?`${r.id}\tVALID\t${r.gender}\t${r.birthDateStr}\t${r.currentAgeYears}\t${r.retireAge}\t${r.retireDateStr}\t${(r.flags||[]).join(', ')}`:`${r.raw}\tERROR\t${r.error}`;
+  copyText(line,null,'Row copied');
+  const el=document.getElementById(elId);
+  if(el){el.textContent='check';el.style.color='var(--mint)';el.style.opacity='1';setTimeout(()=>{el.textContent='content_copy';el.style.color='';},1200);}
+}
+
+function updatePasteKPIs(total,valid,errors){
+  document.getElementById('kpi-total').textContent=total;
+  document.getElementById('kpi-valid').textContent=valid;
+  document.getElementById('kpi-errors').textContent=errors;
+  document.getElementById('paste-summary').textContent=`${total} total IDs processed (${valid} valid, ${errors} errors)`;
+}
+
+function copyPasteTable(evt){
+  if(processedPasteResults.length===0) return;
+  let tsv='National ID\tStatus\tGender\tBirth Date\tAge\tRetirement Age\tRetirement Date\tNotes\tError\n';
+  processedPasteResults.forEach(r=>{
+    tsv+=r.valid?`${r.id}\tVALID\t${r.gender}\t${r.birthDateStr}\t${r.currentAgeYears}\t${r.retireAge}\t${r.retireDateStr}\t${(r.flags||[]).join(', ')}\t\n`:`${r.raw}\tERROR\t\t\t\t\t\t\t${r.error}\n`;
+  });
+  copyText(tsv,evt?evt.currentTarget:document.getElementById('btn-copy'),`${processedPasteResults.length} rows copied`);
+}
+
+function exportPaste(format){
+  if(processedPasteResults.length===0) return;
+  const data=processedPasteResults.map(r=>({
+    'National ID':r.valid?r.id:r.raw,'Status':r.valid?'VALID':'ERROR','Gender':r.valid?r.gender:'','Birth Date':r.valid?r.birthDateStr:'',
+    'Age':r.valid?r.currentAgeYears:'','Retirement Age':r.valid?r.retireAge:'','Retirement Date':r.valid?r.retireDateStr:'',
+    'Governorate':r.valid?r.governorate:'','Notes':r.valid?(r.flags||[]).join(', '):'','Fake Pattern':r.valid?(r.fakePattern?'YES':'NO'):'','Error':r.error||''
+  }));
+  if(format==='csv'){
+    const headers=Object.keys(data[0]);
+    downloadBlob(toCSV(headers,data.map(row=>headers.map(h=>row[h]))),'national_id_results.csv','text/csv;charset=utf-8;');
+  }else{
+    downloadXLSX(data,'Results','national_id_results.xlsx');
+  }
+  showToast('File downloaded','download_done');
+}
+
+function handleFileUpload(e){
+  const file=e.target.files[0];
+  if(!file) return;
+  document.getElementById('file-info-text').textContent=`File: ${file.name}`;
+  const reader=new FileReader();
+  reader.onload=function(evt){
+    const data=new Uint8Array(evt.target.result);
+    const wb=XLSX.read(data,{type:'array',codepage:65001});
+    const firstSheet=wb.SheetNames[0];
+    uploadedSheetData=XLSX.utils.sheet_to_json(wb.Sheets[firstSheet],{defval:''});
+    if(uploadedSheetData.length===0){showToast('No rows found in file','error');return;}
+    document.getElementById('file-rows-text').textContent=`${uploadedSheetData.length} rows detected`;
+    const headers=Object.keys(uploadedSheetData[0]);
+    const select=document.getElementById('column-select');
+    select.innerHTML='';
+    headers.forEach(h=>{
+      const opt=document.createElement('option');
+      opt.value=h;opt.textContent=h;
+      if(/id|national|رقم/i.test(h)) opt.selected=true;
+      select.appendChild(opt);
+    });
+    document.getElementById('upload-mapping').classList.remove('hide');
+  };
+  reader.readAsArrayBuffer(file);
+}
+
+function processUploadedFile(){
+  const idCol=document.getElementById('column-select').value;
+  if(!idCol) return;
+  processedUploadResults=[];
+  let validCount=0;
+  uploadedSheetData.forEach(row=>{
+    const res=parseID(row[idCol]);
+    if(res.valid) validCount++;
+    processedUploadResults.push(Object.assign({},row,{
+      'Extracted Birth Date':res.valid?res.birthDateStr:'',
+      'Gender':res.valid?res.gender:'',
+      'Age':res.valid?res.currentAgeYears:'',
+      'Retirement Age':res.valid?res.retireAge:'',
+      'Retirement Date':res.valid?res.retireDateStr:'',
+      'Governorate':res.valid?res.governorate:'',
+      'Notes':res.valid?(res.flags||[]).join(', '):'',
+      'ID Status':res.valid?'VALID':`ERROR: ${res.error}`
+    }));
+  });
+  const cols=Object.keys(processedUploadResults[0]);
+  document.getElementById('upload-thead').innerHTML=`<tr>${cols.map(c=>`<th>${escapeHtml(c)}</th>`).join('')}</tr>`;
+  const tbody=document.getElementById('upload-tbody');
+  tbody.innerHTML=processedUploadResults.slice(0,150).map(row=>{
+    return `<tr>${cols.map(c=>{
+      if(c==='Gender'&&row[c]) return `<td>${genderBadge(row[c],'.9rem')}</td>`;
+      return `<td>${escapeHtml(row[c])}</td>`;
+    }).join('')}</tr>`;
+  }).join('');
+  const shownNote=processedUploadResults.length>150?` — showing first 150 of ${processedUploadResults.length}`:'';
+  document.getElementById('upload-summary').textContent=`${processedUploadResults.length} rows processed (${validCount} valid)${shownNote}`;
+  document.getElementById('upload-results').classList.remove('hide');
+  showToast('File processed','auto_fix_high');
+}
+
+function downloadUpload(format){
+  if(processedUploadResults.length===0) return;
+  if(format==='csv'){
+    const headers=Object.keys(processedUploadResults[0]);
+    downloadBlob(toCSV(headers,processedUploadResults.map(row=>headers.map(h=>row[h]))),'processed_national_ids.csv','text/csv;charset=utf-8;');
+  }else{
+    downloadXLSX(processedUploadResults,'Processed','processed_national_ids.xlsx');
+  }
+  showToast('File downloaded','download_done');
+}
+
+async function pasteIntoInspector(){
+  try{
+    const text=await navigator.clipboard.readText();
+    if(!text){showToast('Clipboard is empty','info');return;}
+    document.getElementById('inspector-input').value=text.trim();
+    inspectID();
+    showToast('Pasted from clipboard','content_paste_go');
+  }catch(e){showToast('Clipboard access denied — try Ctrl/Cmd+V','block');}
+}
+function loadSampleIntoInspector(){
+  document.getElementById('inspector-input').value=SAMPLE_IDS[Math.floor(Math.random()*SAMPLE_IDS.length)];
+  inspectID();
+}
+
+function progressRing(percent,size,stroke){
+  size=size||96;stroke=stroke||9;
+  const clamped=Math.max(0,Math.min(100,percent));
+  const r=(size-stroke)/2;
+  const c=2*Math.PI*r;
+  const offset=c-(clamped/100)*c;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="progress-ring">
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--edge-strong)" stroke-width="${stroke}"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--amber)" stroke-width="${stroke}" stroke-linecap="round"
+      stroke-dasharray="${c}" stroke-dashoffset="${offset}" transform="rotate(-90 ${size/2} ${size/2})"/>
+  </svg>`;
+}
+
+function inspectID(){
+  const raw=document.getElementById('inspector-input').value;
+  saveStateDebounced({inspectorValue:raw});
+  const box=document.getElementById('inspector-result');
+  if(!raw.trim()){box.innerHTML='';return;}
+  const res=parseID(raw);
+  box.innerHTML=renderInspectorResult(res);
+}
+
+function renderInspectorResult(res){
+  if(!res.valid){
+    return `<div class="card pad" style="text-align:center;padding:2.5rem 1.5rem;">
+      <div class="emptybox" style="background:var(--scarlet-soft);"><span class="material-symbols-rounded" style="color:var(--scarlet);opacity:1;">error</span></div>
+      <h3 class="disp" style="font-weight:640;font-size:1rem;margin:0 0 .3rem;">${escapeHtml(res.error)}</h3>
+      <p style="font-size:.78rem;color:var(--ink-2);margin:0;">Normalized input: <span class="mono">${escapeHtml(res.normalized||res.raw)}</span></p>
+    </div>`;
+  }
+  const segs=[
+    {val:res.centuryDigit,label:'Century'},
+    {val:String(res.birthYear).slice(-2),label:'Year'},
+    {val:pad2(res.birthMonth),label:'Month'},
+    {val:pad2(res.birthDay),label:'Day'},
+    {val:res.govCode,label:'Gov'},
+    {val:res.serial,label:'Serial'},
+    {val:String(res.genderDigit),label:'Gender'},
+    {val:res.checkDigit,label:'Check'}
+  ];
+  const segHtml=segs.map(s=>`<div class="idseg"><span>${s.val}</span><span class="tag">${s.label}</span></div>`).join('');
+  const flagsHtml=res.flags.length?res.flags.map(f=>`<span class="chip">${f.replace(/-/g,' ')}</span>`).join(''):'';
+  const checksHtml=res.checks.map(c=>`<div class="row" style="gap:.55rem;padding:.5rem 0;border-bottom:1px solid var(--edge);">
+      <span class="material-symbols-rounded" style="font-size:1.1rem;color:${c.pass?'var(--mint)':'var(--scarlet)'};">${c.pass?'check_circle':'cancel'}</span>
+      <span style="font-size:.8rem;">${c.label}</span>
+    </div>`).join('');
+
+  return `
+  <div class="stack">
+    <div class="idcard">
+      <div class="idstripe"></div>
+      <div class="pad stack">
+        <div class="row-between">
+          <div class="row" style="gap:.7rem;">
+            <div class="idchip"></div>
+            <div>
+              <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:700;">Arab Republic of Egypt</div>
+              <div class="mono" style="font-size:1.15rem;font-weight:700;letter-spacing:.03em;">${res.id}</div>
+            </div>
+          </div>
+          ${genderBadge(res.gender,'1.05rem')}
+        </div>
+        <div class="scrollx row" style="gap:.4rem;padding:.2rem 0;">${segHtml}</div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card pad stack">
+        <h4 class="cardtitle">Identity</h4>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
+          <div><div class="eyebrow">Birth date</div><div style="font-weight:650;font-size:.9rem;">${res.birthDateStr}</div></div>
+          <div><div class="eyebrow">Weekday</div><div style="font-weight:650;font-size:.9rem;">${res.birthDayOfWeek}</div></div>
+          <div><div class="eyebrow">Age</div><div style="font-weight:650;font-size:.9rem;">${res.currentAgeYears}y ${res.currentAgeMonths}m ${res.currentAgeDays}d</div></div>
+          <div><div class="eyebrow">Governorate</div><div style="font-weight:650;font-size:.9rem;${res.governorateKnown?'':'font-style:italic;color:var(--ink-2);'}">${res.governorate}</div></div>
+        </div>
+        ${res.flags.length?`<div class="row" style="flex-wrap:wrap;gap:.35rem;">${flagsHtml}</div>`:''}
+      </div>
+
+      <div class="card pad">
+        <div class="row" style="gap:1.1rem;align-items:center;">
+          <div style="position:relative;flex-shrink:0;">
+            ${progressRing(res.careerPercent)}
+            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+              <div class="disp" style="font-size:1.15rem;font-weight:700;">${res.careerPercent}%</div>
+            </div>
+          </div>
+          <div class="stack" style="gap:.4rem;">
+            <div class="chip chip-accent" style="width:fit-content;">Law 148/2019</div>
+            <div style="font-size:.9rem;font-weight:650;">${res.retireAge}-year retirement age</div>
+            <div style="font-size:.85rem;">Retires <span style="color:var(--amber-text);font-weight:700;">${res.retireDateStr}</span></div>
+            <div style="font-size:.78rem;color:var(--ink-2);">${res.isEligible?'Already eligible':res.yearsUntilRetire+' years remaining'}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card pad stack">
+      <div class="row-between">
+        <h4 class="cardtitle">Checks — ${res.checksPassed}/${res.checksTotal} passed</h4>
+        <button onclick="copyInspectorSummary()" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>Copy</button>
+      </div>
+      <div>${checksHtml}</div>
+    </div>
+  </div>`;
+}
+
+function copyInspectorSummary(){
+  const raw=document.getElementById('inspector-input').value;
+  const res=parseID(raw);
+  if(!res.valid) return;
+  const summary=`National ID: ${res.id}\nGender: ${res.gender}\nBirth Date: ${res.birthDateStr} (${res.birthDayOfWeek})\nGovernorate: ${res.governorate} (${res.govCode})\nCurrent Age: ${res.currentAgeYears}y ${res.currentAgeMonths}m ${res.currentAgeDays}d\nRetirement Age: ${res.retireAge} years\nRetirement Date: ${res.retireDateStr}\nStructural checks: ${res.checksPassed}/${res.checksTotal} passed`;
+  copyText(summary,null,'Summary copied');
+}
+
+function updateInspectorBatchCount(){
+  const raw=document.getElementById('inspector-batch-input').value;
+  const lines=raw.split('\n').map(l=>l.trim()).filter(Boolean);
+  document.getElementById('inspector-batch-count').textContent=`${lines.length} detected`;
+  saveStateDebounced({inspectorBatchInput:raw});
+}
+function loadSampleIntoInspectorBatch(){
+  document.getElementById('inspector-batch-input').value=SAMPLE_IDS.join('\n');
+  updateInspectorBatchCount();
+}
+
+function processInspectorBatch(){
+  const raw=document.getElementById('inspector-batch-input').value;
+  const lines=raw.split('\n').map(l=>l.trim()).filter(Boolean);
+  if(lines.length===0){showToast('Paste at least one ID first','info');return;}
+  inspectorBatchResults=lines.map(l=>parseID(l));
+  inspectorBatchFilter='all';
+  renderInspectorBatchTable();
+  showToast(`Analyzed ${inspectorBatchResults.length} IDs`,'task_alt');
+}
+function setInspectorBatchFilter(f){inspectorBatchFilter=f;renderInspectorBatchTable();}
+
+function renderInspectorBatchTable(){
+  const resultEl=document.getElementById('inspector-batch-result');
+  const total=inspectorBatchResults.length;
+  const validCount=inspectorBatchResults.filter(r=>r.valid).length;
+  const errorCount=total-validCount;
+  let rows=inspectorBatchResults;
+  if(inspectorBatchFilter==='valid') rows=rows.filter(r=>r.valid);
+  if(inspectorBatchFilter==='error') rows=rows.filter(r=>!r.valid);
+  const cols=['National ID','Status','Century','Birth Date','Weekday','Age','Gender','Gov Code','Governorate','Serial','Check','Retire Age','Retire Date','Yrs to Retire','Career %','Flags'];
+
+  const rowHtml=rows.map((r,idx)=>{
+    const rowId=`irow-${idx}`;
+    if(r.valid){
+      const flagsText=r.flags.length?r.flags.join(', '):'—';
+      return `<tr>
+        <td><span class="material-symbols-rounded rowcopy" id="${rowId}" onclick='copyInspectorBatchRow(${JSON.stringify(JSON.stringify(r))},"${rowId}")'>content_copy</span></td>
+        <td class="mono" style="font-weight:650;">${r.id}</td>
+        <td><span class="statuspill"><span class="statdot ok"></span>Valid</span></td>
+        <td>${r.centuryLabel}</td>
+        <td>${r.birthDateStr}</td>
+        <td>${r.birthDayOfWeek}</td>
+        <td>${r.currentAgeYears}</td>
+        <td>${genderBadge(r.gender,'.85rem')}</td>
+        <td class="mono">${r.govCode}</td>
+        <td style="${r.governorateKnown?'':'font-style:italic;color:var(--ink-2);'}">${r.governorate}</td>
+        <td class="mono">${r.serial}</td>
+        <td class="mono">${r.checkDigit||'—'}</td>
+        <td style="color:var(--amber-text);font-weight:650;">${r.retireAge}</td>
+        <td style="color:var(--amber);font-weight:650;">${r.retireDateStr}</td>
+        <td>${r.yearsUntilRetire}</td>
+        <td>${r.careerPercent}%</td>
+        <td style="font-size:.7rem;color:var(--ink-2);">${flagsText}</td>
+      </tr>`;
+    }
+    return `<tr>
+      <td><span class="material-symbols-rounded rowcopy" id="${rowId}" onclick='copyInspectorBatchRow(${JSON.stringify(JSON.stringify(r))},"${rowId}")'>content_copy</span></td>
+      <td class="mono" style="font-weight:650;">${r.raw}</td>
+      <td><span class="statuspill"><span class="statdot bad"></span>Error</span></td>
+      <td colspan="12" style="color:var(--scarlet);font-weight:600;">${r.error}</td>
+      <td>—</td>
+    </tr>`;
+  }).join('');
+
+  resultEl.innerHTML=`
+    <div class="card pad stack">
+      <div class="row-between">
+        <div>
+          <h3 class="cardtitle">Batch analytics table</h3>
+          <p style="font-size:.75rem;color:var(--ink-2);margin:.15rem 0 0;">${total} total IDs (${validCount} valid, ${errorCount} errors) — ${cols.length} columns</p>
+        </div>
+        <div class="row" style="gap:.4rem;">
+          <button onclick="copyInspectorBatchTable(event)" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>Copy</button>
+          <button onclick="exportInspectorBatch('xlsx')" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">download</span>Excel</button>
+          <button onclick="exportInspectorBatch('csv')" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">csv</span>CSV</button>
+        </div>
+      </div>
+      <div class="pillrow">
+        <button class="pill${inspectorBatchFilter==='all'?' active':''} focusable" onclick="setInspectorBatchFilter('all')">All</button>
+        <button class="pill${inspectorBatchFilter==='valid'?' active':''} focusable" onclick="setInspectorBatchFilter('valid')">Valid</button>
+        <button class="pill${inspectorBatchFilter==='error'?' active':''} focusable" onclick="setInspectorBatchFilter('error')">Errors</button>
+      </div>
+      <div class="scrollx" style="border-radius:16px;border:1px solid var(--edge);">
+        <div style="max-height:460px;overflow:auto;">
+          <table class="dtable"><thead><tr><th></th>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
+          <tbody>${rowHtml||`<tr><td colspan="${cols.length+1}" style="text-align:center;padding:3rem;color:var(--ink-3);">No matching rows</td></tr>`}</tbody></table>
+        </div>
+      </div>
+    </div>`;
+}
+
+function copyInspectorBatchRow(rawJson,elId){
+  const r=JSON.parse(rawJson);
+  const line=r.valid?`${r.id}\tVALID\t${r.centuryLabel}\t${r.birthDateStr}\t${r.birthDayOfWeek}\t${r.currentAgeYears}\t${r.gender}\t${r.govCode}\t${r.governorate}\t${r.serial}\t${r.checkDigit}\t${r.retireAge}\t${r.retireDateStr}\t${r.yearsUntilRetire}\t${r.careerPercent}%\t${(r.flags||[]).join(', ')}`:`${r.raw}\tERROR\t${r.error}`;
+  copyText(line,null,'Row copied');
+  const el=document.getElementById(elId);
+  if(el){el.textContent='check';el.style.color='var(--mint)';setTimeout(()=>{el.textContent='content_copy';el.style.color='';},1200);}
+}
+
+function copyInspectorBatchTable(evt){
+  if(inspectorBatchResults.length===0) return;
+  let tsv='National ID\tStatus\tCentury\tBirth Date\tWeekday\tAge\tGender\tGov Code\tGovernorate\tSerial\tCheck\tRetire Age\tRetire Date\tYrs to Retire\tCareer %\tFlags\tError\n';
+  inspectorBatchResults.forEach(r=>{
+    tsv+=r.valid?`${r.id}\tVALID\t${r.centuryLabel}\t${r.birthDateStr}\t${r.birthDayOfWeek}\t${r.currentAgeYears}\t${r.gender}\t${r.govCode}\t${r.governorate}\t${r.serial}\t${r.checkDigit}\t${r.retireAge}\t${r.retireDateStr}\t${r.yearsUntilRetire}\t${r.careerPercent}%\t${r.flags.join(', ')}\t\n`:`${r.raw}\tERROR\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t${r.error}\n`;
+  });
+  copyText(tsv,evt?evt.currentTarget:null,`${inspectorBatchResults.length} rows copied`);
+}
+
+function exportInspectorBatch(format){
+  if(inspectorBatchResults.length===0) return;
+  const data=inspectorBatchResults.map(r=>({
+    'National ID':r.valid?r.id:r.raw,'Status':r.valid?'VALID':'ERROR','Century':r.valid?r.centuryLabel:'','Birth Date':r.valid?r.birthDateStr:'',
+    'Weekday':r.valid?r.birthDayOfWeek:'','Age':r.valid?r.currentAgeYears:'','Gender':r.valid?r.gender:'','Gov Code':r.valid?r.govCode:'',
+    'Governorate':r.valid?r.governorate:'','Serial':r.valid?r.serial:'','Check Digit':r.valid?r.checkDigit:'','Retirement Age':r.valid?r.retireAge:'',
+    'Retirement Date':r.valid?r.retireDateStr:'','Years To Retire':r.valid?r.yearsUntilRetire:'','Career %':r.valid?r.careerPercent:'',
+    'Fake Pattern':r.valid?(r.fakePattern?'YES':'NO'):'','Flags':r.valid?r.flags.join(', '):'','Error':r.error||''
+  }));
+  if(format==='csv'){
+    const headers=Object.keys(data[0]);
+    downloadBlob(toCSV(headers,data.map(row=>headers.map(h=>row[h]))),'id_batch_analytics.csv','text/csv;charset=utf-8;');
+  }else{
+    downloadXLSX(data,'Batch Analytics','id_batch_analytics.xlsx');
+  }
+  showToast('File downloaded','download_done');
+}
+
+function setFormulaMode(mode){
+  formulaMode=mode;
+  document.getElementById('mode-btn-table').classList.toggle('active',mode==='table');
+  document.getElementById('mode-btn-range').classList.toggle('active',mode==='range');
+  document.getElementById('inputs-table-mode').classList.toggle('hide',mode!=='table');
+  document.getElementById('inputs-range-mode').classList.toggle('hide',mode!=='range');
+  updateFormulas();
+  saveState({formulaMode:mode});
+}
+
+function retireAgeFormula(indent){
+  return `IF(turn60_date>=DATE(2040,7,1),65,
+${indent}IF(turn60_date>=DATE(2038,7,1),64,
+${indent}IF(turn60_date>=DATE(2036,7,1),63,
+${indent}IF(turn60_date>=DATE(2034,7,1),62,
+${indent}IF(turn60_date>=DATE(2032,7,1),61,60)))))`;
+}
+
+function updateFormulas(){
+  let idRef,idPaddedExpr;
+  if(formulaMode==='table'){
+    const colId=document.getElementById('cfg-col-id').value||'National ID';
+    idRef=`[@[${colId}]]`;
+    saveState({formulaTableName:document.getElementById('cfg-table-name').value,formulaColId:colId});
+  }else{
+    idRef=document.getElementById('cfg-cell-id').value||'A2';
+    saveState({formulaCellId:idRef});
+  }
+  idPaddedExpr=`TEXT(${idRef},"00000000000000")`;
+
+  const birthFormula=
+`=LET(
+    id_padded,  ${idPaddedExpr},
+    century,    VALUE(LEFT(id_padded, 1)),
+    base_year,  (century - 2) * 100 + 1900,
+    yy,         VALUE(MID(id_padded, 2, 2)),
+    mm,         VALUE(MID(id_padded, 4, 2)),
+    dd,         VALUE(MID(id_padded, 6, 2)),
+    DATE(base_year + yy, mm, dd)
+)`;
+
+  const genderFormula=
+`=LET(
+    id_padded,     ${idPaddedExpr},
+    gender_digit,  VALUE(MID(id_padded, 13, 1)),
+    IF(MOD(gender_digit, 2) = 1, "Male", "Female")
+)`;
+
+  const retireFormula=
+`=LET(
+    id_padded,    ${idPaddedExpr},
+    century,      VALUE(LEFT(id_padded, 1)),
+    base_year,    (century - 2) * 100 + 1900,
+    yy,           VALUE(MID(id_padded, 2, 2)),
+    mm,           VALUE(MID(id_padded, 4, 2)),
+    dd,           VALUE(MID(id_padded, 6, 2)),
+    birth_date,   DATE(base_year + yy, mm, dd),
+    turn60_date,  EDATE(birth_date, 60 * 12),
+    retire_age,   ${retireAgeFormula('                  ')},
+    EDATE(birth_date, retire_age * 12)
+)`;
+
+  document.getElementById('code-birth').textContent=birthFormula;
+  document.getElementById('code-gender').textContent=genderFormula;
+  document.getElementById('code-retirement').textContent=retireFormula;
+}
+
+function copyFormula(elementId,evt){
+  const text=document.getElementById(elementId).textContent;
+  copyText(text,evt?evt.currentTarget:null,'Formula copied');
+}
+
+function parseDateInput(id){
+  const v=document.getElementById(id).value;
+  if(!v) return null;
+  const [y,m,d]=v.split('-').map(Number);
+  return new Date(y,m-1,d);
+}
+
+function renderWorkdayPicker(){
+  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const el=document.getElementById('workday-picker');
+  el.innerHTML=days.map((d,i)=>`<button type="button" class="pill${workDaySet.has(i)?' active':''} focusable" onclick="toggleWorkday(${i})">${d}</button>`).join('');
+}
+function toggleWorkday(i){
+  if(workDaySet.has(i)) workDaySet.delete(i); else workDaySet.add(i);
+  renderWorkdayPicker();
+  computeBetweenDates();
+  saveState({workDays:Array.from(workDaySet)});
+}
+
+function computeBetweenDates(){
+  const start=parseDateInput('dt-start');
+  const end=parseDateInput('dt-end');
+  const box=document.getElementById('between-result');
+  saveStateDebounced({dtStart:document.getElementById('dt-start').value,dtEnd:document.getElementById('dt-end').value});
+  if(!start||!end){box.innerHTML=`<div style="text-align:center;padding:2rem 1rem;color:var(--ink-3);">Pick a start and end date.</div>`;return;}
+  const s=stripTime(start),e=stripTime(end);
+  const reversed=s>e;
+  const lo=reversed?e:s,hi=reversed?s:e;
+  const totalDays=daysBetween(lo,hi);
+  let workdays=0;
+  const cursor=new Date(lo);
+  while(cursor<hi){if(workDaySet.has(cursor.getDay())) workdays++;cursor.setDate(cursor.getDate()+1);}
+  let years=hi.getFullYear()-lo.getFullYear();
+  let months=hi.getMonth()-lo.getMonth();
+  let days=hi.getDate()-lo.getDate();
+  if(days<0){months--;days+=daysInMonth(hi.getMonth()===0?hi.getFullYear()-1:hi.getFullYear(),(hi.getMonth()+11)%12);}
+  if(months<0){years--;months+=12;}
+  box.innerHTML=`
+    <div class="stack">
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;">
+        <div class="kpi"><div class="lbl">Total days</div><div class="num disp">${totalDays}${reversed?' (reversed)':''}</div></div>
+        <div class="kpi"><div class="lbl">Working days</div><div class="num disp" style="color:var(--amber-text);">${workdays}</div></div>
+      </div>
+      <div class="kpi"><div class="lbl">Calendar span</div><div style="font-size:1.05rem;font-weight:650;" class="disp">${years}y ${months}m ${days}d</div></div>
+    </div>`;
+}
+
+function computeAge(){
+  const birth=parseDateInput('dt-birth');
+  const asofVal=document.getElementById('dt-asof').value;
+  const asof=asofVal?parseDateInput('dt-asof'):new Date();
+  const box=document.getElementById('age-result');
+  saveStateDebounced({dtBirth:document.getElementById('dt-birth').value,dtAsof:asofVal});
+  if(!birth){box.innerHTML=`<div style="text-align:center;padding:2rem 1rem;color:var(--ink-3);">Pick a birth date.</div>`;return;}
+  const age=calcAge(birth,asof);
+  const nextBirthday=addYears(birth,age.years+(stripTime(asof)>=stripTime(new Date(asof.getFullYear(),birth.getMonth(),birth.getDate()))?1:0));
+  const nb=addYears(birth,Math.floor(age.totalDays/365.25)+1);
+  let cursorYears=age.years;
+  let bday=addYears(birth,cursorYears);
+  if(stripTime(bday)<=stripTime(asof)) bday=addYears(birth,cursorYears+1);
+  const daysToNext=daysBetween(stripTime(asof),stripTime(bday));
+  box.innerHTML=`
+    <div class="stack">
+      <div class="kpi"><div class="lbl">Exact age</div><div style="font-size:1.3rem;font-weight:650;" class="disp">${age.years}y ${age.months}m ${age.days}d</div></div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;">
+        <div class="kpi"><div class="lbl">Total days lived</div><div class="num disp">${age.totalDays}</div></div>
+        <div class="kpi"><div class="lbl">Days to next birthday</div><div class="num disp" style="color:var(--amber-text);">${daysToNext}</div></div>
+      </div>
+      <div class="kpi"><div class="lbl">Born on</div><div style="font-weight:650;">${DAY_NAMES[birth.getDay()]}, ${MONTH_NAMES[birth.getMonth()]} ${birth.getDate()}, ${birth.getFullYear()}</div></div>
+    </div>`;
+}
+
+function computeWeekday(){
+  const date=parseDateInput('dt-weekday');
+  const box=document.getElementById('weekday-result');
+  saveStateDebounced({dtWeekday:document.getElementById('dt-weekday').value});
+  if(!date){box.innerHTML=`<div style="text-align:center;padding:2rem 1rem;color:var(--ink-3);">Pick a date.</div>`;return;}
+  const dow=date.getDay();
+  const dayOfYear=daysBetween(new Date(date.getFullYear(),0,1),date)+1;
+  const weekNum=Math.ceil((dayOfYear+new Date(date.getFullYear(),0,1).getDay())/7);
+  box.innerHTML=`
+    <div class="stack">
+      <div class="kpi"><div class="lbl">Weekday</div><div style="font-size:1.3rem;font-weight:650;" class="disp">${DAY_NAMES[dow]}</div></div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;">
+        <div class="kpi"><div class="lbl">Day of year</div><div class="num disp">${dayOfYear}</div></div>
+        <div class="kpi"><div class="lbl">Week number</div><div class="num disp">${weekNum}</div></div>
+      </div>
+      <div class="kpi"><div class="lbl">Leap year</div><div style="font-weight:650;">${isLeapYear(date.getFullYear())?'Yes — 366 days':'No — 365 days'}</div></div>
+    </div>`;
+}
+
+function computeLeapSingle(){
+  const raw=document.getElementById('ly-year').value;
+  const box=document.getElementById('leap-single-result');
+  saveStateDebounced({lyYear:raw});
+  if(!raw){box.innerHTML='';return;}
+  const y=parseInt(raw,10);
+  if(!Number.isFinite(y)){box.innerHTML=`<p style="color:var(--scarlet);font-size:.8rem;">Enter a valid year.</p>`;return;}
+  const leap=isLeapYear(y);
+  box.innerHTML=`<div class="kpi" style="margin-top:.7rem;">
+    <div class="row" style="gap:.5rem;">
+      <span class="material-symbols-rounded" style="color:${leap?'var(--mint)':'var(--scarlet)'};">${leap?'check_circle':'cancel'}</span>
+      <div style="font-weight:650;">${y} is ${leap?'a leap year':'not a leap year'}</div>
+    </div>
+    <div style="font-size:.75rem;color:var(--ink-2);margin-top:.4rem;">${y}/4=${(y%4===0)}, ${y}/100=${(y%100===0)}, ${y}/400=${(y%400===0)} — divisible by 4 and (not by 100, or by 400)</div>
+  </div>`;
+}
+
+function computeLeapRange(){
+  const fromRaw=document.getElementById('ly-from').value;
+  const toRaw=document.getElementById('ly-to').value;
+  const box=document.getElementById('leap-range-result');
+  saveStateDebounced({lyFrom:fromRaw,lyTo:toRaw});
+  if(!fromRaw||!toRaw){box.innerHTML='';return;}
+  let from=parseInt(fromRaw,10),to=parseInt(toRaw,10);
+  if(!Number.isFinite(from)||!Number.isFinite(to)){box.innerHTML=`<p style="color:var(--scarlet);font-size:.8rem;margin-top:.7rem;">Enter valid years.</p>`;return;}
+  if(from>to){[from,to]=[to,from];}
+  if(to-from>500){box.innerHTML=`<p style="color:var(--scarlet);font-size:.8rem;margin-top:.7rem;">Range too large — keep it under 500 years.</p>`;return;}
+  const leaps=[];
+  for(let y=from;y<=to;y++){if(isLeapYear(y)) leaps.push(y);}
+  box.innerHTML=`
+    <div class="kpi" style="margin-top:.7rem;">
+      <div class="lbl">Leap years found</div>
+      <div class="num disp" style="color:var(--amber-text);">${leaps.length}</div>
+    </div>
+    <div class="scrollx" style="max-height:140px;overflow-y:auto;margin-top:.6rem;">
+      <div class="row" style="flex-wrap:wrap;gap:.35rem;">${leaps.map(y=>`<span class="chip">${y}</span>`).join('')||'<span style="color:var(--ink-3);font-size:.8rem;">None in range</span>'}</div>
+    </div>`;
+}
+
+const COMMANDS=[
+  {id:'go-processor-paste',label:'Batch Processor — Paste IDs',group:'Navigate',icon:'content_paste',run:()=>{switchTab('processor');switchSubTab('paste');}},
+  {id:'go-processor-upload',label:'Batch Processor — Upload File',group:'Navigate',icon:'upload_file',run:()=>{switchTab('processor');switchSubTab('upload');}},
+  {id:'go-inspector-single',label:'Inspector — Single ID',group:'Navigate',icon:'fingerprint',run:()=>{switchTab('inspector');setInspectorMode('single');}},
+  {id:'go-inspector-batch',label:'Inspector — Batch Analytics',group:'Navigate',icon:'table_rows',run:()=>{switchTab('inspector');setInspectorMode('batch');}},
+  {id:'go-formula',label:'Excel / Sheets Formulas',group:'Navigate',icon:'functions',run:()=>switchTab('formula')},
+  {id:'go-dates-between',label:'Date Tools — Between Dates',group:'Navigate',icon:'date_range',run:()=>{switchTab('datetools');switchDateSub('between');}},
+  {id:'go-dates-age',label:'Date Tools — Age Calculator',group:'Navigate',icon:'cake',run:()=>{switchTab('datetools');switchDateSub('age');}},
+  {id:'go-dates-weekday',label:'Date Tools — Weekday Finder',group:'Navigate',icon:'view_week',run:()=>{switchTab('datetools');switchDateSub('weekday');}},
+  {id:'go-dates-leap',label:'Date Tools — Leap Years',group:'Navigate',icon:'event_repeat',run:()=>{switchTab('datetools');switchDateSub('leapyears');}},
+  {id:'act-paste-clipboard',label:'Paste ID List From Clipboard',group:'Actions',icon:'content_paste_go',run:()=>{switchTab('processor');switchSubTab('paste');pasteFromClipboard();}},
+  {id:'act-sample-processor',label:'Load Sample Data (Batch Processor)',group:'Actions',icon:'science',run:()=>{switchTab('processor');switchSubTab('paste');loadSampleData();}},
+  {id:'act-sample-inspector',label:'Load Sample ID (Inspector)',group:'Actions',icon:'science',run:()=>{switchTab('inspector');setInspectorMode('single');loadSampleIntoInspector();}},
+  {id:'act-theme',label:'Toggle Light / Dark Theme',group:'Actions',icon:'contrast',run:()=>toggleTheme()},
+  {id:'act-clear-cache',label:'Clear Cached Local Data',group:'Actions',icon:'layers_clear',run:()=>clearAllCache()}
+];
+let cmdkActiveIndex=0;
+let cmdkFiltered=COMMANDS;
+
+function openCmdk(){
+  const overlay=document.getElementById('cmdk-overlay');
+  const input=document.getElementById('cmdk-input');
+  overlay.classList.add('open');
+  input.value='';
+  renderCmdkResults('');
+  setTimeout(()=>input.focus(),30);
+}
+function closeCmdk(){document.getElementById('cmdk-overlay').classList.remove('open');}
+
+function renderCmdkResults(query){
+  const q=query.trim().toLowerCase();
+  cmdkFiltered=q?COMMANDS.filter(c=>c.label.toLowerCase().includes(q)):COMMANDS;
+  cmdkActiveIndex=0;
+  const list=document.getElementById('cmdk-list');
+  if(cmdkFiltered.length===0){list.innerHTML=`<div class="cmdk-empty">No matching actions</div>`;return;}
+  let html='',lastGroup='';
+  cmdkFiltered.forEach((c,i)=>{
+    if(c.group!==lastGroup){html+=`<div class="cmdk-group">${c.group}</div>`;lastGroup=c.group;}
+    html+=`<div class="cmdk-item${i===cmdkActiveIndex?' active':''}" data-idx="${i}" onclick="runCmdByIndex(${i})">
+      <span class="material-symbols-rounded" style="font-size:1.1rem;">${c.icon}</span><span>${escapeHtml(c.label)}</span></div>`;
+  });
+  list.innerHTML=html;
+}
+function moveCmdSelection(delta){
+  if(cmdkFiltered.length===0) return;
+  cmdkActiveIndex=(cmdkActiveIndex+delta+cmdkFiltered.length)%cmdkFiltered.length;
+  document.querySelectorAll('.cmdk-item').forEach(el=>el.classList.remove('active'));
+  const el=document.querySelector(`.cmdk-item[data-idx="${cmdkActiveIndex}"]`);
+  if(el){el.classList.add('active');el.scrollIntoView({block:'nearest'});}
+}
+function runCmdByIndex(i){const cmd=cmdkFiltered[i];if(!cmd) return;closeCmdk();cmd.run();}
+function runActiveCmd(){runCmdByIndex(cmdkActiveIndex);}
+
+function restoreCachedState(){
+  const state=loadState();
+  if(state.pasteInput){document.getElementById('paste-input').value=state.pasteInput;updateLiveCount();}
+  if(state.formulaTableName) document.getElementById('cfg-table-name').value=state.formulaTableName;
+  if(state.formulaColId) document.getElementById('cfg-col-id').value=state.formulaColId;
+  if(state.formulaCellId) document.getElementById('cfg-cell-id').value=state.formulaCellId;
+  if(state.formulaMode) setFormulaMode(state.formulaMode);
+  if(state.inspectorValue) document.getElementById('inspector-input').value=state.inspectorValue;
+  if(state.inspectorBatchInput){document.getElementById('inspector-batch-input').value=state.inspectorBatchInput;updateInspectorBatchCount();}
+  if(Array.isArray(state.workDays)&&state.workDays.length) workDaySet=new Set(state.workDays);
+  if(state.dtStart) document.getElementById('dt-start').value=state.dtStart;
+  if(state.dtEnd) document.getElementById('dt-end').value=state.dtEnd;
+  if(state.dtBirth) document.getElementById('dt-birth').value=state.dtBirth;
+  if(state.dtAsof) document.getElementById('dt-asof').value=state.dtAsof;
+  if(state.dtWeekday) document.getElementById('dt-weekday').value=state.dtWeekday;
+  if(state.lyYear) document.getElementById('ly-year').value=state.lyYear;
+  if(state.lyFrom) document.getElementById('ly-from').value=state.lyFrom;
+  if(state.lyTo) document.getElementById('ly-to').value=state.lyTo;
+  if(state.activeTab&&state.activeTab!=='processor') switchTab(state.activeTab);
+  if(state.activeSubtab&&state.activeSubtab!=='paste') switchSubTab(state.activeSubtab);
+  if(state.activeDateSub&&state.activeDateSub!=='between') switchDateSub(state.activeDateSub);
+  if(state.inspectorMode==='batch') setInspectorMode('batch');
+}
+
+window.onload=function(){
+  initTheme();
+  document.addEventListener('keydown',(e)=>{
+    const isK=e.key==='k'||e.key==='K';
+    if((e.metaKey||e.ctrlKey)&&isK){
+      e.preventDefault();
+      const overlay=document.getElementById('cmdk-overlay');
+      overlay.classList.contains('open')?closeCmdk():openCmdk();
+      return;
+    }
+    if(!document.getElementById('cmdk-overlay').classList.contains('open')) return;
+    if(e.key==='Escape'){e.preventDefault();closeCmdk();}
+    else if(e.key==='ArrowDown'){e.preventDefault();moveCmdSelection(1);}
+    else if(e.key==='ArrowUp'){e.preventDefault();moveCmdSelection(-1);}
+    else if(e.key==='Enter'){e.preventDefault();runActiveCmd();}
+  });
+  renderWorkdayPicker();
+  restoreCachedState();
+  updateFormulas();
+  moveTopIndicator();
+  computeBetweenDates();
+  computeAge();
+  computeWeekday();
+  computeLeapSingle();
+  computeLeapRange();
+  document.getElementById('paste-input').addEventListener('input',updateLiveCount);
+  const dropZone=document.getElementById('drop-zone');
+  dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('dragging');});
+  dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragging'));
+  dropZone.addEventListener('drop',e=>{
+    e.preventDefault();
+    dropZone.classList.remove('dragging');
+    if(e.dataTransfer.files.length){
+      document.getElementById('file-input').files=e.dataTransfer.files;
+      handleFileUpload({target:{files:e.dataTransfer.files}});
+    }
+  });
+  dropZone.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();document.getElementById('file-input').click();}});
+};
+window.addEventListener('resize',moveTopIndicator);
+</script>
+
+
+</body>
+</html>
