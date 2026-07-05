@@ -58,15 +58,15 @@ body{
   min-height:100vh;position:relative;letter-spacing:-0.008em;transition:background .4s ease,color .4s ease;
   padding-bottom:calc(74px + env(safe-area-inset-bottom));
 }
-.field{position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+.field{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
 .orb{position:absolute;border-radius:50%;filter:blur(80px)}
 .orb-a{width:36rem;height:36rem;top:-14rem;right:-10rem;background:radial-gradient(circle,var(--amber-soft),transparent 70%);opacity:.5}
 .orb-b{width:30rem;height:30rem;bottom:-12rem;left:-12rem;background:radial-gradient(circle,var(--amber-soft),transparent 70%);opacity:.24}
 .orb-c{width:22rem;height:22rem;top:40%;left:60%;background:radial-gradient(circle,var(--amber-soft),transparent 72%);opacity:.14}
 .dark .orb{filter:blur(100px)}
-.grain{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.5;mix-blend-mode:overlay;
+.grain{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.35;mix-blend-mode:overlay;
   background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E")}
-.dark .grain{opacity:.9}
+.dark .grain{opacity:.55}
 ::selection{background:var(--amber-soft);color:var(--amber-text)}
 .material-symbols-rounded{display:inline-flex;align-items:center;justify-content:center;line-height:1;flex-shrink:0;vertical-align:middle}
 .material-symbols-rounded svg{width:1em;height:1em;display:block}
@@ -78,13 +78,14 @@ body{
 .eyebrow{font-size:var(--fs-xs);font-weight:650;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3)}
 .num{font-variant-numeric:tabular-nums}
 
-.glass{background:var(--milk);border:1px solid var(--edge);backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3)}
+.glass{background:var(--milk);border:1px solid var(--edge);backdrop-filter:blur(16px) saturate(1.3);-webkit-backdrop-filter:blur(16px) saturate(1.3);isolation:isolate}
 .card{
-  background:var(--milk);border:1px solid var(--edge);border-radius:var(--r1);box-shadow:var(--sh-2),inset 0 1px 0 rgba(255,255,255,0.35);
+  position:relative;isolation:isolate;background:var(--milk);border:1px solid var(--edge);border-radius:var(--r1);box-shadow:var(--sh-2),inset 0 1px 1.5px rgba(255,255,255,0.22);
   backdrop-filter:blur(18px) saturate(1.35);-webkit-backdrop-filter:blur(18px) saturate(1.35);
+  transform:translateZ(0);
 }
-.dark .card{box-shadow:var(--sh-2)}
-.card-solid{background:var(--milk-strong);border:1px solid var(--edge-strong);border-radius:var(--r1);box-shadow:var(--sh-2)}
+.dark .card{box-shadow:var(--sh-2),inset 0 1px 1.5px rgba(255,255,255,0.05)}
+.card-solid{position:relative;isolation:isolate;background:var(--milk-strong);border:1px solid var(--edge-strong);border-radius:var(--r1);box-shadow:var(--sh-2)}
 .pad{padding:1.25rem}
 @media(min-width:768px){.pad{padding:1.75rem}}
 
@@ -221,27 +222,34 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
 @keyframes toastin{from{opacity:0;transform:translateY(-12px) scale(.9)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes toastout{to{opacity:0;transform:scale(.94)}}
 
-.idseg{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:2.3rem;padding:.55rem .35rem;border-radius:12px;
-  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:.95rem;color:var(--ink);cursor:default;
+.idseg{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;min-width:3.4rem;padding:.65rem .5rem .55rem;border-radius:14px;
+  font-family:'JetBrains Mono',monospace;font-weight:700;font-size:1.45rem;letter-spacing:.005em;color:var(--ink);cursor:default;
   background:var(--milk-strong);border:1px solid var(--edge);
-  transition:transform .2s cubic-bezier(.16,1,.3,1),border-color .2s ease}
-.idseg:hover{transform:translateY(-3px);border-color:var(--edge-strong)}
-.idseg .tag{font-size:.5rem;font-weight:700;opacity:.6;margin-top:.15rem;letter-spacing:.02em;text-transform:uppercase}
+  transition:transform .2s cubic-bezier(.16,1,.3,1),border-color .2s ease,background .2s ease}
+.idseg:hover{transform:translateY(-3px);border-color:var(--amber);background:var(--amber-soft)}
+.idseg .tag{font-family:'Inter',sans-serif;font-size:.58rem;font-weight:700;opacity:.62;margin-top:.28rem;letter-spacing:.055em;text-transform:uppercase}
+.idseg-group{display:inline-flex;align-items:center;gap:.35rem;border-radius:16px}
+.idseg-divider{width:1px;align-self:stretch;margin:.5rem .2rem;flex-shrink:0;background:repeating-linear-gradient(to bottom,var(--edge-strong) 0 4px,transparent 4px 9px)}
 
-.idcard{position:relative;border-radius:var(--r1);overflow:hidden;background:var(--milk-strong);backdrop-filter:blur(18px) saturate(1.35);-webkit-backdrop-filter:blur(18px) saturate(1.35);border:1px solid var(--edge-strong);box-shadow:var(--sh-3)}
-.idcard::before{content:'';position:absolute;inset:-30% -10%;background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.22) 50%,transparent 58%);transform:translateX(-55%);transition:transform .8s cubic-bezier(.16,1,.3,1);pointer-events:none;z-index:3}
-.idcard:hover::before{transform:translateX(55%)}
-.dark .idcard::before{background:linear-gradient(115deg,transparent 42%,rgba(255,255,255,.10) 50%,transparent 58%)}
-.idstripe{height:3px;position:relative;overflow:hidden;background:linear-gradient(100deg,var(--amber),var(--amber-hi))}
-.idstripe::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.5) 50%,transparent 80%);background-size:220% 100%;animation:shimmer 7s ease-in-out infinite}
+.idcard{position:relative;isolation:isolate;border-radius:var(--r1);overflow:hidden;background:var(--milk-strong);backdrop-filter:blur(20px) saturate(1.4);-webkit-backdrop-filter:blur(20px) saturate(1.4);border:1px solid var(--edge-strong);box-shadow:var(--sh-3);transform:translateZ(0)}
+.idcard::before{content:'';position:absolute;inset:-30% -10%;background:linear-gradient(115deg,transparent 46%,rgba(255,255,255,.16) 50%,transparent 54%);transform:translate3d(-55%,0,0);transition:transform .9s cubic-bezier(.16,1,.3,1);pointer-events:none;z-index:3;will-change:transform}
+.idcard:hover::before{transform:translate3d(55%,0,0)}
+.dark .idcard::before{background:linear-gradient(115deg,transparent 46%,rgba(255,255,255,.07) 50%,transparent 54%)}
+.idwatermark{position:absolute;z-index:-1;inset:0;pointer-events:none;
+  background-image:repeating-linear-gradient(115deg,var(--edge-strong) 0px,var(--edge-strong) 1px,transparent 1px,transparent 8px);
+  -webkit-mask-image:radial-gradient(ellipse 65% 85% at 88% 8%,black 0%,transparent 68%);
+  mask-image:radial-gradient(ellipse 65% 85% at 88% 8%,black 0%,transparent 68%);opacity:.6}
+.dark .idwatermark{opacity:.4}
+.idstripe{height:3px;position:relative;overflow:hidden;background:linear-gradient(100deg,var(--amber),var(--amber-hi));isolation:isolate}
+.idstripe::after{content:'';position:absolute;inset:0;background:linear-gradient(100deg,transparent 20%,rgba(255,255,255,.42) 50%,transparent 80%);background-size:220% 100%;animation:shimmer 8s ease-in-out infinite;will-change:background-position}
 @keyframes shimmer{0%{background-position:150% 0}55%{background-position:-50% 0}100%{background-position:-50% 0}}
-.idchip{width:2.5rem;height:1.85rem;border-radius:8px;background:linear-gradient(135deg,#E7CE9E,#C7A268);position:relative;box-shadow:inset 0 0 0 1px rgba(0,0,0,.15)}
-.idchip::before,.idchip::after{content:'';position:absolute;background:rgba(0,0,0,.16)}
-.idchip::before{left:33%;top:0;bottom:0;width:1px}
-.idchip::after{top:40%;left:0;right:0;height:1px}
+.idchip{width:2.7rem;height:2rem;border-radius:7px;background:linear-gradient(150deg,#F4E1B2,#D9AF72 45%,#B8863E);position:relative;box-shadow:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 2px rgba(0,0,0,.22),0 3px 8px -3px rgba(120,80,30,.45)}
+.idchip::before,.idchip::after{content:'';position:absolute;background:rgba(0,0,0,.18)}
+.idchip::before{left:34%;top:3px;bottom:3px;width:1px}
+.idchip::after{top:38%;left:3px;right:3px;height:1px}
 
-.emptybox{width:4.2rem;height:4.2rem;border-radius:999px;background:radial-gradient(circle at 35% 30%,var(--milk-strong),var(--milk));display:inline-flex;align-items:center;justify-content:center;margin-bottom:.8rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
-.emptybox .material-symbols-rounded{font-size:1.8rem;color:var(--amber-text);opacity:.8}
+.emptybox{width:4.4rem;height:4.4rem;border-radius:999px;background:radial-gradient(circle at 35% 30%,var(--milk-strong),var(--milk));display:inline-flex;align-items:center;justify-content:center;margin-bottom:.8rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.3), var(--sh-1)}
+.emptybox .material-symbols-rounded{font-size:1.9rem;color:var(--amber-text);opacity:.85}
 
 .focusable:focus-visible{outline:none;box-shadow:0 0 0 4px var(--amber-soft);border-radius:8px}
 .wrap{max-width:78rem;margin:0 auto;padding:0 1rem}
@@ -259,7 +267,7 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
 .hide{display:none !important}
 
 @keyframes panelIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-@keyframes cardRevealIn{from{opacity:0;transform:scale(.985)}to{opacity:1;transform:scale(1)}}
+@keyframes cardRevealIn{from{opacity:0;transform:translateY(6px) translateZ(0)}to{opacity:1;transform:translateY(0) translateZ(0)}}
 .tabpanel:not(.hide){animation:panelIn .38s cubic-bezier(.16,1,.3,1) both}
 .tabpanel:not(.hide) .idcard{animation:cardRevealIn .5s cubic-bezier(.16,1,.3,1) both}
 
@@ -630,8 +638,6 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
 </div>
 
 <script>
-/* ---- Icon system: hand-drawn line icons replacing the Material Symbols web
-   font. Zero network requests, zero FOUT, renders the instant the DOM parses. ---- */
 const ICON_DEFS={
   arrow_forward:'<path d="M4 12h14M13 6l6 6-6 6"/>',
   auto_awesome:'<path d="M12 3l1.4 4.3L18 9l-4.6 1.7L12 15l-1.4-4.3L6 9l4.6-1.7L12 3z"/><path d="M19 14.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7.7-2z"/>',
@@ -682,9 +688,6 @@ function hydrateIcons(root){
   (root||document).querySelectorAll('.material-symbols-rounded').forEach(hydrateIcon);
 }
 hydrateIcons();
-// Self-healing: any icon span added or re-texted later (toasts, table rows,
-// command palette, gender badges, theme toggle, etc.) gets hydrated the moment
-// it lands in the DOM — no per-call-site plumbing needed.
 new MutationObserver(muts=>{
   muts.forEach(m=>{
     if(m.target&&m.target.nodeType===1&&m.target.classList&&m.target.classList.contains('material-symbols-rounded')) hydrateIcon(m.target);
@@ -1240,17 +1243,15 @@ function renderInspectorResult(res){
       <p style="font-size:.78rem;color:var(--ink-2);margin:0;">Normalized input: <span class="mono">${escapeHtml(res.normalized||res.raw)}</span></p>
     </div>`;
   }
-  const segs=[
-    {val:res.centuryDigit,label:'Century'},
-    {val:String(res.birthYear).slice(-2),label:'Year'},
-    {val:pad2(res.birthMonth),label:'Month'},
-    {val:pad2(res.birthDay),label:'Day'},
-    {val:res.govCode,label:'Gov'},
-    {val:res.serial,label:'Serial'},
-    {val:String(res.genderDigit),label:'Gender'},
-    {val:res.checkDigit,label:'Check'}
+  const segGroups=[
+    {items:[{val:res.centuryDigit,label:'Cent.'},{val:String(res.birthYear).slice(-2),label:'Year'},{val:pad2(res.birthMonth),label:'Month'},{val:pad2(res.birthDay),label:'Day'}]},
+    {items:[{val:res.govCode,label:'Gov'},{val:res.serial,label:'Serial'}]},
+    {items:[{val:String(res.genderDigit),label:'Gender'},{val:res.checkDigit,label:'Check'}]}
   ];
-  const segHtml=segs.map(s=>`<div class="idseg"><span>${s.val}</span><span class="tag">${s.label}</span></div>`).join('');
+  const segHtml=segGroups.map((g,gi)=>{
+    const items=g.items.map(s=>`<div class="idseg"><span>${s.val}</span><span class="tag">${s.label}</span></div>`).join('');
+    return `<div class="idseg-group">${items}</div>${gi<segGroups.length-1?'<div class="idseg-divider"></div>':''}`;
+  }).join('');
   const flagsHtml=res.flags.length?res.flags.map(f=>`<span class="chip">${f.replace(/-/g,' ')}</span>`).join(''):'';
   const checksHtml=res.checks.map(c=>`<div class="row" style="gap:.55rem;padding:.5rem 0;border-bottom:1px solid var(--edge);">
       <span class="material-symbols-rounded" style="font-size:1.1rem;color:${c.pass?'var(--mint)':'var(--scarlet)'};">${c.pass?'check_circle':'cancel'}</span>
@@ -1260,46 +1261,47 @@ function renderInspectorResult(res){
   return `
   <div class="stack">
     <div class="idcard">
+      <div class="idwatermark"></div>
       <div class="idstripe"></div>
       <div class="pad stack">
         <div class="row-between">
-          <div class="row" style="gap:.7rem;">
+          <div class="row" style="gap:.75rem;">
             <div class="idchip"></div>
             <div>
-              <div style="font-size:.65rem;text-transform:uppercase;letter-spacing:.08em;color:var(--ink-3);font-weight:700;">Arab Republic of Egypt</div>
-              <div class="mono" style="font-size:1.15rem;font-weight:700;letter-spacing:.03em;">${res.id}</div>
+              <div style="font-size:.66rem;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3);font-weight:700;">Arab Republic of Egypt</div>
+              <div class="mono" style="font-size:1.55rem;font-weight:700;letter-spacing:.02em;line-height:1.2;">${res.id}</div>
             </div>
           </div>
           ${genderBadge(res.gender,'1.05rem')}
         </div>
-        <div class="scrollx row" style="gap:.4rem;padding:.2rem 0;">${segHtml}</div>
+        <div class="scrollx row" style="gap:.15rem;padding:.3rem 0 .1rem;">${segHtml}</div>
       </div>
     </div>
 
     <div class="grid2">
       <div class="card pad stack">
         <h4 class="cardtitle">Identity</h4>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
-          <div><div class="eyebrow">Birth date</div><div style="font-weight:650;font-size:.9rem;">${res.birthDateStr}</div></div>
-          <div><div class="eyebrow">Weekday</div><div style="font-weight:650;font-size:.9rem;">${res.birthDayOfWeek}</div></div>
-          <div><div class="eyebrow">Age</div><div style="font-weight:650;font-size:.9rem;">${res.currentAgeYears}y ${res.currentAgeMonths}m ${res.currentAgeDays}d</div></div>
-          <div><div class="eyebrow">Governorate</div><div style="font-weight:650;font-size:.9rem;${res.governorateKnown?'':'font-style:italic;color:var(--ink-2);'}">${res.governorate}</div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
+          <div class="row" style="gap:.55rem;align-items:flex-start;"><span class="material-symbols-rounded" style="font-size:1.05rem;color:var(--amber-text);margin-top:.15rem;">cake</span><div><div class="eyebrow">Birth date</div><div style="font-weight:650;font-size:.95rem;">${res.birthDateStr}</div></div></div>
+          <div class="row" style="gap:.55rem;align-items:flex-start;"><span class="material-symbols-rounded" style="font-size:1.05rem;color:var(--amber-text);margin-top:.15rem;">calendar_month</span><div><div class="eyebrow">Weekday</div><div style="font-weight:650;font-size:.95rem;">${res.birthDayOfWeek}</div></div></div>
+          <div class="row" style="gap:.55rem;align-items:flex-start;"><span class="material-symbols-rounded" style="font-size:1.05rem;color:var(--amber-text);margin-top:.15rem;">functions</span><div><div class="eyebrow">Age</div><div style="font-weight:650;font-size:.95rem;">${res.currentAgeYears}y ${res.currentAgeMonths}m ${res.currentAgeDays}d</div></div></div>
+          <div class="row" style="gap:.55rem;align-items:flex-start;"><span class="material-symbols-rounded" style="font-size:1.05rem;color:var(--amber-text);margin-top:.15rem;">fingerprint</span><div><div class="eyebrow">Governorate</div><div style="font-weight:650;font-size:.95rem;${res.governorateKnown?'':'font-style:italic;color:var(--ink-2);'}">${res.governorate}</div></div></div>
         </div>
         ${res.flags.length?`<div class="row" style="flex-wrap:wrap;gap:.35rem;">${flagsHtml}</div>`:''}
       </div>
 
       <div class="card pad">
-        <div class="row" style="gap:1.1rem;align-items:center;">
+        <div class="row" style="gap:1.25rem;align-items:center;">
           <div style="position:relative;flex-shrink:0;">
-            ${progressRing(res.careerPercent)}
+            ${progressRing(res.careerPercent,104,10)}
             <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
-              <div class="disp" style="font-size:1.15rem;font-weight:700;">${res.careerPercent}%</div>
+              <div class="disp num" style="font-size:1.5rem;font-weight:700;line-height:1;">${res.careerPercent}%</div>
             </div>
           </div>
           <div class="stack" style="gap:.4rem;">
             <div class="chip chip-accent" style="width:fit-content;">Law 148/2019</div>
-            <div style="font-size:.9rem;font-weight:650;">${res.retireAge}-year retirement age</div>
-            <div style="font-size:.85rem;">Retires <span style="color:var(--amber-text);font-weight:700;">${res.retireDateStr}</span></div>
+            <div style="font-size:.92rem;font-weight:650;">${res.retireAge}-year retirement age</div>
+            <div style="font-size:.87rem;">Retires <span class="num" style="color:var(--amber-text);font-weight:700;">${res.retireDateStr}</span></div>
             <div style="font-size:.78rem;color:var(--ink-2);">${res.isEligible?'Already eligible':res.yearsUntilRetire+' years remaining'}</div>
           </div>
         </div>
@@ -1484,8 +1486,6 @@ function saveDestState(){
   saveState({destDirty:Object.assign({},destDirty),destValues:vals});
 }
 
-// Keeps the 3 destination fields from ever colliding: manually-set (dirty) fields
-// are left untouched, everything else auto-flows around them in sequence.
 function recomputeDestinations(){
   if(formulaMode==='range'){
     const idRef=document.getElementById('cfg-cell-id').value||'A2';
