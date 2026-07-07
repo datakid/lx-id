@@ -213,9 +213,10 @@ table.dtable th{padding:.75rem .9rem;border-bottom:1px solid var(--edge);white-s
 table.dtable td{padding:.65rem .9rem;border-bottom:1px solid var(--edge);white-space:nowrap}
 table.dtable tbody tr{transition:background .15s}
 table.dtable tbody tr:hover{background:var(--milk)}
-.rowcopy{opacity:0;transition:opacity .15s;cursor:pointer;color:var(--ink-3);font-size:1.05rem}
-table.dtable tbody tr:hover .rowcopy{opacity:1}
+.rowcopy{opacity:0;transition:opacity .15s;cursor:pointer;color:var(--ink-3);font-size:1.05rem;border-radius:6px}
+table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
 .rowcopy:hover{color:var(--amber)}
+.rowcopy:focus-visible{outline:none;box-shadow:0 0 0 3px var(--amber-soft)}
 
 .codeblock{background:var(--ink);color:var(--bg);font-family:'JetBrains Mono',monospace;font-size:.74rem;line-height:1.75;padding:1.1rem;border-radius:var(--r2);overflow-x:auto;white-space:pre;border:1px solid var(--edge-strong)}
 .dark .codeblock{background:#0A0807;color:#F3ECDE}
@@ -285,6 +286,9 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
 
 .progress-ring circle{transition:stroke-dashoffset 1.1s cubic-bezier(.4,0,.2,1)}
 
+@keyframes spin{to{transform:rotate(360deg)}}
+.spin{display:inline-flex;animation:spin .8s linear infinite}
+
 .cmdk-overlay{position:fixed;inset:0;z-index:200;background:rgba(15,12,9,.45);backdrop-filter:blur(6px);display:flex;align-items:flex-start;justify-content:center;padding:12vh 1rem 1rem;opacity:0;pointer-events:none;transition:opacity .2s ease}
 .cmdk-overlay.open{opacity:1;pointer-events:auto}
 .cmdk-box{width:100%;max-width:34rem;background:var(--bg);border:1px solid var(--edge-strong);border-radius:var(--r1);box-shadow:var(--sh-3),inset 0 1px 1px var(--glass-hi);overflow:hidden;transform:translateY(-8px);transition:transform .2s cubic-bezier(.16,1,.3,1)}
@@ -333,7 +337,7 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
       <button class="toptab" data-tab="datetools" onclick="switchTab('datetools')"><span class="material-symbols-rounded" style="font-size:1.1rem;">calendar_month</span>Dates</button>
     </nav>
     <div class="row" style="gap:.25rem;">
-      <button class="iconbtn desktop-only focusable" onclick="openCmdk()" title="Command palette">
+      <button class="iconbtn desktop-only focusable" onclick="openCmdk()" title="Command palette" aria-label="Open command palette">
         <span class="material-symbols-rounded" style="font-size:1.15rem;">search</span>
       </button>
       <button class="iconbtn focusable" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle light or dark theme">
@@ -369,7 +373,7 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
           <button onclick="loadSampleData()" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">auto_awesome</span>Sample</button>
           <button onclick="clearPasteData()" class="btn btn-ghost btn-sm focusable" style="margin-left:auto;"><span class="material-symbols-rounded" style="font-size:1rem;">delete</span>Clear</button>
         </div>
-        <button onclick="processPasteData()" class="btn btn-primary btn-block focusable"><span class="material-symbols-rounded" style="font-size:1.1rem;">play_arrow</span>Process IDs</button>
+        <button onclick="processPasteData()" id="btn-process-paste" class="btn btn-primary btn-block focusable"><span class="material-symbols-rounded" style="font-size:1.1rem;">play_arrow</span>Process IDs</button>
       </div>
 
       <div class="card pad stack">
@@ -379,9 +383,9 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
             <p style="font-size:.75rem;color:var(--ink-2);margin:.15rem 0 0;" id="paste-summary">Awaiting input…</p>
           </div>
           <div class="row" style="gap:.4rem;">
-            <button onclick="copyPasteTable(event)" class="iconbtn focusable" id="btn-copy" disabled title="Copy all"><span class="material-symbols-rounded" style="font-size:1.15rem;">content_copy</span></button>
-            <button onclick="exportPaste('xlsx')" class="btn btn-soft btn-sm focusable" id="btn-xlsx" disabled><span class="material-symbols-rounded" style="font-size:1rem;">download</span>Excel</button>
-            <button onclick="exportPaste('csv')" class="btn btn-ghost btn-sm focusable" id="btn-csv" disabled><span class="material-symbols-rounded" style="font-size:1rem;">csv</span>CSV</button>
+            <button onclick="copyPasteTable(event)" class="iconbtn focusable" id="btn-copy" disabled title="Copy visible rows" aria-label="Copy visible rows"><span class="material-symbols-rounded" style="font-size:1.15rem;">content_copy</span></button>
+            <button onclick="exportPaste('xlsx')" class="btn btn-soft btn-sm focusable" id="btn-xlsx" disabled title="Export visible rows to Excel"><span class="material-symbols-rounded" style="font-size:1rem;">download</span>Excel</button>
+            <button onclick="exportPaste('csv')" class="btn btn-ghost btn-sm focusable" id="btn-csv" disabled title="Export visible rows to CSV"><span class="material-symbols-rounded" style="font-size:1rem;">csv</span>CSV</button>
           </div>
         </div>
         <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;">
@@ -432,7 +436,7 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
             <p style="font-size:.7rem;color:var(--ink-2);margin:.1rem 0 0;" id="file-rows-text">0 rows</p>
           </div>
         </div>
-        <button onclick="processUploadedFile()" class="btn btn-primary btn-block focusable"><span class="material-symbols-rounded" style="font-size:1.1rem;">auto_fix_high</span>Extract &amp; Process</button>
+        <button onclick="processUploadedFile()" id="btn-extract-process" class="btn btn-primary btn-block focusable"><span class="material-symbols-rounded" style="font-size:1.1rem;">auto_fix_high</span>Extract &amp; Process</button>
       </div>
     </div>
     <div id="upload-results" class="card pad hide stack" style="margin-top:1.1rem;">
@@ -470,8 +474,8 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
     <div class="card pad stack">
       <div class="row" style="gap:.6rem;">
         <input type="text" id="inspector-input" placeholder="Enter a 14-digit national ID…" class="field-input mono focusable" style="flex:1;font-size:.95rem;letter-spacing:.02em;" oninput="inspectID()">
-        <button onclick="pasteIntoInspector()" class="iconbtn focusable" title="Paste"><span class="material-symbols-rounded">content_paste_go</span></button>
-        <button onclick="loadSampleIntoInspector()" class="iconbtn focusable" title="Sample ID"><span class="material-symbols-rounded">auto_awesome</span></button>
+        <button onclick="pasteIntoInspector()" class="iconbtn focusable" title="Paste" aria-label="Paste from clipboard"><span class="material-symbols-rounded">content_paste_go</span></button>
+        <button onclick="loadSampleIntoInspector()" class="iconbtn focusable" title="Sample ID" aria-label="Load a sample ID"><span class="material-symbols-rounded">auto_awesome</span></button>
       </div>
     </div>
     <div id="inspector-result"></div>
@@ -485,7 +489,7 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
       </div>
       <textarea id="inspector-batch-input" rows="8" placeholder="One ID per line…" class="field-area focusable" style="font-size:.78rem;" oninput="updateInspectorBatchCount()"></textarea>
       <div class="row" style="flex-wrap:wrap;gap:.5rem;">
-        <button onclick="processInspectorBatch()" class="btn btn-primary focusable"><span class="material-symbols-rounded" style="font-size:1.1rem;">play_arrow</span>Run Analytics</button>
+        <button onclick="processInspectorBatch()" id="btn-run-analytics" class="btn btn-primary focusable"><span class="material-symbols-rounded" style="font-size:1.1rem;">play_arrow</span>Run Analytics</button>
         <button onclick="loadSampleIntoInspectorBatch()" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">auto_awesome</span>Sample</button>
       </div>
     </div>
@@ -535,7 +539,7 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
         <span class="material-symbols-rounded" style="font-size:1rem;color:var(--ink-3);">arrow_forward</span>
         <label class="eyebrow" style="white-space:nowrap;">Paste in</label>
         <input id="dest-birth" class="field-input mono focusable dest-input" oninput="onDestInput('birth')">
-        <button class="iconbtn focusable dest-reset" title="Auto-assign location" onclick="resetDest('birth')"><span class="material-symbols-rounded" style="font-size:1.05rem;">sync</span></button>
+        <button class="iconbtn focusable dest-reset" title="Auto-assign location" aria-label="Auto-assign birth date destination cell" onclick="resetDest('birth')"><span class="material-symbols-rounded" style="font-size:1.05rem;">sync</span></button>
       </div>
       <pre class="codeblock" id="code-birth"></pre>
     </div>
@@ -549,7 +553,7 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
         <span class="material-symbols-rounded" style="font-size:1rem;color:var(--ink-3);">arrow_forward</span>
         <label class="eyebrow" style="white-space:nowrap;">Paste in</label>
         <input id="dest-gender" class="field-input mono focusable dest-input" oninput="onDestInput('gender')">
-        <button class="iconbtn focusable dest-reset" title="Auto-assign location" onclick="resetDest('gender')"><span class="material-symbols-rounded" style="font-size:1.05rem;">sync</span></button>
+        <button class="iconbtn focusable dest-reset" title="Auto-assign location" aria-label="Auto-assign gender destination cell" onclick="resetDest('gender')"><span class="material-symbols-rounded" style="font-size:1.05rem;">sync</span></button>
       </div>
       <pre class="codeblock" id="code-gender"></pre>
     </div>
@@ -563,7 +567,7 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
         <span class="material-symbols-rounded" style="font-size:1rem;color:var(--ink-3);">arrow_forward</span>
         <label class="eyebrow" style="white-space:nowrap;">Paste in</label>
         <input id="dest-retirement" class="field-input mono focusable dest-input" oninput="onDestInput('retirement')">
-        <button class="iconbtn focusable dest-reset" title="Auto-assign location" onclick="resetDest('retirement')"><span class="material-symbols-rounded" style="font-size:1.05rem;">sync</span></button>
+        <button class="iconbtn focusable dest-reset" title="Auto-assign location" aria-label="Auto-assign retirement destination cell" onclick="resetDest('retirement')"><span class="material-symbols-rounded" style="font-size:1.05rem;">sync</span></button>
       </div>
       <pre class="codeblock" id="code-retirement"></pre>
     </div>
@@ -649,11 +653,23 @@ table.dtable tbody tr:hover .rowcopy{opacity:1}
   </div>
 </div>
 
+<div class="cmdk-overlay" id="confirm-overlay" onclick="if(event.target===this)closeConfirm()">
+  <div class="cmdk-box pad stack" style="max-width:24rem;">
+    <h3 class="cardtitle" id="confirm-title">Are you sure?</h3>
+    <p id="confirm-message" style="font-size:.82rem;color:var(--ink-2);margin:0;">This action cannot be undone.</p>
+    <div class="row" style="justify-content:flex-end;gap:.5rem;">
+      <button class="btn btn-ghost btn-sm focusable" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-primary btn-sm focusable" id="confirm-action-btn">Confirm</button>
+    </div>
+  </div>
+</div>
+
 <script>
 const ICON_DEFS={
   arrow_forward:'<path d="M4 12h14M13 6l6 6-6 6"/>',
   auto_awesome:'<path d="M12 3l1.4 4.3L18 9l-4.6 1.7L12 15l-1.4-4.3L6 9l4.6-1.7L12 3z"/><path d="M19 14.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7.7-2z"/>',
   auto_fix_high:'<path d="M4.5 19.5L16 8"/><path d="M14.5 3.2l.8 1.7 1.7.8-1.7.8-.8 1.7-.8-1.7-1.7-.8 1.7-.8.8-1.7z"/><path d="M19 10.5l.5 1.1 1.1.5-1.1.5-.5 1.1-.5-1.1-1.1-.5 1.1-.5.5-1.1z"/>',
+  block:'<circle cx="12" cy="12" r="9"/><path d="M6 6l12 12"/>',
   cake:'<path d="M4 21v-6a2 2 0 012-2h12a2 2 0 012 2v6"/><path d="M4 21h16"/><path d="M8 13V9M12 13V9M16 13V9"/><circle cx="8" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="7" r="1" fill="currentColor" stroke="none"/><circle cx="16" cy="7" r="1" fill="currentColor" stroke="none"/>',
   calendar_month:'<rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17"/><path d="M8 3v4M16 3v4"/>',
   cancel:'<circle cx="12" cy="12" r="9"/><path d="M9.5 9.5l5 5M14.5 9.5l-5 5"/>',
@@ -669,7 +685,9 @@ const ICON_DEFS={
   light_mode:'<circle cx="12" cy="12" r="4.3"/><path d="M12 2.5v2.3M12 19.2v2.3M4.4 4.4l1.6 1.6M18 18l1.6 1.6M2.5 12h2.3M19.2 12h2.3M4.4 19.6L6 18M18 6l1.6-1.6"/>',
   date_range:'<rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17"/><path d="M8 3v4M16 3v4"/><rect x="7" y="13" width="4" height="3.2" rx=".8" fill="currentColor" stroke="none"/>',
   delete:'<path d="M5 7h14"/><path d="M9.5 11v6M14.5 11v6"/><path d="M7 7l.9 12A2 2 0 009.9 21h4.2a2 2 0 002-1.8L17 7"/><path d="M9.3 7V4.8A1.3 1.3 0 0110.6 3.5h2.8a1.3 1.3 0 011.3 1.3V7"/>',
+  delete_sweep:'<path d="M3 7h9"/><path d="M7.5 11v6M12 11v6"/><path d="M5 7l.9 12A2 2 0 007.9 21h4.7a2 2 0 002-1.8L15.5 7"/><path d="M7.3 7V4.8A1.3 1.3 0 018.6 3.5h2.3a1.3 1.3 0 011.3 1.3V7"/><path d="M17.5 5l3-1.5M20 4.5l1 3"/>',
   download:'<path d="M12 3v11.5M7.2 10.3L12 15l4.8-4.7"/><path d="M4.5 19h15"/>',
+  download_done:'<path d="M11.5 3v8M7.5 7.6L11.5 11.6l4-4"/><path d="M4.5 19h15"/><path d="M16 15.5l1.8 1.8L21.5 13.3"/>',
   error:'<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.3"/><circle cx="12" cy="16.3" r="1" fill="currentColor" stroke="none"/>',
   event_repeat:'<rect x="3.5" y="5" width="12.5" height="15" rx="3"/><path d="M3.5 10h12.5"/><path d="M7 3v4"/><path d="M16.5 14.5a3.3 3.3 0 015.5-2.3M22 12v-3.2M22 12h-3.2"/><path d="M20.7 17.5a3.3 3.3 0 01-5.5 2.3M15.5 20v-3.2M15.5 20h3.2"/>',
   fingerprint:'<circle cx="12" cy="12" r="8.4" stroke-dasharray="35 60" transform="rotate(-40 12 12)"/><circle cx="12" cy="12" r="5.6" stroke-dasharray="24 40" transform="rotate(25 12 12)"/><circle cx="12" cy="12" r="3" stroke-dasharray="12 30" transform="rotate(80 12 12)"/><circle cx="12" cy="12" r=".9" fill="currentColor" stroke="none"/>',
@@ -683,6 +701,7 @@ const ICON_DEFS={
   search:'<circle cx="10.8" cy="10.8" r="6.8"/><path d="M20 20l-4.2-4.2"/>',
   sync:'<path d="M4.5 12a7.5 7.5 0 0113-5M17 3.7v4.3h-4.3"/><path d="M19.5 12a7.5 7.5 0 01-13 5M7 20.3V16h4.3"/>',
   table_rows:'<rect x="3.5" y="4.5" width="17" height="15" rx="2.2"/><path d="M3.5 9.7h17M3.5 14.8h17"/>',
+  task_alt:'<rect x="3.5" y="3.5" width="17" height="17" rx="6"/><path d="M8 12.3l2.6 2.6L16.3 9"/>',
   upload_file:'<path d="M6.5 3h7l4 4v13a1.2 1.2 0 01-1.2 1.2H6.5A1.2 1.2 0 015.3 20V4.2A1.2 1.2 0 016.5 3z"/><path d="M13.5 3v4h4"/><path d="M12 18v-5.3M9.6 15.1l2.4-2.4 2.4 2.4"/>',
   view_week:'<rect x="3.5" y="4.5" width="4.3" height="15" rx="1.2"/><rect x="9.8" y="4.5" width="4.3" height="15" rx="1.2"/><rect x="16.1" y="4.5" width="4.3" height="15" rx="1.2"/>'
 };
@@ -737,23 +756,81 @@ let inspectorMode='single';
 let inspectorBatchResults=[];
 let inspectorBatchFilter='all';
 
+let storageWarned=false;
 function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);return raw?JSON.parse(raw):{};}catch(e){return{};}}
-function saveState(patch){try{const cur=loadState();localStorage.setItem(STORAGE_KEY,JSON.stringify(Object.assign({},cur,patch)));}catch(e){}}
+function saveState(patch){
+  try{
+    const cur=loadState();
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(Object.assign({},cur,patch)));
+    return true;
+  }catch(e){
+    if(!storageWarned){
+      storageWarned=true;
+      showToast('Local save failed — your changes may not persist','error');
+    }
+    return false;
+  }
+}
 function saveStateDebounced(patch){clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveState(patch),350);}
 function clearAllCache(){localStorage.removeItem(STORAGE_KEY);showToast('Cached data cleared','delete_sweep');}
 
-function initTheme(){
-  const state=loadState();
-  const prefersDark=window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-  const dark=state.theme?state.theme==='dark':(state.theme===undefined?true:prefersDark);
+let pendingConfirmAction=null;
+function openConfirm(title,message,onConfirm){
+  document.getElementById('confirm-title').textContent=title;
+  document.getElementById('confirm-message').textContent=message;
+  pendingConfirmAction=onConfirm;
+  document.getElementById('confirm-overlay').classList.add('open');
+}
+function closeConfirm(){
+  document.getElementById('confirm-overlay').classList.remove('open');
+  pendingConfirmAction=null;
+}
+function runPendingConfirm(){
+  const action=pendingConfirmAction;
+  closeConfirm();
+  if(action) action();
+}
+document.getElementById('confirm-action-btn')?.addEventListener?.('click',runPendingConfirm);
+
+function confirmClearCache(){
+  openConfirm('Clear cached local data?','This removes every saved input, theme choice, and preference stored in this browser. It cannot be undone.',clearAllCache);
+}
+
+function systemPrefersDark(){
+  return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+}
+function applyTheme(dark){
   document.documentElement.classList.toggle('dark',dark);
   document.getElementById('theme-icon').textContent=dark?'light_mode':'dark_mode';
+  const meta=document.querySelector('meta[name="theme-color"]');
+  if(meta) meta.setAttribute('content',dark?'#0D0B09':'#F7F3EC');
+}
+function initTheme(){
+  const state=loadState();
+  const hasOverride=state.theme==='dark'||state.theme==='light';
+  const dark=hasOverride?state.theme==='dark':systemPrefersDark();
+  applyTheme(dark);
+  if(window.matchMedia){
+    const mq=window.matchMedia('(prefers-color-scheme: dark)');
+    const onSystemChange=e=>{
+      const cur=loadState();
+      if(cur.theme==='dark'||cur.theme==='light') return;
+      applyTheme(e.matches);
+    };
+    mq.addEventListener?mq.addEventListener('change',onSystemChange):mq.addListener(onSystemChange);
+  }
 }
 function toggleTheme(){
   const dark=!document.documentElement.classList.contains('dark');
-  document.documentElement.classList.toggle('dark',dark);
-  document.getElementById('theme-icon').textContent=dark?'light_mode':'dark_mode';
+  applyTheme(dark);
   saveState({theme:dark?'dark':'light'});
+}
+function useSystemTheme(){
+  const patch=Object.assign({},loadState());
+  delete patch.theme;
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(patch));}catch(e){}
+  applyTheme(systemPrefersDark());
+  showToast('Following system theme','contrast');
 }
 
 function showToast(msg,icon){
@@ -787,6 +864,47 @@ function flashCopied(btnEl){
   btnEl.classList.add('copied');
   btnEl.innerHTML='<span class="material-symbols-rounded" style="font-size:.95rem;">check</span> Copied';
   setTimeout(()=>{btnEl.classList.remove('copied');btnEl.innerHTML=original;btnEl.style.minWidth='';btnEl.dataset.flashing='0';},1400);
+}
+
+function setBusy(btn,busy,label){
+  if(!btn) return;
+  if(busy){
+    if(btn.dataset.busy==='1') return;
+    btn.dataset.busy='1';
+    btn.dataset.originalHtml=btn.innerHTML;
+    btn.disabled=true;
+    btn.innerHTML=`<span class="material-symbols-rounded spin" style="font-size:1.1rem;">sync</span>${escapeHtml(label||'Processing…')}`;
+  }else{
+    btn.disabled=false;
+    if(btn.dataset.originalHtml) btn.innerHTML=btn.dataset.originalHtml;
+    btn.dataset.busy='0';
+  }
+}
+
+function chunkProcess(items,worker,{onDone,frameBudgetMs=12}={}){
+  const results=new Array(items.length);
+  let i=0;
+  function step(){
+    const start=performance.now();
+    while(i<items.length&&performance.now()-start<frameBudgetMs){
+      results[i]=worker(items[i],i);
+      i++;
+    }
+    if(i<items.length){
+      requestAnimationFrame(step);
+    }else if(onDone){
+      onDone(results);
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+function markDuplicates(results){
+  const counts={};
+  results.forEach(r=>{if(r.valid) counts[r.id]=(counts[r.id]||0)+1;});
+  results.forEach(r=>{
+    if(r.valid&&counts[r.id]>1&&!r.flags.includes('duplicate-id')) r.flags.push('duplicate-id');
+  });
 }
 
 function normalizeIDInput(raw){
@@ -1043,23 +1161,35 @@ function processPasteData(){
   const raw=document.getElementById('paste-input').value;
   const lines=raw.split('\n').map(l=>l.trim()).filter(Boolean);
   if(lines.length===0){showToast('Paste at least one ID first','info');return;}
-  processedPasteResults=lines.map(l=>parseID(l));
-  const valid=processedPasteResults.filter(r=>r.valid).length;
-  const errors=processedPasteResults.length-valid;
-  updatePasteKPIs(processedPasteResults.length,valid,errors);
-  currentFilter='all';
-  document.querySelectorAll('.pill[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter==='all'));
-  document.getElementById('search-input').value='';
-  renderPasteTable();
-  const hasResults=processedPasteResults.length>0;
-  ['btn-copy','btn-xlsx','btn-csv'].forEach(id=>document.getElementById(id).disabled=!hasResults);
-  showToast(`Processed ${processedPasteResults.length} IDs`,'task_alt');
+  const btn=document.getElementById('btn-process-paste');
+  setBusy(btn,true,'Processing…');
+  chunkProcess(lines,parseID,{onDone:results=>{
+    processedPasteResults=results;
+    markDuplicates(processedPasteResults);
+    const valid=processedPasteResults.filter(r=>r.valid).length;
+    const errors=processedPasteResults.length-valid;
+    updatePasteKPIs(processedPasteResults.length,valid,errors);
+    currentFilter='all';
+    document.querySelectorAll('.pill[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter==='all'));
+    document.getElementById('search-input').value='';
+    renderPasteTable();
+    const hasResults=processedPasteResults.length>0;
+    ['btn-copy','btn-xlsx','btn-csv'].forEach(id=>document.getElementById(id).disabled=!hasResults);
+    setBusy(btn,false);
+    showToast(`Processed ${processedPasteResults.length} IDs`,'task_alt');
+  }});
 }
 
 function setFilter(f){
   currentFilter=f;
   document.querySelectorAll('.pill[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter===f));
   renderPasteTable();
+}
+
+let lastPasteRows=[];
+
+function rowCopyBtn(rowId,idx,fnName){
+  return `<span class="material-symbols-rounded rowcopy focusable" id="${rowId}" role="button" tabindex="0" title="Copy row" onclick="${fnName}(${idx},'${rowId}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${fnName}(${idx},'${rowId}')}">content_copy</span>`;
 }
 
 function renderPasteTable(){
@@ -1069,6 +1199,7 @@ function renderPasteTable(){
   if(currentFilter==='valid') filtered=filtered.filter(r=>r.valid);
   if(currentFilter==='error') filtered=filtered.filter(r=>!r.valid);
   if(searchTerm) filtered=filtered.filter(r=>(r.raw+' '+(r.id||'')+' '+(r.error||'')+' '+(r.governorate||'')).toLowerCase().includes(searchTerm));
+  lastPasteRows=filtered;
   if(filtered.length===0){
     tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:3rem 1rem;color:var(--ink-3);">No matching results found.</td></tr>`;
     return;
@@ -1079,7 +1210,7 @@ function renderPasteTable(){
       const fakeBadge=r.fakePattern?'<span class="chip" style="margin-left:.3rem;">Fake pattern</span>':'';
       const govBadge=!r.governorateKnown?'<span class="chip" style="margin-left:.3rem;">Unknown gov</span>':'';
       return `<tr>
-        <td><span class="material-symbols-rounded rowcopy" id="${rowId}" onclick='copyPasteRow(${JSON.stringify(JSON.stringify(r))},"${rowId}")'>content_copy</span></td>
+        <td>${rowCopyBtn(rowId,idx,'copyPasteRow')}</td>
         <td class="mono" style="font-weight:650;">${r.id}${fakeBadge}${govBadge}</td>
         <td><span class="statuspill"><span class="statdot ok"></span>Valid</span></td>
         <td>${genderBadge(r.gender)}</td>
@@ -1087,22 +1218,23 @@ function renderPasteTable(){
         <td>${r.currentAgeYears}y</td>
         <td style="color:var(--amber-text);font-weight:650;">${r.retireAge} yrs</td>
         <td style="color:var(--amber);font-weight:650;">${r.retireDateStr}</td>
-        <td style="font-size:.72rem;color:var(--ink-2);">${r.flags.length?r.flags.join(', '):'No anomalies'}</td>
+        <td style="font-size:.72rem;color:var(--ink-2);">${r.flags.length?r.flags.map(f=>f.replace(/-/g,' ')).join(', '):'No anomalies'}</td>
       </tr>`;
     }
     return `<tr>
-      <td><span class="material-symbols-rounded rowcopy" id="${rowId}" onclick='copyPasteRow(${JSON.stringify(JSON.stringify(r))},"${rowId}")'>content_copy</span></td>
-      <td class="mono" style="font-weight:650;">${r.raw}</td>
+      <td>${rowCopyBtn(rowId,idx,'copyPasteRow')}</td>
+      <td class="mono" style="font-weight:650;">${escapeHtml(r.raw)}</td>
       <td><span class="statuspill"><span class="statdot bad"></span>Error</span></td>
       <td style="color:var(--ink-3);">—</td><td style="color:var(--ink-3);">—</td><td style="color:var(--ink-3);">—</td><td style="color:var(--ink-3);">—</td><td style="color:var(--ink-3);">—</td>
-      <td style="color:var(--scarlet);font-weight:600;">${r.error}</td>
+      <td style="color:var(--scarlet);font-weight:600;">${escapeHtml(r.error)}</td>
     </tr>`;
   }).join('');
 }
 
-function copyPasteRow(rawJson,elId){
-  const r=JSON.parse(rawJson);
-  const line=r.valid?`${r.id}\tVALID\t${r.gender}\t${r.birthDateStr}\t${r.currentAgeYears}\t${r.retireAge}\t${r.retireDateStr}\t${(r.flags||[]).join(', ')}`:`${r.raw}\tERROR\t${r.error}`;
+function copyPasteRow(idx,elId){
+  const r=lastPasteRows[idx];
+  if(!r) return;
+  const line=r.valid?`${r.id}\tVALID\t${r.gender}\t${r.birthDateStr}\t${r.currentAgeYears}\t${r.retireAge}\t${r.retireDateStr}\t${(r.flags||[]).map(f=>f.replace(/-/g,' ')).join(', ')}`:`${r.raw}\tERROR\t${r.error}`;
   copyText(line,null,'Row copied');
   const el=document.getElementById(elId);
   if(el){el.textContent='check';el.style.color='var(--mint)';el.style.opacity='1';setTimeout(()=>{el.textContent='content_copy';el.style.color='';},1200);}
@@ -1116,20 +1248,20 @@ function updatePasteKPIs(total,valid,errors){
 }
 
 function copyPasteTable(evt){
-  if(processedPasteResults.length===0) return;
+  if(lastPasteRows.length===0){showToast('No visible rows to copy','info');return;}
   let tsv='National ID\tStatus\tGender\tBirth Date\tAge\tRetirement Age\tRetirement Date\tNotes\tError\n';
-  processedPasteResults.forEach(r=>{
-    tsv+=r.valid?`${r.id}\tVALID\t${r.gender}\t${r.birthDateStr}\t${r.currentAgeYears}\t${r.retireAge}\t${r.retireDateStr}\t${(r.flags||[]).join(', ')}\t\n`:`${r.raw}\tERROR\t\t\t\t\t\t\t${r.error}\n`;
+  lastPasteRows.forEach(r=>{
+    tsv+=r.valid?`${r.id}\tVALID\t${r.gender}\t${r.birthDateStr}\t${r.currentAgeYears}\t${r.retireAge}\t${r.retireDateStr}\t${(r.flags||[]).map(f=>f.replace(/-/g,' ')).join(', ')}\t\n`:`${r.raw}\tERROR\t\t\t\t\t\t\t${r.error}\n`;
   });
-  copyText(tsv,evt?evt.currentTarget:document.getElementById('btn-copy'),`${processedPasteResults.length} rows copied`);
+  copyText(tsv,evt?evt.currentTarget:document.getElementById('btn-copy'),`${lastPasteRows.length} rows copied`);
 }
 
 function exportPaste(format){
-  if(processedPasteResults.length===0) return;
-  const data=processedPasteResults.map(r=>({
+  if(lastPasteRows.length===0){showToast('No visible rows to export','info');return;}
+  const data=lastPasteRows.map(r=>({
     'National ID':r.valid?r.id:r.raw,'Status':r.valid?'VALID':'ERROR','Gender':r.valid?r.gender:'','Birth Date':r.valid?r.birthDateStr:'',
     'Age':r.valid?r.currentAgeYears:'','Retirement Age':r.valid?r.retireAge:'','Retirement Date':r.valid?r.retireDateStr:'',
-    'Governorate':r.valid?r.governorate:'','Notes':r.valid?(r.flags||[]).join(', '):'','Fake Pattern':r.valid?(r.fakePattern?'YES':'NO'):'','Error':r.error||''
+    'Governorate':r.valid?r.governorate:'','Notes':r.valid?(r.flags||[]).map(f=>f.replace(/-/g,' ')).join(', '):'','Fake Pattern':r.valid?(r.fakePattern?'YES':'NO'):'','Error':r.error||''
   }));
   if(format==='csv'){
     const headers=Object.keys(data[0]);
@@ -1137,7 +1269,7 @@ function exportPaste(format){
   }else{
     downloadXLSX(data,'Results','national_id_results.xlsx');
   }
-  showToast('File downloaded','download_done');
+  showToast(`${lastPasteRows.length} rows downloaded`,'download_done');
 }
 
 function handleFileUpload(e){
@@ -1169,35 +1301,44 @@ function handleFileUpload(e){
 function processUploadedFile(){
   const idCol=document.getElementById('column-select').value;
   if(!idCol) return;
-  processedUploadResults=[];
-  let validCount=0;
-  uploadedSheetData.forEach(row=>{
-    const res=parseID(row[idCol]);
-    if(res.valid) validCount++;
-    processedUploadResults.push(Object.assign({},row,{
-      'Extracted Birth Date':res.valid?res.birthDateStr:'',
-      'Gender':res.valid?res.gender:'',
-      'Age':res.valid?res.currentAgeYears:'',
-      'Retirement Age':res.valid?res.retireAge:'',
-      'Retirement Date':res.valid?res.retireDateStr:'',
-      'Governorate':res.valid?res.governorate:'',
-      'Notes':res.valid?(res.flags||[]).join(', '):'',
-      'ID Status':res.valid?'VALID':`ERROR: ${res.error}`
-    }));
-  });
-  const cols=Object.keys(processedUploadResults[0]);
-  document.getElementById('upload-thead').innerHTML=`<tr>${cols.map(c=>`<th>${escapeHtml(c)}</th>`).join('')}</tr>`;
-  const tbody=document.getElementById('upload-tbody');
-  tbody.innerHTML=processedUploadResults.slice(0,150).map(row=>{
-    return `<tr>${cols.map(c=>{
-      if(c==='Gender'&&row[c]) return `<td>${genderBadge(row[c],'.9rem')}</td>`;
-      return `<td>${escapeHtml(row[c])}</td>`;
-    }).join('')}</tr>`;
-  }).join('');
-  const shownNote=processedUploadResults.length>150?` — showing first 150 of ${processedUploadResults.length}`:'';
-  document.getElementById('upload-summary').textContent=`${processedUploadResults.length} rows processed (${validCount} valid)${shownNote}`;
-  document.getElementById('upload-results').classList.remove('hide');
-  showToast('File processed','auto_fix_high');
+  const btn=document.getElementById('btn-extract-process');
+  setBusy(btn,true,'Processing…');
+  chunkProcess(uploadedSheetData,row=>parseID(row[idCol]),{onDone:reses=>{
+    processedUploadResults=[];
+    let validCount=0;
+    const idCounts={};
+    reses.forEach(res=>{if(res.valid) idCounts[res.id]=(idCounts[res.id]||0)+1;});
+    uploadedSheetData.forEach((row,i)=>{
+      const res=reses[i];
+      if(res.valid) validCount++;
+      const notesParts=res.valid?(res.flags||[]).map(f=>f.replace(/-/g,' ')):[];
+      if(res.valid&&idCounts[res.id]>1) notesParts.push('duplicate id');
+      processedUploadResults.push(Object.assign({},row,{
+        'Extracted Birth Date':res.valid?res.birthDateStr:'',
+        'Gender':res.valid?res.gender:'',
+        'Age':res.valid?res.currentAgeYears:'',
+        'Retirement Age':res.valid?res.retireAge:'',
+        'Retirement Date':res.valid?res.retireDateStr:'',
+        'Governorate':res.valid?res.governorate:'',
+        'Notes':notesParts.join(', '),
+        'ID Status':res.valid?'VALID':`ERROR: ${res.error}`
+      }));
+    });
+    const cols=Object.keys(processedUploadResults[0]);
+    document.getElementById('upload-thead').innerHTML=`<tr>${cols.map(c=>`<th>${escapeHtml(c)}</th>`).join('')}</tr>`;
+    const tbody=document.getElementById('upload-tbody');
+    tbody.innerHTML=processedUploadResults.slice(0,150).map(row=>{
+      return `<tr>${cols.map(c=>{
+        if(c==='Gender'&&row[c]) return `<td>${genderBadge(row[c],'.9rem')}</td>`;
+        return `<td>${escapeHtml(row[c])}</td>`;
+      }).join('')}</tr>`;
+    }).join('');
+    const shownNote=processedUploadResults.length>150?` — showing first 150 of ${processedUploadResults.length}`:'';
+    document.getElementById('upload-summary').textContent=`${processedUploadResults.length} rows processed (${validCount} valid)${shownNote}`;
+    document.getElementById('upload-results').classList.remove('hide');
+    setBusy(btn,false);
+    showToast('File processed','auto_fix_high');
+  }});
 }
 
 function downloadUpload(format){
@@ -1353,12 +1494,20 @@ function processInspectorBatch(){
   const raw=document.getElementById('inspector-batch-input').value;
   const lines=raw.split('\n').map(l=>l.trim()).filter(Boolean);
   if(lines.length===0){showToast('Paste at least one ID first','info');return;}
-  inspectorBatchResults=lines.map(l=>parseID(l));
-  inspectorBatchFilter='all';
-  renderInspectorBatchTable();
-  showToast(`Analyzed ${inspectorBatchResults.length} IDs`,'task_alt');
+  const btn=document.getElementById('btn-run-analytics');
+  setBusy(btn,true,'Analyzing…');
+  chunkProcess(lines,parseID,{onDone:results=>{
+    inspectorBatchResults=results;
+    markDuplicates(inspectorBatchResults);
+    inspectorBatchFilter='all';
+    renderInspectorBatchTable();
+    setBusy(btn,false);
+    showToast(`Analyzed ${inspectorBatchResults.length} IDs`,'task_alt');
+  }});
 }
 function setInspectorBatchFilter(f){inspectorBatchFilter=f;renderInspectorBatchTable();}
+
+let lastInspectorBatchRows=[];
 
 function renderInspectorBatchTable(){
   const resultEl=document.getElementById('inspector-batch-result');
@@ -1368,14 +1517,15 @@ function renderInspectorBatchTable(){
   let rows=inspectorBatchResults;
   if(inspectorBatchFilter==='valid') rows=rows.filter(r=>r.valid);
   if(inspectorBatchFilter==='error') rows=rows.filter(r=>!r.valid);
+  lastInspectorBatchRows=rows;
   const cols=['National ID','Status','Century','Birth Date','Weekday','Age','Gender','Gov Code','Governorate','Serial','Check','Retire Age','Retire Date','Yrs to Retire','Career %','Flags'];
 
   const rowHtml=rows.map((r,idx)=>{
     const rowId=`irow-${idx}`;
     if(r.valid){
-      const flagsText=r.flags.length?r.flags.join(', '):'—';
+      const flagsText=r.flags.length?r.flags.map(f=>f.replace(/-/g,' ')).join(', '):'—';
       return `<tr>
-        <td><span class="material-symbols-rounded rowcopy" id="${rowId}" onclick='copyInspectorBatchRow(${JSON.stringify(JSON.stringify(r))},"${rowId}")'>content_copy</span></td>
+        <td>${rowCopyBtn(rowId,idx,'copyInspectorBatchRow')}</td>
         <td class="mono" style="font-weight:650;">${r.id}</td>
         <td><span class="statuspill"><span class="statdot ok"></span>Valid</span></td>
         <td>${r.centuryLabel}</td>
@@ -1395,10 +1545,10 @@ function renderInspectorBatchTable(){
       </tr>`;
     }
     return `<tr>
-      <td><span class="material-symbols-rounded rowcopy" id="${rowId}" onclick='copyInspectorBatchRow(${JSON.stringify(JSON.stringify(r))},"${rowId}")'>content_copy</span></td>
-      <td class="mono" style="font-weight:650;">${r.raw}</td>
+      <td>${rowCopyBtn(rowId,idx,'copyInspectorBatchRow')}</td>
+      <td class="mono" style="font-weight:650;">${escapeHtml(r.raw)}</td>
       <td><span class="statuspill"><span class="statdot bad"></span>Error</span></td>
-      <td colspan="12" style="color:var(--scarlet);font-weight:600;">${r.error}</td>
+      <td colspan="12" style="color:var(--scarlet);font-weight:600;">${escapeHtml(r.error)}</td>
       <td>—</td>
     </tr>`;
   }).join('');
@@ -1411,9 +1561,9 @@ function renderInspectorBatchTable(){
           <p style="font-size:.75rem;color:var(--ink-2);margin:.15rem 0 0;">${total} total IDs (${validCount} valid, ${errorCount} errors) — ${cols.length} columns</p>
         </div>
         <div class="row" style="gap:.4rem;">
-          <button onclick="copyInspectorBatchTable(event)" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>Copy</button>
-          <button onclick="exportInspectorBatch('xlsx')" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">download</span>Excel</button>
-          <button onclick="exportInspectorBatch('csv')" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">csv</span>CSV</button>
+          <button onclick="copyInspectorBatchTable(event)" class="btn btn-ghost btn-sm focusable" title="Copy visible rows"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>Copy</button>
+          <button onclick="exportInspectorBatch('xlsx')" class="btn btn-soft btn-sm focusable" title="Export visible rows to Excel"><span class="material-symbols-rounded" style="font-size:.95rem;">download</span>Excel</button>
+          <button onclick="exportInspectorBatch('csv')" class="btn btn-ghost btn-sm focusable" title="Export visible rows to CSV"><span class="material-symbols-rounded" style="font-size:.95rem;">csv</span>CSV</button>
         </div>
       </div>
       <div class="pillrow">
@@ -1430,31 +1580,32 @@ function renderInspectorBatchTable(){
     </div>`;
 }
 
-function copyInspectorBatchRow(rawJson,elId){
-  const r=JSON.parse(rawJson);
-  const line=r.valid?`${r.id}\tVALID\t${r.centuryLabel}\t${r.birthDateStr}\t${r.birthDayOfWeek}\t${r.currentAgeYears}\t${r.gender}\t${r.govCode}\t${r.governorate}\t${r.serial}\t${r.checkDigit}\t${r.retireAge}\t${r.retireDateStr}\t${r.yearsUntilRetire}\t${r.careerPercent}%\t${(r.flags||[]).join(', ')}`:`${r.raw}\tERROR\t${r.error}`;
+function copyInspectorBatchRow(idx,elId){
+  const r=lastInspectorBatchRows[idx];
+  if(!r) return;
+  const line=r.valid?`${r.id}\tVALID\t${r.centuryLabel}\t${r.birthDateStr}\t${r.birthDayOfWeek}\t${r.currentAgeYears}\t${r.gender}\t${r.govCode}\t${r.governorate}\t${r.serial}\t${r.checkDigit}\t${r.retireAge}\t${r.retireDateStr}\t${r.yearsUntilRetire}\t${r.careerPercent}%\t${(r.flags||[]).map(f=>f.replace(/-/g,' ')).join(', ')}`:`${r.raw}\tERROR\t${r.error}`;
   copyText(line,null,'Row copied');
   const el=document.getElementById(elId);
   if(el){el.textContent='check';el.style.color='var(--mint)';setTimeout(()=>{el.textContent='content_copy';el.style.color='';},1200);}
 }
 
 function copyInspectorBatchTable(evt){
-  if(inspectorBatchResults.length===0) return;
+  if(lastInspectorBatchRows.length===0){showToast('No visible rows to copy','info');return;}
   let tsv='National ID\tStatus\tCentury\tBirth Date\tWeekday\tAge\tGender\tGov Code\tGovernorate\tSerial\tCheck\tRetire Age\tRetire Date\tYrs to Retire\tCareer %\tFlags\tError\n';
-  inspectorBatchResults.forEach(r=>{
-    tsv+=r.valid?`${r.id}\tVALID\t${r.centuryLabel}\t${r.birthDateStr}\t${r.birthDayOfWeek}\t${r.currentAgeYears}\t${r.gender}\t${r.govCode}\t${r.governorate}\t${r.serial}\t${r.checkDigit}\t${r.retireAge}\t${r.retireDateStr}\t${r.yearsUntilRetire}\t${r.careerPercent}%\t${r.flags.join(', ')}\t\n`:`${r.raw}\tERROR\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t${r.error}\n`;
+  lastInspectorBatchRows.forEach(r=>{
+    tsv+=r.valid?`${r.id}\tVALID\t${r.centuryLabel}\t${r.birthDateStr}\t${r.birthDayOfWeek}\t${r.currentAgeYears}\t${r.gender}\t${r.govCode}\t${r.governorate}\t${r.serial}\t${r.checkDigit}\t${r.retireAge}\t${r.retireDateStr}\t${r.yearsUntilRetire}\t${r.careerPercent}%\t${r.flags.map(f=>f.replace(/-/g,' ')).join(', ')}\t\n`:`${r.raw}\tERROR\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t${r.error}\n`;
   });
-  copyText(tsv,evt?evt.currentTarget:null,`${inspectorBatchResults.length} rows copied`);
+  copyText(tsv,evt?evt.currentTarget:null,`${lastInspectorBatchRows.length} rows copied`);
 }
 
 function exportInspectorBatch(format){
-  if(inspectorBatchResults.length===0) return;
-  const data=inspectorBatchResults.map(r=>({
+  if(lastInspectorBatchRows.length===0){showToast('No visible rows to export','info');return;}
+  const data=lastInspectorBatchRows.map(r=>({
     'National ID':r.valid?r.id:r.raw,'Status':r.valid?'VALID':'ERROR','Century':r.valid?r.centuryLabel:'','Birth Date':r.valid?r.birthDateStr:'',
     'Weekday':r.valid?r.birthDayOfWeek:'','Age':r.valid?r.currentAgeYears:'','Gender':r.valid?r.gender:'','Gov Code':r.valid?r.govCode:'',
     'Governorate':r.valid?r.governorate:'','Serial':r.valid?r.serial:'','Check Digit':r.valid?r.checkDigit:'','Retirement Age':r.valid?r.retireAge:'',
     'Retirement Date':r.valid?r.retireDateStr:'','Years To Retire':r.valid?r.yearsUntilRetire:'','Career %':r.valid?r.careerPercent:'',
-    'Fake Pattern':r.valid?(r.fakePattern?'YES':'NO'):'','Flags':r.valid?r.flags.join(', '):'','Error':r.error||''
+    'Fake Pattern':r.valid?(r.fakePattern?'YES':'NO'):'','Flags':r.valid?r.flags.map(f=>f.replace(/-/g,' ')).join(', '):'','Error':r.error||''
   }));
   if(format==='csv'){
     const headers=Object.keys(data[0]);
@@ -1462,7 +1613,7 @@ function exportInspectorBatch(format){
   }else{
     downloadXLSX(data,'Batch Analytics','id_batch_analytics.xlsx');
   }
-  showToast('File downloaded','download_done');
+  showToast(`${lastInspectorBatchRows.length} rows downloaded`,'download_done');
 }
 
 const destOrder=['birth','gender','retirement'];
@@ -1666,8 +1817,6 @@ function computeAge(){
   saveStateDebounced({dtBirth:document.getElementById('dt-birth').value,dtAsof:asofVal});
   if(!birth){box.innerHTML=`<div style="text-align:center;padding:2rem 1rem;color:var(--ink-3);">Pick a birth date.</div>`;return;}
   const age=calcAge(birth,asof);
-  const nextBirthday=addYears(birth,age.years+(stripTime(asof)>=stripTime(new Date(asof.getFullYear(),birth.getMonth(),birth.getDate()))?1:0));
-  const nb=addYears(birth,Math.floor(age.totalDays/365.25)+1);
   let cursorYears=age.years;
   let bday=addYears(birth,cursorYears);
   if(stripTime(bday)<=stripTime(asof)) bday=addYears(birth,cursorYears+1);
@@ -1755,7 +1904,8 @@ const COMMANDS=[
   {id:'act-sample-processor',label:'Load Sample Data (Batch Processor)',group:'Actions',icon:'science',run:()=>{switchTab('processor');switchSubTab('paste');loadSampleData();}},
   {id:'act-sample-inspector',label:'Load Sample ID (Inspector)',group:'Actions',icon:'science',run:()=>{switchTab('inspector');setInspectorMode('single');loadSampleIntoInspector();}},
   {id:'act-theme',label:'Toggle Light / Dark Theme',group:'Actions',icon:'contrast',run:()=>toggleTheme()},
-  {id:'act-clear-cache',label:'Clear Cached Local Data',group:'Actions',icon:'layers_clear',run:()=>clearAllCache()}
+  {id:'act-theme-system',label:'Use System Theme',group:'Actions',icon:'contrast',run:()=>useSystemTheme()},
+  {id:'act-clear-cache',label:'Clear Cached Local Data',group:'Actions',icon:'layers_clear',run:()=>confirmClearCache()}
 ];
 let cmdkActiveIndex=0;
 let cmdkFiltered=COMMANDS;
@@ -1833,6 +1983,11 @@ window.onload=function(){
       e.preventDefault();
       const overlay=document.getElementById('cmdk-overlay');
       overlay.classList.contains('open')?closeCmdk():openCmdk();
+      return;
+    }
+    if(document.getElementById('confirm-overlay').classList.contains('open')){
+      if(e.key==='Escape'){e.preventDefault();closeConfirm();}
+      else if(e.key==='Enter'){e.preventDefault();runPendingConfirm();}
       return;
     }
     if(!document.getElementById('cmdk-overlay').classList.contains('open')) return;
