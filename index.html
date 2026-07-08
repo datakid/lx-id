@@ -127,21 +127,15 @@ body{
 .field-area{font-family:'JetBrains Mono',monospace;line-height:1.7;resize:vertical}
 .field-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239C8F78' stroke-width='2.4'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.85rem center;padding-right:2.4rem}
 
-input[type="date"].field-input{color-scheme:light;position:relative}
+input[type="date"].field-input{color-scheme:light;position:relative;font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;letter-spacing:.01em;accent-color:var(--amber)}
 .dark input[type="date"].field-input{color-scheme:dark}
-input[type="date"].field-input::-webkit-calendar-picker-indicator{
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239C8F78' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='5' width='17' height='15' rx='3'/%3E%3Cpath d='M3.5 10h17'/%3E%3Cpath d='M8 3v4M16 3v4'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:center;background-size:1.05rem;width:1.6rem;height:1.6rem;padding:0;margin-left:.4rem;
-  border-radius:8px;cursor:pointer;opacity:.85;transition:opacity .15s ease,background-color .15s ease;
-}
+input[type="date"].field-input::-webkit-calendar-picker-indicator{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%239C8F78' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3.5' y='5' width='17' height='15' rx='3'/%3E%3Cpath d='M3.5 10h17'/%3E%3Cpath d='M8 3v4M16 3v4'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:center;background-size:1.05rem;width:1.6rem;height:1.6rem;padding:0;margin-left:.4rem;border-radius:8px;cursor:pointer;opacity:.85;transition:opacity .15s ease,background-color .15s ease}
 input[type="date"].field-input::-webkit-calendar-picker-indicator:hover{opacity:1;background-color:var(--milk)}
-input[type="date"].field-input::-webkit-datetime-edit{padding:0}
-input[type="date"].field-input::-webkit-datetime-edit-fields-wrapper{padding:0}
-input[type="date"].field-input{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;letter-spacing:.01em}
-input[type="date"].field-input::-webkit-datetime-edit-text{color:var(--ink-3);padding:0 .2em;opacity:.8}
-input[type="date"].field-input::-webkit-datetime-edit-month-field,
-input[type="date"].field-input::-webkit-datetime-edit-day-field{color:var(--amber-text);font-weight:600;border-radius:5px;padding:.05em .2em}
-input[type="date"].field-input::-webkit-datetime-edit-year-field{color:var(--ink);font-weight:600;border-radius:5px;padding:.05em .2em}
+input[type="date"].field-input::-webkit-datetime-edit,input[type="date"].field-input::-webkit-datetime-edit-fields-wrapper{padding:0}
+input[type="date"].field-input::-webkit-datetime-edit-text{color:var(--ink-3);padding:0 .15em;opacity:.8}
+input[type="date"].field-input::-webkit-datetime-edit-month-field,input[type="date"].field-input::-webkit-datetime-edit-day-field,input[type="date"].field-input::-webkit-datetime-edit-year-field{color:var(--ink);font-weight:600;border-radius:4px;padding:.1em .2em;transition:background .15s,color .15s}
+input[type="date"].field-input::-webkit-datetime-edit-month-field:focus,input[type="date"].field-input::-webkit-datetime-edit-day-field:focus,input[type="date"].field-input::-webkit-datetime-edit-year-field:focus{background-color:var(--amber) !important;color:#FFFFFF !important;outline:none}
+.dark input[type="date"].field-input::-webkit-datetime-edit-month-field:focus,.dark input[type="date"].field-input::-webkit-datetime-edit-day-field:focus,.dark input[type="date"].field-input::-webkit-datetime-edit-year-field:focus{background-color:var(--amber) !important;color:#000000 !important}
 input[type="date"].field-input::-webkit-inner-spin-button{display:none}
 
 .destrow{display:flex;align-items:center;gap:.5rem;margin:-.3rem 0 .15rem;}
@@ -2021,7 +2015,5 @@ window.onload=function(){
 };
 window.addEventListener('resize',moveTopIndicator);
 </script>
-
-
 </body>
 </html>
