@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
@@ -11,7 +11,7 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650;9..144,760&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650;9..144,760&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
 <style>
 :root{
@@ -34,7 +34,6 @@
   --sh-glow:0 1px 2px rgba(138,75,38,0.3), 0 10px 22px -12px rgba(138,75,38,0.5);
   --glass-hi:rgba(255,255,255,0.65); --glass-lo:rgba(34,27,20,0.05); --glass-sat:1.4; --glass-bright:1.03;
 }
-/* Surface style presets — chosen from Settings, layered on top of the light/dark tokens above */
 [data-style="airy"]{
   --r1:32px; --r2:23px; --r3:16px; --r4:11px;
   --blur-sm:8px; --blur-md:10px; --blur-lg:11px; --blur-xl:13px;
@@ -103,7 +102,7 @@ body{
 .disp{font-family:var(--font-display);letter-spacing:-0.015em;font-optical-sizing:auto}
 .mono{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
 .pagetitle{font-family:var(--font-display);letter-spacing:-0.022em;font-size:var(--fs-xl);font-weight:650;margin:0;color:var(--ink);position:relative;display:inline-block;padding-bottom:.15rem}
-.pagetitle::after{content:'';position:absolute;left:.05rem;bottom:-.5rem;width:2.5rem;height:3px;border-radius:3px;background:linear-gradient(100deg,var(--amber),var(--amber-hi));opacity:.55}
+.pagetitle::after{content:'';position:absolute;inset-inline-start:.05rem;bottom:-.5rem;width:2.5rem;height:3px;border-radius:3px;background:linear-gradient(100deg,var(--amber),var(--amber-hi));opacity:.55}
 .cardtitle{font-family:var(--font-display);letter-spacing:-0.01em;font-size:var(--fs-md);font-weight:600;margin:0;color:var(--ink)}
 .eyebrow{font-size:var(--fs-xs);font-weight:650;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3)}
 .num{font-variant-numeric:tabular-nums}
@@ -125,9 +124,9 @@ body{
 .btn:active{transform:scale(.96)}
 .btn:disabled{opacity:.35;cursor:not-allowed}
 .btn-primary{position:relative;overflow:hidden;background:linear-gradient(155deg,var(--amber),var(--amber-hi));color:#FBF3E8;box-shadow:var(--sh-glow),inset 0 1px 0 rgba(255,255,255,.35),inset 0 -1px 1.5px rgba(0,0,0,.1)}
-.btn-primary::after{content:'';position:absolute;top:0;left:-60%;width:35%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.4),transparent);transform:skewX(-18deg);transition:left .55s cubic-bezier(.16,1,.3,1)}
+.btn-primary::after{content:'';position:absolute;top:0;inset-inline-start:-60%;width:35%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.4),transparent);transform:skewX(-18deg);transition:inset-inline-start .55s cubic-bezier(.16,1,.3,1)}
 .btn-primary:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 2px 3px rgba(138,75,38,.32),0 16px 30px -14px rgba(138,75,38,.55),inset 0 1px 0 rgba(255,255,255,.4),inset 0 -1px 1.5px rgba(0,0,0,.1)}
-.btn-primary:hover:not(:disabled)::after{left:130%}
+.btn-primary:hover:not(:disabled)::after{inset-inline-start:130%}
 .btn-ghost{background:transparent;color:var(--ink-2)}
 .btn-ghost:hover:not(:disabled){background:var(--milk-strong);color:var(--ink)}
 .btn-soft{background:var(--amber-soft);color:var(--amber-text)}
@@ -140,6 +139,7 @@ body{
   background:transparent;border:none;color:var(--ink-2);cursor:pointer;transition:background .2s cubic-bezier(.16,1,.3,1),color .2s,transform .15s}
 .iconbtn:hover{background:var(--milk-strong);color:var(--ink);transform:scale(1.06)}
 .iconbtn:active{transform:scale(.92)}
+.lang-btn{width:auto;padding:0 .7rem;font-family:var(--font-body);font-size:.72rem;font-weight:700;letter-spacing:.02em}
 
 .field-input,.field-area,.field-select{
   background:var(--milk-strong);border:1px solid var(--edge);color:var(--ink);border-radius:var(--r3);
@@ -148,12 +148,8 @@ body{
 }
 .field-input:focus,.field-area:focus,.field-select:focus{border-color:var(--amber);box-shadow:0 0 0 4px var(--amber-soft),inset 0 1px 2px rgba(20,14,8,.03)}
 .field-area{font-family:'JetBrains Mono',monospace;line-height:1.7;resize:vertical}
-.field-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239C8F78' stroke-width='2.4'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.85rem center;padding-right:2.4rem}
+.field-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239C8F78' stroke-width='2.4'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.85rem center;padding-inline-end:2.4rem}
 
-/* Custom date field — a fully custom component instead of relying on native
-   ::-webkit-datetime-edit styling, which browsers apply inconsistently (that
-   inconsistency was the root cause of the illegible focus state). This gives
-   guaranteed legibility and a consistent look across every browser. */
 .date-field{position:relative}
 .dateinput{
   display:flex;align-items:center;background:var(--milk-strong);border:1px solid var(--edge);
@@ -172,7 +168,7 @@ body{
 .dateseg[data-kind="y"]{width:2.9em}
 .dateseg:focus{background:var(--amber-soft);color:var(--amber-text)}
 .datesep{color:var(--ink-3);font-family:'JetBrains Mono',monospace;font-weight:600;opacity:.65;padding:0 .05rem;user-select:none}
-.datecal-btn{margin-left:auto;width:1.9rem;height:1.9rem;flex-shrink:0;border:none;background:transparent;color:var(--ink-3);
+.datecal-btn{margin-inline-start:auto;width:1.9rem;height:1.9rem;flex-shrink:0;border:none;background:transparent;color:var(--ink-3);
   border-radius:8px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,color .15s}
 .datecal-btn:hover{background:var(--milk);color:var(--amber-text)}
 .datecal-btn .material-symbols-rounded{font-size:1.05rem}
@@ -186,7 +182,7 @@ body{
 .date-today-btn:active{transform:scale(.94)}
 
 .datecal-popover{
-  position:absolute;top:calc(100% + .6rem);left:0;z-index:60;width:17.5rem;max-width:calc(100vw - 2.5rem);
+  position:absolute;top:calc(100% + .6rem);inset-inline-start:0;z-index:60;width:17.5rem;max-width:calc(100vw - 2.5rem);
   background:var(--bg);border:1px solid var(--edge-strong);border-radius:var(--r2);
   box-shadow:var(--sh-3),inset 0 1px 1px var(--glass-hi);padding:.9rem;
   opacity:0;transform:translateY(-6px) scale(.98);pointer-events:none;transition:opacity .16s ease,transform .16s cubic-bezier(.16,1,.3,1);
@@ -209,7 +205,7 @@ body{
 .datecal-foot button:hover{background:var(--milk-strong);color:var(--ink)}
 
 .field-clearable{position:relative}
-.field-clear-btn{position:absolute;right:.3rem;top:50%;transform:translateY(-50%);width:1.6rem;height:1.6rem;border:none;background:transparent;color:var(--ink-3);border-radius:999px;display:none;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,color .15s}
+.field-clear-btn{position:absolute;inset-inline-end:.3rem;top:50%;transform:translateY(-50%);width:1.6rem;height:1.6rem;border:none;background:transparent;color:var(--ink-3);border-radius:999px;display:none;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,color .15s}
 .field-clearable input:not(:placeholder-shown)+.field-clear-btn{display:inline-flex}
 .field-clear-btn:hover{background:var(--milk-strong);color:var(--ink)}
 .field-clear-btn .material-symbols-rounded{font-size:1rem}
@@ -218,12 +214,12 @@ body{
 .settings-section:first-of-type{margin-top:.2rem}
 .settings-section .eyebrow{margin-bottom:.55rem;display:block}
 .style-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(6.2rem,1fr));gap:.55rem}
-.style-swatch{position:relative;border:1.5px solid var(--edge);border-radius:var(--r3);padding:.65rem .6rem .55rem;cursor:pointer;background:var(--milk-strong);transition:border-color .15s,box-shadow .15s;text-align:left}
+.style-swatch{position:relative;border:1.5px solid var(--edge);border-radius:var(--r3);padding:.65rem .6rem .55rem;cursor:pointer;background:var(--milk-strong);transition:border-color .15s,box-shadow .15s;text-align:start}
 .style-swatch:hover{border-color:var(--edge-strong)}
 .style-swatch.active{border-color:var(--amber);box-shadow:0 0 0 3px var(--amber-soft)}
 .style-swatch .swatch-preview{height:1.9rem;border-radius:8px;margin-bottom:.5rem;border:1px solid var(--edge)}
 .style-swatch .swatch-label{font-size:.71rem;font-weight:700;color:var(--ink)}
-.style-swatch .swatch-check{position:absolute;top:.4rem;right:.4rem;color:var(--amber);opacity:0;transition:opacity .15s}
+.style-swatch .swatch-check{position:absolute;top:.4rem;inset-inline-end:.4rem;color:var(--amber);opacity:0;transition:opacity .15s}
 .style-swatch.active .swatch-check{opacity:1}
 
 .font-option{display:flex;align-items:center;gap:.7rem;border:1.5px solid var(--edge);border-radius:var(--r3);padding:.6rem .75rem;cursor:pointer;background:var(--milk-strong);transition:border-color .15s,box-shadow .15s;text-align:left;width:100%;margin-bottom:.5rem}
@@ -296,8 +292,8 @@ body{
 .statdot.warn{background:var(--sun)}
 .statuspill{display:inline-flex;align-items:center;gap:.4rem;font-size:.75rem;font-weight:650}
 
-.kpi{position:relative;overflow:hidden;padding:1rem 1.1rem 1rem 1.3rem;border-radius:var(--r2);background:var(--milk);border:1px solid var(--edge);transition:transform .2s cubic-bezier(.16,1,.3,1),box-shadow .2s ease}
-.kpi::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--edge-strong);transition:background .2s ease}
+.kpi{position:relative;overflow:hidden;padding-block:1rem;padding-inline:1.3rem 1.1rem;border-radius:var(--r2);background:var(--milk);border:1px solid var(--edge);transition:transform .2s cubic-bezier(.16,1,.3,1),box-shadow .2s ease}
+.kpi::before{content:'';position:absolute;inset-inline-start:0;top:0;bottom:0;width:3px;background:var(--edge-strong);transition:background .2s ease}
 .kpi:hover{transform:translateY(-1px);box-shadow:var(--sh-1)}
 .kpi.kpi-mint::before{background:var(--mint)}
 .kpi.kpi-scarlet::before{background:var(--scarlet)}
@@ -305,7 +301,7 @@ body{
 .kpi .num{font-size:1.7rem;line-height:1}
 .kpi .lbl{font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.07em;font-weight:650;color:var(--ink-3);margin-bottom:.3rem}
 
-table.dtable{width:100%;text-align:left;font-size:.8rem;border-collapse:collapse}
+table.dtable{width:100%;text-align:start;font-size:.8rem;border-collapse:collapse}
 table.dtable thead{color:var(--ink-3);font-weight:700;font-size:.62rem;text-transform:uppercase;letter-spacing:.06em}
 table.dtable th{padding:.75rem .9rem;border-bottom:1px solid var(--edge);white-space:nowrap;background:var(--bg);background:color-mix(in srgb, var(--bg) 92%, transparent);position:sticky;top:0}
 table.dtable td{padding:.65rem .9rem;border-bottom:1px solid var(--edge);white-space:nowrap}
@@ -323,7 +319,7 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
 .dropzone:hover,.dropzone.dragging{border-color:var(--amber);background:var(--amber-soft)}
 
 #toasts{position:fixed;top:calc(1rem + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;align-items:center;pointer-events:none}
-.toast{background:var(--ink);color:var(--bg);padding:.55rem 1.1rem .55rem .55rem;border-radius:999px;box-shadow:var(--sh-3);display:flex;align-items:center;gap:.55rem;font-size:.8rem;font-weight:640;
+.toast{background:var(--ink);color:var(--bg);padding-block:.55rem;padding-inline:.55rem 1.1rem;border-radius:999px;box-shadow:var(--sh-3);display:flex;align-items:center;gap:.55rem;font-size:.8rem;font-weight:640;
   animation:toastin .3s cubic-bezier(.16,1,.3,1)}
 .dark .toast{background:#161310;color:#F3ECDE}
 .toast .material-symbols-rounded{width:1.7rem;height:1.7rem;border-radius:999px;font-size:1rem !important;background:rgba(255,255,255,.12)}
@@ -350,8 +346,8 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
   transform:translateZ(0);transition:transform .35s cubic-bezier(.16,1,.3,1),box-shadow .35s ease}
 .idcard::before{content:'';position:absolute;inset:0;background:linear-gradient(128deg,rgba(255,255,255,.24) 0%,transparent 34%);pointer-events:none;z-index:3}
 .dark .idcard::before{background:linear-gradient(128deg,rgba(255,255,255,.08) 0%,transparent 34%)}
-.idcard::after{content:'';position:absolute;top:0;left:-75%;width:45%;height:100%;background:linear-gradient(75deg,transparent,rgba(255,255,255,.22),transparent);transform:skewX(-15deg);transition:left .75s cubic-bezier(.16,1,.3,1);pointer-events:none;z-index:4}
-.idcard:hover::after{left:150%}
+.idcard::after{content:'';position:absolute;top:0;inset-inline-start:-75%;width:45%;height:100%;background:linear-gradient(75deg,transparent,rgba(255,255,255,.22),transparent);transform:skewX(-15deg);transition:inset-inline-start .75s cubic-bezier(.16,1,.3,1);pointer-events:none;z-index:4}
+.idcard:hover::after{inset-inline-start:150%}
 .idcard:hover{transform:translateY(-2px) translateZ(0);box-shadow:var(--sh-3),0 22px 44px -20px rgba(20,14,8,.22),inset 0 1px 1px var(--glass-hi),inset 0 -1px 1px var(--glass-lo)}
 .dark .idcard:hover{box-shadow:var(--sh-3),0 26px 52px -20px rgba(0,0,0,.5),inset 0 1px 1px var(--glass-hi),inset 0 -1px 1px var(--glass-lo)}
 .idwatermark{position:absolute;z-index:-1;inset:0;pointer-events:none;
@@ -387,6 +383,7 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
 @keyframes cardRevealIn{from{opacity:0;transform:translateY(6px) translateZ(0)}to{opacity:1;transform:translateY(0) translateZ(0)}}
 .tabpanel:not(.hide){animation:panelIn .38s cubic-bezier(.16,1,.3,1) both}
 .tabpanel:not(.hide) .idcard{animation:cardRevealIn .5s cubic-bezier(.16,1,.3,1) both}
+.subtabpanel:not(.hide),.refsubpanel:not(.hide),.datesubpanel:not(.hide){animation:panelIn .3s cubic-bezier(.16,1,.3,1) both}
 
 .progress-ring circle{transition:stroke-dashoffset 1.1s cubic-bezier(.4,0,.2,1)}
 
@@ -404,7 +401,18 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
 .cmdk-item.active{background:var(--milk-strong)}
 .cmdk-empty{padding:2rem;text-align:center;color:var(--ink-3);font-size:.85rem}
 .cmdk-hint-bar{display:flex;flex-wrap:wrap;gap:.9rem;padding:.6rem .9rem;border-top:1px solid var(--edge);font-size:.68rem;color:var(--ink-3);font-weight:600}
-.cmdk-hint-bar kbd{font-family:'JetBrains Mono',monospace;background:var(--milk-strong);border:1px solid var(--edge);border-radius:5px;padding:.05rem .38rem;margin-right:.25rem;font-size:.64rem;color:var(--ink-2)}
+.cmdk-hint-bar kbd{font-family:'JetBrains Mono',monospace;background:var(--milk-strong);border:1px solid var(--edge);border-radius:5px;padding:.05rem .38rem;margin-inline-end:.25rem;font-size:.64rem;color:var(--ink-2)}
+
+[dir="rtl"]{
+  --font-display:'Cairo',sans-serif; --font-body:'Cairo',sans-serif;
+}
+[dir="rtl"] .mono,[dir="rtl"] .codeblock,[dir="rtl"] input.mono,[dir="rtl"] .date-field,[dir="rtl"] input[type="date"],[dir="rtl"] input[type="number"]{
+  direction:ltr;
+}
+[dir="rtl"] td.mono,[dir="rtl"] th{unicode-bidi:plaintext}
+[dir="rtl"] .date-field-foot{direction:rtl}
+[dir="rtl"] .field-select{background-position:left 0.85rem center;padding-inline-end:.9rem;padding-inline-start:2.4rem}
+[dir="rtl"] .cmdk-input{text-align:right}
 
 .topbar{transition:box-shadow .25s ease}
 .topbar.scrolled{box-shadow:0 1px 0 var(--edge),0 14px 26px -20px rgba(20,14,8,.3)}
@@ -436,24 +444,25 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
       </div>
       <div>
         <div class="disp" style="font-size:1.05rem;font-weight:650;line-height:1.1;">LX ID</div>
-        <div style="font-size:.68rem;color:var(--ink-3);font-weight:600;">National ID &amp; Retirement Toolkit</div>
+        <div data-i18n="brand_subtitle" style="font-size:.68rem;color:var(--ink-3);font-weight:600;">National ID &amp; Retirement Toolkit</div>
       </div>
     </div>
     <nav class="toptabs desktop-only" id="toptabs">
       <div class="topindicator" id="topindicator"></div>
-      <button class="toptab active" data-tab="processor" onclick="switchTab('processor')"><span class="material-symbols-rounded" style="font-size:1.1rem;">table_rows</span>Processor</button>
-      <button class="toptab" data-tab="inspector" onclick="switchTab('inspector')"><span class="material-symbols-rounded" style="font-size:1.1rem;">fingerprint</span>Inspector</button>
-      <button class="toptab" data-tab="formula" onclick="switchTab('formula')"><span class="material-symbols-rounded" style="font-size:1.1rem;">functions</span>Formulas</button>
-      <button class="toptab" data-tab="datetools" onclick="switchTab('datetools')"><span class="material-symbols-rounded" style="font-size:1.1rem;">calendar_month</span>Dates</button>
+      <button class="toptab active" data-tab="idtools" onclick="switchTab('idtools')"><span class="material-symbols-rounded" style="font-size:1.1rem;">fingerprint</span><span data-i18n="nav_idtools">ID Tools</span></button>
+      <button class="toptab" data-tab="formula" onclick="switchTab('formula')"><span class="material-symbols-rounded" style="font-size:1.1rem;">functions</span><span data-i18n="nav_formula">Formulas</span></button>
+      <button class="toptab" data-tab="datetools" onclick="switchTab('datetools')"><span class="material-symbols-rounded" style="font-size:1.1rem;">calendar_month</span><span data-i18n="nav_dates">Dates</span></button>
+      <button class="toptab" data-tab="reference" onclick="switchTab('reference')"><span class="material-symbols-rounded" style="font-size:1.1rem;">public</span><span data-i18n="nav_reference">Reference</span></button>
     </nav>
     <div class="row" style="gap:.25rem;">
-      <button class="iconbtn desktop-only focusable" onclick="openCmdk()" title="Command palette" aria-label="Open command palette">
+      <button class="iconbtn lang-btn focusable" onclick="toggleLang()" title="Language" aria-label="Toggle language" id="lang-btn">ع</button>
+      <button class="iconbtn desktop-only focusable" onclick="openCmdk()" data-i18n-title="cmdk_title" title="Command palette" aria-label="Open command palette">
         <span class="material-symbols-rounded" style="font-size:1.15rem;">search</span>
       </button>
-      <button class="iconbtn focusable" onclick="openSettings()" title="Settings" aria-label="Open settings">
+      <button class="iconbtn focusable" onclick="openSettings()" data-i18n-title="settings_title" title="Settings" aria-label="Open settings">
         <span class="material-symbols-rounded" style="font-size:1.15rem;">settings</span>
       </button>
-      <button class="iconbtn focusable" onclick="toggleTheme()" title="Toggle theme" aria-label="Toggle light or dark theme">
+      <button class="iconbtn focusable" onclick="toggleTheme()" data-i18n-title="theme_title" title="Toggle theme" aria-label="Toggle light or dark theme">
         <span class="material-symbols-rounded" id="theme-icon" style="font-size:1.2rem;">dark_mode</span>
       </button>
     </div>
@@ -462,70 +471,48 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
 
 <main class="wrap" style="position:relative;z-index:1;padding-top:1.1rem;">
 
-<section id="tab-processor" class="tabpanel">
+<section id="tab-idtools" class="tabpanel">
   <div class="row-between" style="margin-bottom:1rem;">
     <div>
-      <h1 class="pagetitle">Batch Processor</h1>
+      <h1 class="pagetitle" data-i18n="idtools_title">ID Tools</h1>
     </div>
     <div class="pillrow">
-      <button class="pill active focusable" data-subtab="paste" onclick="switchSubTab('paste')"><span class="material-symbols-rounded" style="font-size:1rem;">content_paste</span>Paste</button>
-      <button class="pill focusable" data-subtab="upload" onclick="switchSubTab('upload')"><span class="material-symbols-rounded" style="font-size:1rem;">upload_file</span>Upload</button>
+      <button class="pill active focusable" data-subtab="single" onclick="switchSubTab('single')"><span class="material-symbols-rounded" style="font-size:1rem;">fingerprint</span><span data-i18n="sub_single">Single</span></button>
+      <button class="pill focusable" data-subtab="batch" onclick="switchSubTab('batch')"><span class="material-symbols-rounded" style="font-size:1rem;">table_rows</span><span data-i18n="sub_batch">Batch</span></button>
+      <button class="pill focusable" data-subtab="upload" onclick="switchSubTab('upload')"><span class="material-symbols-rounded" style="font-size:1rem;">upload_file</span><span data-i18n="sub_upload">Upload</span></button>
     </div>
   </div>
 
-  <div id="subtab-paste" class="subtabpanel">
-    <div class="grid2">
-      <div class="card pad stack">
-        <div class="row-between">
-          <label class="disp" style="font-weight:640;font-size:.95rem;">Paste ID list</label>
-          <span class="chip" id="paste-count">0 detected</span>
+  <div id="subtab-single" class="subtabpanel stack">
+    <div class="card pad stack">
+      <div class="row" style="gap:.6rem;">
+        <div class="field-clearable" style="flex:1;">
+          <input type="text" id="inspector-input" data-i18n-ph="single_placeholder" placeholder="Enter a 14-digit national ID…" class="field-input mono focusable" style="width:100%;padding-inline-end:2.3rem;font-size:.95rem;letter-spacing:.02em;" oninput="inspectID()">
+          <button type="button" class="field-clear-btn" tabindex="-1" onclick="clearFieldAndRefresh('inspector-input')" aria-label="Clear ID"><span class="material-symbols-rounded">cancel</span></button>
         </div>
-        <textarea id="paste-input" rows="10" placeholder="29805121401234&#10;30101011509876&#10;27510202100001" class="field-area focusable" style="font-size:.78rem;"></textarea>
-        <div class="row" style="flex-wrap:wrap;gap:.5rem;">
-          <button onclick="pasteFromClipboard()" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">content_paste_go</span>Paste</button>
-          <button onclick="loadSampleData()" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">auto_awesome</span>Sample</button>
-          <button onclick="clearPasteData()" class="btn btn-ghost btn-sm focusable" style="margin-left:auto;"><span class="material-symbols-rounded" style="font-size:1rem;">delete</span>Clear</button>
-        </div>
-        <button onclick="processPasteData()" id="btn-process-paste" class="btn btn-primary btn-block focusable"><span class="material-symbols-rounded" style="font-size:1.1rem;">play_arrow</span>Process IDs</button>
+        <button onclick="pasteIntoInspector()" class="iconbtn focusable" data-i18n-title="paste_title" title="Paste" aria-label="Paste from clipboard"><span class="material-symbols-rounded">content_paste_go</span></button>
+        <button onclick="loadSampleIntoInspector()" class="iconbtn focusable" data-i18n-title="sample_title" title="Sample ID" aria-label="Load a sample ID"><span class="material-symbols-rounded">auto_awesome</span></button>
       </div>
+    </div>
+    <div id="inspector-result"></div>
+  </div>
 
-      <div class="card pad stack">
-        <div class="row-between">
-          <div>
-            <h3 class="cardtitle">Results</h3>
-            <p style="font-size:.75rem;color:var(--ink-2);margin:.15rem 0 0;" id="paste-summary">Awaiting input…</p>
-          </div>
-          <div class="row" style="gap:.4rem;">
-            <button onclick="copyPasteTable(event)" class="iconbtn focusable" id="btn-copy" disabled title="Copy visible rows" aria-label="Copy visible rows"><span class="material-symbols-rounded" style="font-size:1.15rem;">content_copy</span></button>
-            <button onclick="exportPaste('xlsx')" class="btn btn-soft btn-sm focusable" id="btn-xlsx" disabled title="Export visible rows to Excel"><span class="material-symbols-rounded" style="font-size:1rem;">download</span>Excel</button>
-            <button onclick="exportPaste('csv')" class="btn btn-ghost btn-sm focusable" id="btn-csv" disabled title="Export visible rows to CSV"><span class="material-symbols-rounded" style="font-size:1rem;">csv</span>CSV</button>
-          </div>
-        </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;">
-          <div class="kpi"><div class="lbl">Total</div><div class="num disp" id="kpi-total">0</div></div>
-          <div class="kpi kpi-mint"><div class="lbl">Valid</div><div class="num disp" style="color:var(--mint);" id="kpi-valid">0</div></div>
-          <div class="kpi kpi-scarlet"><div class="lbl">Errors</div><div class="num disp" style="color:var(--scarlet);" id="kpi-errors">0</div></div>
-        </div>
-        <div class="row" style="flex-wrap:wrap;gap:.5rem;">
-          <div class="pillrow">
-            <button class="pill active focusable" data-filter="all" onclick="setFilter('all')">All</button>
-            <button class="pill focusable" data-filter="valid" onclick="setFilter('valid')">Valid</button>
-            <button class="pill focusable" data-filter="error" onclick="setFilter('error')">Errors</button>
-          </div>
-          <div class="field-clearable" style="flex:1;min-width:130px;">
-            <input type="text" id="search-input" placeholder="Search…" class="field-input focusable" style="width:100%;padding:.5rem 2.1rem .5rem .8rem;font-size:.78rem;" oninput="renderPasteTable()">
-            <button type="button" class="field-clear-btn" tabindex="-1" onclick="clearFieldAndRefresh('search-input')" aria-label="Clear search"><span class="material-symbols-rounded">cancel</span></button>
-          </div>
-        </div>
-        <div class="scrollx" style="border-radius:16px;border:1px solid var(--edge);">
-          <div style="max-height:400px;overflow-y:auto;">
-            <table class="dtable">
-              <thead><tr><th></th><th>National ID</th><th>Status</th><th>Gender</th><th>Birth Date</th><th>Age</th><th>Retire Age</th><th>Retirement Date</th><th>Notes / Error</th></tr></thead>
-              <tbody id="paste-tbody"><tr><td colspan="9" style="text-align:center;padding:3rem 1rem;color:var(--ink-3);">Paste IDs on the left and click Process.</td></tr></tbody>
-            </table>
-          </div>
-        </div>
+  <div id="subtab-batch" class="subtabpanel hide stack">
+    <div class="card pad stack">
+      <div class="row-between">
+        <label class="disp" data-i18n="batch_label" style="font-weight:640;font-size:.95rem;">Paste ID list for deep analytics</label>
+        <span class="chip" id="batch-count">0 detected</span>
       </div>
+      <textarea id="batch-input" rows="8" placeholder="29805121401234&#10;30101011509876&#10;27510202100001" class="field-area focusable" style="font-size:.78rem;" oninput="updateBatchCount()"></textarea>
+      <div class="row" style="flex-wrap:wrap;gap:.5rem;">
+        <button onclick="batchPasteFromClipboard()" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">content_paste_go</span><span data-i18n="btn_paste">Paste</span></button>
+        <button onclick="batchLoadSample()" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">auto_awesome</span><span data-i18n="btn_sample">Sample</span></button>
+        <button onclick="batchClear()" class="btn btn-ghost btn-sm focusable" style="margin-inline-start:auto;"><span class="material-symbols-rounded" style="font-size:1rem;">delete</span><span data-i18n="btn_clear">Clear</span></button>
+      </div>
+      <button onclick="processBatch()" id="btn-run-analytics" class="btn btn-primary btn-block focusable"><span class="material-symbols-rounded" style="font-size:1.1rem;">play_arrow</span><span data-i18n="btn_run_analytics">Run Analytics</span></button>
+    </div>
+    <div id="batch-result">
+      <div class="card pad" data-i18n="batch_empty" style="text-align:center;padding:3rem 1.5rem;color:var(--ink-3);font-size:.85rem;">Paste a list of IDs above and run analytics to see the full breakdown here.</div>
     </div>
   </div>
 
@@ -535,15 +522,15 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
       <div class="stack" style="align-items:center;">
         <div class="emptybox"><span class="material-symbols-rounded" style="font-size:1.9rem;">cloud_upload</span></div>
         <div>
-          <h3 class="cardtitle">Drop a file or tap to browse</h3>
-          <p style="font-size:.78rem;color:var(--ink-2);margin:.25rem 0 0;">.xlsx, .xls, or .csv</p>
+          <h3 class="cardtitle" data-i18n="upload_drop_title">Drop a file or tap to browse</h3>
+          <p style="font-size:.78rem;color:var(--ink-2);margin:.25rem 0 0;" data-i18n="upload_drop_types">.xlsx, .xls, or .csv</p>
         </div>
       </div>
     </div>
     <div id="upload-mapping" class="card pad hide" style="margin-top:1.1rem;">
       <div style="display:grid;grid-template-columns:1fr;gap:.9rem;">
         <div>
-          <label class="eyebrow">National ID column</label>
+          <label class="eyebrow" data-i18n="upload_col_label">National ID column</label>
           <select id="column-select" class="field-select focusable"></select>
         </div>
         <div class="row-between" style="background:var(--milk);border-radius:14px;padding:.7rem .9rem;">
@@ -552,18 +539,18 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
             <p style="font-size:.7rem;color:var(--ink-2);margin:.1rem 0 0;" id="file-rows-text">0 rows</p>
           </div>
         </div>
-        <button onclick="processUploadedFile()" id="btn-extract-process" class="btn btn-primary btn-block focusable"><span class="material-symbols-rounded" style="font-size:1.1rem;">auto_fix_high</span>Extract &amp; Process</button>
+        <button onclick="processUploadedFile()" id="btn-extract-process" class="btn btn-primary btn-block focusable"><span class="material-symbols-rounded" style="font-size:1.1rem;">auto_fix_high</span><span data-i18n="btn_extract">Extract &amp; Process</span></button>
       </div>
     </div>
     <div id="upload-results" class="card pad hide stack" style="margin-top:1.1rem;">
       <div class="row-between">
         <div>
-          <h3 class="cardtitle">File results</h3>
+          <h3 class="cardtitle" data-i18n="upload_results_title">File results</h3>
           <p style="font-size:.75rem;color:var(--ink-2);margin:.15rem 0 0;" id="upload-summary">0 rows</p>
         </div>
         <div class="row" style="gap:.4rem;">
-          <button onclick="downloadUpload('xlsx')" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">download</span>Excel</button>
-          <button onclick="downloadUpload('csv')" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">csv</span>CSV</button>
+          <button onclick="downloadUpload('xlsx')" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">download</span><span data-i18n="btn_excel">Excel</span></button>
+          <button onclick="downloadUpload('csv')" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">csv</span><span data-i18n="btn_csv">CSV</span></button>
         </div>
       </div>
       <div class="scrollx" style="border-radius:16px;border:1px solid var(--edge);">
@@ -574,76 +561,35 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
     </div>
   </div>
 </section>
-
-<section id="tab-inspector" class="tabpanel hide">
-  <div class="row-between" style="margin-bottom:1rem;">
-    <div>
-      <h1 class="pagetitle">ID Inspector</h1>
-    </div>
-    <div class="pillrow">
-      <button class="pill active focusable" data-mode="single" onclick="setInspectorMode('single')"><span class="material-symbols-rounded" style="font-size:1rem;">fingerprint</span>Single</button>
-      <button class="pill focusable" data-mode="batch" onclick="setInspectorMode('batch')"><span class="material-symbols-rounded" style="font-size:1rem;">table_rows</span>Batch</button>
-    </div>
-  </div>
-
-  <div id="inspector-single" class="stack">
-    <div class="card pad stack">
-      <div class="row" style="gap:.6rem;">
-        <div class="field-clearable" style="flex:1;">
-          <input type="text" id="inspector-input" placeholder="Enter a 14-digit national ID…" class="field-input mono focusable" style="width:100%;padding-right:2.3rem;font-size:.95rem;letter-spacing:.02em;" oninput="inspectID()">
-          <button type="button" class="field-clear-btn" tabindex="-1" onclick="clearFieldAndRefresh('inspector-input')" aria-label="Clear ID"><span class="material-symbols-rounded">cancel</span></button>
-        </div>
-        <button onclick="pasteIntoInspector()" class="iconbtn focusable" title="Paste" aria-label="Paste from clipboard"><span class="material-symbols-rounded">content_paste_go</span></button>
-        <button onclick="loadSampleIntoInspector()" class="iconbtn focusable" title="Sample ID" aria-label="Load a sample ID"><span class="material-symbols-rounded">auto_awesome</span></button>
-      </div>
-    </div>
-    <div id="inspector-result"></div>
-  </div>
-
-  <div id="inspector-batch" class="stack hide">
-    <div class="card pad stack">
-      <div class="row-between">
-        <label class="disp" style="font-weight:640;font-size:.95rem;">Paste IDs for deep analytics</label>
-        <span class="chip" id="inspector-batch-count">0 detected</span>
-      </div>
-      <textarea id="inspector-batch-input" rows="8" placeholder="One ID per line…" class="field-area focusable" style="font-size:.78rem;" oninput="updateInspectorBatchCount()"></textarea>
-      <div class="row" style="flex-wrap:wrap;gap:.5rem;">
-        <button onclick="processInspectorBatch()" id="btn-run-analytics" class="btn btn-primary focusable"><span class="material-symbols-rounded" style="font-size:1.1rem;">play_arrow</span>Run Analytics</button>
-        <button onclick="loadSampleIntoInspectorBatch()" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">auto_awesome</span>Sample</button>
-      </div>
-    </div>
-    <div id="inspector-batch-result"></div>
-  </div>
-</section>
 <section id="tab-formula" class="tabpanel hide">
   <div style="margin-bottom:1rem;">
-    <h1 class="pagetitle">Excel / Sheets Formulas</h1>
+    <h1 class="pagetitle" data-i18n="formula_title">Excel / Sheets Formulas</h1>
   </div>
 
   <div class="card pad stack" style="margin-bottom:1.1rem;">
     <div class="row-between">
-      <label class="disp" style="font-weight:640;font-size:.9rem;">Reference mode</label>
+      <label class="disp" data-i18n="reference_mode" style="font-weight:640;font-size:.9rem;">Reference mode</label>
       <div class="pillrow">
-        <button class="pill active focusable" id="mode-btn-table" onclick="setFormulaMode('table')">Table column</button>
-        <button class="pill focusable" id="mode-btn-range" onclick="setFormulaMode('range')">Single cell</button>
+        <button class="pill active focusable" id="mode-btn-table" onclick="setFormulaMode('table')" data-i18n="mode_table">Table column</button>
+        <button class="pill focusable" id="mode-btn-range" onclick="setFormulaMode('range')" data-i18n="mode_cell">Single cell</button>
       </div>
     </div>
     <div id="inputs-table-mode" style="display:grid;grid-template-columns:1fr;gap:.7rem;">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
         <div>
-          <label class="eyebrow">Table name</label>
-          <input id="cfg-table-name" class="field-input focusable" style="font-size:.8rem;" value="" placeholder="Table1" oninput="updateFormulas()">
+          <label class="eyebrow" data-i18n="lbl_table_name">Table name</label>
+          <input id="cfg-table-name" class="field-input focusable" style="font-size:.8rem;" value="" data-i18n-ph="ph_table1" placeholder="Table1" oninput="updateFormulas()">
         </div>
         <div>
-          <label class="eyebrow">ID column name</label>
-          <input id="cfg-col-id" class="field-input focusable" style="font-size:.8rem;" value="" placeholder="National ID" oninput="updateFormulas()">
+          <label class="eyebrow" data-i18n="lbl_col_id_name">ID column name</label>
+          <input id="cfg-col-id" class="field-input focusable" style="font-size:.8rem;" value="" data-i18n-ph="ph_national_id" placeholder="National ID" oninput="updateFormulas()">
         </div>
       </div>
     </div>
     <div id="inputs-range-mode" class="hide" style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
       <div>
-        <label class="eyebrow">ID cell reference</label>
-        <input id="cfg-cell-id" class="field-input mono focusable" style="font-size:.8rem;" value="" placeholder="A2" oninput="updateFormulas()">
+        <label class="eyebrow" data-i18n="lbl_cell_ref">ID cell reference</label>
+        <input id="cfg-cell-id" class="field-input mono focusable" style="font-size:.8rem;" value="" data-i18n-ph="ph_a2" placeholder="A2" oninput="updateFormulas()">
       </div>
     </div>
   </div>
@@ -651,42 +597,42 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
   <div class="stack">
     <div class="card pad stack">
       <div class="row-between">
-        <div class="row" style="gap:.5rem;"><span class="chip">1</span><h3 class="cardtitle">Birth date</h3></div>
-        <button onclick="copyFormula('code-birth',event)" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>Copy</button>
+        <div class="row" style="gap:.5rem;"><span class="chip">1</span><h3 class="cardtitle" data-i18n="card_birth">Birth date</h3></div>
+        <button onclick="copyFormula('code-birth',event)" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span><span data-i18n="btn_copy">Copy</span></button>
       </div>
       <div class="destrow">
         <span class="material-symbols-rounded" style="font-size:1rem;color:var(--ink-3);">arrow_forward</span>
-        <label class="eyebrow" style="white-space:nowrap;">Paste in</label>
+        <label class="eyebrow" data-i18n="lbl_paste_in" style="white-space:nowrap;">Paste in</label>
         <input id="dest-birth" class="field-input mono focusable dest-input" oninput="onDestInput('birth')">
-        <button class="iconbtn focusable dest-reset" title="Auto-assign location" aria-label="Auto-assign birth date destination cell" onclick="resetDest('birth')"><span class="material-symbols-rounded" style="font-size:1.05rem;">sync</span></button>
+        <button class="iconbtn focusable dest-reset" data-i18n-title="auto_assign_title" title="Auto-assign location" aria-label="Auto-assign birth date destination cell" onclick="resetDest('birth')"><span class="material-symbols-rounded" style="font-size:1.05rem;">sync</span></button>
       </div>
       <pre class="codeblock" id="code-birth"></pre>
     </div>
 
     <div class="card pad stack">
       <div class="row-between">
-        <div class="row" style="gap:.5rem;"><span class="chip">2</span><h3 class="cardtitle">Gender</h3></div>
-        <button onclick="copyFormula('code-gender',event)" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>Copy</button>
+        <div class="row" style="gap:.5rem;"><span class="chip">2</span><h3 class="cardtitle" data-i18n="card_gender">Gender</h3></div>
+        <button onclick="copyFormula('code-gender',event)" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span><span data-i18n="btn_copy">Copy</span></button>
       </div>
       <div class="destrow">
         <span class="material-symbols-rounded" style="font-size:1rem;color:var(--ink-3);">arrow_forward</span>
-        <label class="eyebrow" style="white-space:nowrap;">Paste in</label>
+        <label class="eyebrow" data-i18n="lbl_paste_in" style="white-space:nowrap;">Paste in</label>
         <input id="dest-gender" class="field-input mono focusable dest-input" oninput="onDestInput('gender')">
-        <button class="iconbtn focusable dest-reset" title="Auto-assign location" aria-label="Auto-assign gender destination cell" onclick="resetDest('gender')"><span class="material-symbols-rounded" style="font-size:1.05rem;">sync</span></button>
+        <button class="iconbtn focusable dest-reset" data-i18n-title="auto_assign_title" title="Auto-assign location" aria-label="Auto-assign gender destination cell" onclick="resetDest('gender')"><span class="material-symbols-rounded" style="font-size:1.05rem;">sync</span></button>
       </div>
       <pre class="codeblock" id="code-gender"></pre>
     </div>
 
     <div class="card pad stack">
       <div class="row-between">
-        <div class="row" style="gap:.5rem;"><span class="chip">3</span><h3 class="cardtitle">Retirement age &amp; date</h3></div>
-        <button onclick="copyFormula('code-retirement',event)" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>Copy</button>
+        <div class="row" style="gap:.5rem;"><span class="chip">3</span><h3 class="cardtitle" data-i18n="card_retirement">Retirement age &amp; date</h3></div>
+        <button onclick="copyFormula('code-retirement',event)" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span><span data-i18n="btn_copy">Copy</span></button>
       </div>
       <div class="destrow">
         <span class="material-symbols-rounded" style="font-size:1rem;color:var(--ink-3);">arrow_forward</span>
-        <label class="eyebrow" style="white-space:nowrap;">Paste in</label>
+        <label class="eyebrow" data-i18n="lbl_paste_in" style="white-space:nowrap;">Paste in</label>
         <input id="dest-retirement" class="field-input mono focusable dest-input" oninput="onDestInput('retirement')">
-        <button class="iconbtn focusable dest-reset" title="Auto-assign location" aria-label="Auto-assign retirement destination cell" onclick="resetDest('retirement')"><span class="material-symbols-rounded" style="font-size:1.05rem;">sync</span></button>
+        <button class="iconbtn focusable dest-reset" data-i18n-title="auto_assign_title" title="Auto-assign location" aria-label="Auto-assign retirement destination cell" onclick="resetDest('retirement')"><span class="material-symbols-rounded" style="font-size:1.05rem;">sync</span></button>
       </div>
       <pre class="codeblock" id="code-retirement"></pre>
     </div>
@@ -695,26 +641,26 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
 <section id="tab-datetools" class="tabpanel hide">
   <div class="row-between" style="margin-bottom:1rem;">
     <div>
-      <h1 class="pagetitle">Date Tools</h1>
+      <h1 class="pagetitle" data-i18n="dates_title">Date Tools</h1>
     </div>
   </div>
   <div class="scrollx" style="margin-bottom:1.1rem;">
     <div class="pillrow">
-      <button class="pill active focusable" data-datesub="between" onclick="switchDateSub('between')"><span class="material-symbols-rounded" style="font-size:1rem;">date_range</span>Between Dates</button>
-      <button class="pill focusable" data-datesub="age" onclick="switchDateSub('age')"><span class="material-symbols-rounded" style="font-size:1rem;">cake</span>Age</button>
-      <button class="pill focusable" data-datesub="weekday" onclick="switchDateSub('weekday')"><span class="material-symbols-rounded" style="font-size:1rem;">view_week</span>Weekday</button>
-      <button class="pill focusable" data-datesub="leapyears" onclick="switchDateSub('leapyears')"><span class="material-symbols-rounded" style="font-size:1rem;">event_repeat</span>Leap Years</button>
+      <button class="pill active focusable" data-datesub="between" onclick="switchDateSub('between')"><span class="material-symbols-rounded" style="font-size:1rem;">date_range</span><span data-i18n="sub_between">Between Dates</span></button>
+      <button class="pill focusable" data-datesub="age" onclick="switchDateSub('age')"><span class="material-symbols-rounded" style="font-size:1rem;">cake</span><span data-i18n="sub_age">Age</span></button>
+      <button class="pill focusable" data-datesub="weekday" onclick="switchDateSub('weekday')"><span class="material-symbols-rounded" style="font-size:1rem;">view_week</span><span data-i18n="sub_weekday">Weekday</span></button>
+      <button class="pill focusable" data-datesub="leapyears" onclick="switchDateSub('leapyears')"><span class="material-symbols-rounded" style="font-size:1rem;">event_repeat</span><span data-i18n="sub_leap">Leap Years</span></button>
     </div>
   </div>
 
   <div id="datesub-between" class="datesubpanel grid2">
     <div class="card pad stack">
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
-        <div><label class="eyebrow" style="display:block;margin-bottom:.35rem;">Start date</label><input type="date" id="dt-start" class="field-input focusable" oninput="computeBetweenDates()"></div>
-        <div><label class="eyebrow" style="display:block;margin-bottom:.35rem;">End date</label><input type="date" id="dt-end" class="field-input focusable" oninput="computeBetweenDates()"></div>
+        <div><label class="eyebrow" data-i18n="lbl_start_date" style="display:block;margin-bottom:.35rem;">Start date</label><input type="date" id="dt-start" class="field-input focusable" oninput="computeBetweenDates()"></div>
+        <div><label class="eyebrow" data-i18n="lbl_end_date" style="display:block;margin-bottom:.35rem;">End date</label><input type="date" id="dt-end" class="field-input focusable" oninput="computeBetweenDates()"></div>
       </div>
       <div>
-        <label class="eyebrow" style="display:block;margin-bottom:.4rem;">Working days</label>
+        <label class="eyebrow" data-i18n="lbl_working_days" style="display:block;margin-bottom:.4rem;">Working days</label>
         <div class="row" id="workday-picker" style="gap:.35rem;flex-wrap:wrap;"></div>
       </div>
     </div>
@@ -723,15 +669,15 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
 
   <div id="datesub-age" class="datesubpanel grid2 hide">
     <div class="card pad stack">
-      <div><label class="eyebrow" style="display:block;margin-bottom:.35rem;">Birth date</label><input type="date" id="dt-birth" class="field-input focusable" oninput="computeAge()"></div>
-      <div><label class="eyebrow" style="display:block;margin-bottom:.35rem;">As of (optional)</label><input type="date" id="dt-asof" class="field-input focusable" oninput="computeAge()"></div>
+      <div><label class="eyebrow" data-i18n="lbl_birth_date" style="display:block;margin-bottom:.35rem;">Birth date</label><input type="date" id="dt-birth" class="field-input focusable" oninput="computeAge()"></div>
+      <div><label class="eyebrow" data-i18n="lbl_asof" style="display:block;margin-bottom:.35rem;">As of (optional)</label><input type="date" id="dt-asof" class="field-input focusable" oninput="computeAge()"></div>
     </div>
     <div id="age-result" class="card pad"></div>
   </div>
 
   <div id="datesub-weekday" class="datesubpanel grid2 hide">
     <div class="card pad stack">
-      <div><label class="eyebrow" style="display:block;margin-bottom:.35rem;">Any date</label><input type="date" id="dt-weekday" class="field-input focusable" oninput="computeWeekday()"></div>
+      <div><label class="eyebrow" data-i18n="lbl_any_date" style="display:block;margin-bottom:.35rem;">Any date</label><input type="date" id="dt-weekday" class="field-input focusable" oninput="computeWeekday()"></div>
     </div>
     <div id="weekday-result" class="card pad"></div>
   </div>
@@ -739,12 +685,12 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
   <div id="datesub-leapyears" class="datesubpanel stack hide">
     <div class="grid2">
       <div class="card pad stack">
-        <label class="eyebrow" style="display:block;margin-bottom:.35rem;">Single year</label>
-        <input type="number" id="ly-year" placeholder="e.g. 2028" class="field-input focusable" oninput="computeLeapSingle()">
+        <label class="eyebrow" data-i18n="lbl_single_year" style="display:block;margin-bottom:.35rem;">Single year</label>
+        <input type="number" id="ly-year" placeholder="e.g. 2028" data-i18n-ph="ph_year_eg" class="field-input focusable" oninput="computeLeapSingle()">
         <div id="leap-single-result"></div>
       </div>
       <div class="card pad stack">
-        <label class="eyebrow" style="display:block;margin-bottom:.35rem;">Year range</label>
+        <label class="eyebrow" data-i18n="lbl_year_range" style="display:block;margin-bottom:.35rem;">Year range</label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">
           <input type="number" id="ly-from" placeholder="2000" class="field-input focusable" oninput="computeLeapRange()">
           <input type="number" id="ly-to" placeholder="2050" class="field-input focusable" oninput="computeLeapRange()">
@@ -755,31 +701,146 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
   </div>
 </section>
 
+<section id="tab-reference" class="tabpanel hide">
+  <div class="row-between" style="margin-bottom:1rem;">
+    <div>
+      <h1 class="pagetitle" data-i18n="reference_title">Reference</h1>
+    </div>
+  </div>
+  <div class="scrollx" style="margin-bottom:1.1rem;">
+    <div class="pillrow">
+      <button class="pill active focusable" data-refsub="structure" onclick="switchRefSub('structure')"><span class="material-symbols-rounded" style="font-size:1rem;">fingerprint</span><span data-i18n="ref_structure">ID Structure</span></button>
+      <button class="pill focusable" data-refsub="governorates" onclick="switchRefSub('governorates')"><span class="material-symbols-rounded" style="font-size:1rem;">public</span><span data-i18n="ref_gov">Governorates</span></button>
+      <button class="pill focusable" data-refsub="law" onclick="switchRefSub('law')"><span class="material-symbols-rounded" style="font-size:1rem;">gavel</span><span data-i18n="ref_law">Retirement Law</span></button>
+    </div>
+  </div>
+
+  <div id="refsub-structure" class="refsubpanel stack">
+    <div class="card pad stack">
+      <h3 class="cardtitle" data-i18n="struct_title">14 digits, six meanings</h3>
+      <p style="font-size:.82rem;color:var(--ink-2);margin:0;" data-i18n="struct_desc">Every Egyptian national ID packs birth date, sex, and place of registration into a single number. Here's how the positions break down.</p>
+    </div>
+    <div class="grid2">
+      <div class="card pad stack">
+        <div class="row" style="gap:.55rem;align-items:flex-start;">
+          <span class="chip chip-accent" style="flex-shrink:0;">1</span>
+          <div>
+            <div style="font-weight:650;font-size:.9rem;" data-i18n="struct1_t">Century digit</div>
+            <p style="font-size:.78rem;color:var(--ink-2);margin:.25rem 0 0;" data-i18n="struct1_d">Digit 1. 2 means born in the 1900s, 3 means born in the 2000s.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card pad stack">
+        <div class="row" style="gap:.55rem;align-items:flex-start;">
+          <span class="chip chip-accent" style="flex-shrink:0;">2</span>
+          <div>
+            <div style="font-weight:650;font-size:.9rem;" data-i18n="struct2_t">Birth date</div>
+            <p style="font-size:.78rem;color:var(--ink-2);margin:.25rem 0 0;" data-i18n="struct2_d">Digits 2–7, as YY MM DD. Combined with the century digit this gives the full birth date.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card pad stack">
+        <div class="row" style="gap:.55rem;align-items:flex-start;">
+          <span class="chip chip-accent" style="flex-shrink:0;">3</span>
+          <div>
+            <div style="font-weight:650;font-size:.9rem;" data-i18n="struct3_t">Governorate code</div>
+            <p style="font-size:.78rem;color:var(--ink-2);margin:.25rem 0 0;" data-i18n="struct3_d">Digits 8–9. Identifies where the ID was first registered — see the Governorates tab for the full list.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card pad stack">
+        <div class="row" style="gap:.55rem;align-items:flex-start;">
+          <span class="chip chip-accent" style="flex-shrink:0;">4</span>
+          <div>
+            <div style="font-weight:650;font-size:.9rem;" data-i18n="struct4_t">Serial number</div>
+            <p style="font-size:.78rem;color:var(--ink-2);margin:.25rem 0 0;" data-i18n="struct4_d">Digits 10–12. A sequential registration number for that birth date and governorate.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card pad stack">
+        <div class="row" style="gap:.55rem;align-items:flex-start;">
+          <span class="chip chip-accent" style="flex-shrink:0;">5</span>
+          <div>
+            <div style="font-weight:650;font-size:.9rem;" data-i18n="struct5_t">Gender digit</div>
+            <p style="font-size:.78rem;color:var(--ink-2);margin:.25rem 0 0;" data-i18n="struct5_d">Digit 13. Odd means Male, even means Female.</p>
+          </div>
+        </div>
+      </div>
+      <div class="card pad stack">
+        <div class="row" style="gap:.55rem;align-items:flex-start;">
+          <span class="chip chip-accent" style="flex-shrink:0;">6</span>
+          <div>
+            <div style="font-weight:650;font-size:.9rem;" data-i18n="struct6_t">Check digit</div>
+            <p style="font-size:.78rem;color:var(--ink-2);margin:.25rem 0 0;" data-i18n="struct6_d">Digit 14. A verification digit issued with the card; this tool records it but doesn't independently validate it.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="refsub-governorates" class="refsubpanel hide stack">
+    <div class="card pad stack">
+      <div class="row-between">
+        <label class="disp" data-i18n="gov_label" style="font-weight:640;font-size:.95rem;">Governorate codes</label>
+        <span class="chip" id="gov-count">26 total</span>
+      </div>
+      <div class="field-clearable">
+        <input type="text" id="gov-search" data-i18n-ph="gov_search_ph" placeholder="Search by code or name…" class="field-input focusable" style="width:100%;padding-inline-end:2.3rem;font-size:.82rem;" oninput="renderGovTable()">
+        <button type="button" class="field-clear-btn" tabindex="-1" onclick="clearFieldAndRefresh('gov-search')" aria-label="Clear search"><span class="material-symbols-rounded">cancel</span></button>
+      </div>
+    </div>
+    <div class="scrollx" style="border-radius:16px;border:1px solid var(--edge);">
+      <div style="max-height:460px;overflow-y:auto;">
+        <table class="dtable">
+          <thead><tr><th></th><th data-i18n="gov_col_code">Code</th><th data-i18n="gov_col_name">Governorate</th></tr></thead>
+          <tbody id="gov-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <div id="refsub-law" class="refsubpanel hide stack">
+    <div class="card pad stack">
+      <div class="row" style="gap:.5rem;align-items:center;">
+        <span class="chip chip-accent" data-i18n="law_badge">Law 148/2019</span>
+        <h3 class="cardtitle" style="margin:0;" data-i18n="law_title">Egypt's phased retirement age increase</h3>
+      </div>
+      <p style="font-size:.82rem;color:var(--ink-2);margin:0;" data-i18n="law_desc">The standard pension age of 60 steps up gradually until it reaches 65. The age that applies to a given person depends on their birth date.</p>
+    </div>
+    <div class="scrollx" style="border-radius:16px;border:1px solid var(--edge);">
+      <table class="dtable">
+        <thead><tr><th data-i18n="law_col_from">Applies from</th><th data-i18n="law_col_age">Retirement age</th></tr></thead>
+        <tbody id="law-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <nav class="bottomnav mobile-only">
-  <button class="navitem active" data-tab="processor" onclick="switchTab('processor')"><span class="material-symbols-rounded">table_rows</span><span class="lbl">Processor</span></button>
-  <button class="navitem" data-tab="inspector" onclick="switchTab('inspector')"><span class="material-symbols-rounded">fingerprint</span><span class="lbl">Inspector</span></button>
-  <button class="navitem" data-tab="formula" onclick="switchTab('formula')"><span class="material-symbols-rounded">functions</span><span class="lbl">Formulas</span></button>
-  <button class="navitem" data-tab="datetools" onclick="switchTab('datetools')"><span class="material-symbols-rounded">calendar_month</span><span class="lbl">Dates</span></button>
+  <button class="navitem active" data-tab="idtools" onclick="switchTab('idtools')"><span class="material-symbols-rounded">fingerprint</span><span class="lbl" data-i18n="nav_idtools">ID Tools</span></button>
+  <button class="navitem" data-tab="formula" onclick="switchTab('formula')"><span class="material-symbols-rounded">functions</span><span class="lbl" data-i18n="nav_formula">Formulas</span></button>
+  <button class="navitem" data-tab="datetools" onclick="switchTab('datetools')"><span class="material-symbols-rounded">calendar_month</span><span class="lbl" data-i18n="nav_dates">Dates</span></button>
+  <button class="navitem" data-tab="reference" onclick="switchTab('reference')"><span class="material-symbols-rounded">public</span><span class="lbl" data-i18n="nav_reference">Reference</span></button>
   <button class="navitem" onclick="openCmdk()"><span class="material-symbols-rounded">search</span><span class="lbl">Search</span></button>
 </nav>
 
 <div class="cmdk-overlay" id="cmdk-overlay" onclick="if(event.target===this)closeCmdk()">
   <div class="cmdk-box">
-    <input class="cmdk-input" id="cmdk-input" placeholder="Type a command…" oninput="renderCmdkResults(this.value)">
+    <input class="cmdk-input" id="cmdk-input" data-i18n-ph="cmdk_ph" placeholder="Type a command…" oninput="renderCmdkResults(this.value)">
     <div class="cmdk-list" id="cmdk-list"></div>
-    <div class="cmdk-hint-bar"><span><kbd>&uarr;</kbd><kbd>&darr;</kbd>Navigate</span><span><kbd>&crarr;</kbd>Select</span><span><kbd>Esc</kbd>Close</span></div>
+    <div class="cmdk-hint-bar"><span><kbd>&uarr;</kbd><kbd>&darr;</kbd><span data-i18n="cmdk_nav">Navigate</span></span><span><kbd>&crarr;</kbd><span data-i18n="cmdk_select">Select</span></span><span><kbd>Esc</kbd><span data-i18n="cmdk_close">Close</span></span></div>
   </div>
 </div>
 
 <div class="cmdk-overlay" id="confirm-overlay" onclick="if(event.target===this)closeConfirm()">
   <div class="cmdk-box pad stack" style="max-width:24rem;">
-    <h3 class="cardtitle" id="confirm-title">Are you sure?</h3>
-    <p id="confirm-message" style="font-size:.82rem;color:var(--ink-2);margin:0;">This action cannot be undone.</p>
+    <h3 class="cardtitle" id="confirm-title" data-i18n="confirm_title">Are you sure?</h3>
+    <p id="confirm-message" style="font-size:.82rem;color:var(--ink-2);margin:0;" data-i18n="confirm_message">This action cannot be undone.</p>
     <div class="row" style="justify-content:flex-end;gap:.5rem;">
-      <button class="btn btn-ghost btn-sm focusable" onclick="closeConfirm()">Cancel</button>
-      <button class="btn btn-primary btn-sm focusable" id="confirm-action-btn">Confirm</button>
+      <button class="btn btn-ghost btn-sm focusable" onclick="closeConfirm()" data-i18n="btn_cancel">Cancel</button>
+      <button class="btn btn-primary btn-sm focusable" id="confirm-action-btn" data-i18n="btn_confirm">Confirm</button>
     </div>
   </div>
 </div>
@@ -787,32 +848,32 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
 <div class="cmdk-overlay" id="settings-overlay" onclick="if(event.target===this)closeSettings()">
   <div class="cmdk-box pad" style="max-width:30rem;max-height:82vh;overflow-y:auto;">
     <div class="row-between" style="margin-bottom:.3rem;">
-      <h3 class="cardtitle">Settings</h3>
+      <h3 class="cardtitle" data-i18n="settings_title">Settings</h3>
       <button class="iconbtn focusable" onclick="closeSettings()" aria-label="Close settings">
         <span class="material-symbols-rounded" style="font-size:1.05rem;">close</span>
       </button>
     </div>
 
     <div class="settings-section">
-      <span class="eyebrow">Theme</span>
+      <span class="eyebrow" data-i18n="settings_theme">Theme</span>
       <div class="row" id="theme-picker" style="gap:.4rem;">
-        <button type="button" class="pill focusable" data-theme="system" onclick="setThemePref('system')">System</button>
-        <button type="button" class="pill focusable" data-theme="light" onclick="setThemePref('light')">Light</button>
-        <button type="button" class="pill focusable" data-theme="dark" onclick="setThemePref('dark')">Dark</button>
+        <button type="button" class="pill focusable" data-theme="system" onclick="setThemePref('system')" data-i18n="theme_system">System</button>
+        <button type="button" class="pill focusable" data-theme="light" onclick="setThemePref('light')" data-i18n="theme_light">Light</button>
+        <button type="button" class="pill focusable" data-theme="dark" onclick="setThemePref('dark')" data-i18n="theme_dark">Dark</button>
       </div>
     </div>
 
     <div class="settings-section">
-      <span class="eyebrow">Surface style</span>
+      <span class="eyebrow" data-i18n="settings_surface">Surface style</span>
       <div class="style-grid" id="style-picker"></div>
     </div>
 
     <div class="settings-section">
-      <span class="eyebrow">Typeface</span>
+      <span class="eyebrow" data-i18n="settings_typeface">Typeface</span>
       <div id="font-picker"></div>
     </div>
 
-    <p style="font-size:.7rem;color:var(--ink-3);margin:1rem 0 0;">Saved to this browser only — nothing is sent anywhere.</p>
+    <p style="font-size:.7rem;color:var(--ink-3);margin:1rem 0 0;" data-i18n="settings_footer">Saved to this browser only — nothing is sent anywhere.</p>
   </div>
 </div>
 
@@ -851,6 +912,8 @@ const ICON_DEFS={
   man:'<circle cx="10" cy="14" r="6"/><path d="M14.6 9.4L20 4M20 4h-4.4M20 4v4.4"/>',
   woman:'<circle cx="12" cy="9" r="6"/><path d="M12 15v6.5M8.8 18.6h6.4"/>',
   play_arrow:'<path d="M7 4.5l13 7.5-13 7.5v-15z" fill="currentColor" stroke="none"/>',
+  public:'<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 4 5.3 4 8.5s-1.4 6.1-4 8.5c-2.6-2.4-4-5.3-4-8.5s1.4-6.1 4-8.5z"/>',
+  gavel:'<path d="M8.5 3.5l6 6-2.3 2.3-6-6z"/><path d="M4.7 10.6l3.6-3.6 6.7 6.7-3.6 3.6z"/><path d="M13 13l7 7"/><path d="M3.5 20.5h9"/>',
   science:'<path d="M10 3h4"/><path d="M10.5 3v5.3l-5 8.7a1.8 1.8 0 001.6 2.7h9.8a1.8 1.8 0 001.6-2.7l-5-8.7V3"/><path d="M8.3 15h7.4"/>',
   search:'<circle cx="10.8" cy="10.8" r="6.8"/><path d="M20 20l-4.2-4.2"/>',
   sync:'<path d="M4.5 12a7.5 7.5 0 0113-5M17 3.7v4.3h-4.3"/><path d="M19.5 12a7.5 7.5 0 01-13 5M7 20.3V16h4.3"/>',
@@ -884,7 +947,236 @@ new MutationObserver(muts=>{
   });
 }).observe(document.body,{childList:true,subtree:true,characterData:true});
 
+let currentLang='en';
+const I18N={
+en:{
+  brand_subtitle:'National ID & Retirement Toolkit',
+  nav_idtools:'ID Tools', nav_formula:'Formulas', nav_dates:'Dates', nav_reference:'Reference',
+  cmdk_title:'Command palette', settings_title:'Settings', theme_title:'Toggle light or dark theme', lang_title:'Switch to Arabic',
+  idtools_title:'ID Tools', sub_single:'Single', sub_batch:'Batch', sub_upload:'Upload',
+  single_placeholder:'Enter a 14-digit national ID…', paste_title:'Paste', sample_title:'Sample ID',
+  batch_label:'Paste ID list for deep analytics', batch_count:n=>`${n} detected`,
+  btn_paste:'Paste', btn_sample:'Sample', btn_clear:'Clear', btn_run_analytics:'Run Analytics',
+  batch_empty:'Paste a list of IDs above and run analytics to see the full breakdown here.',
+  results_title:'Results', results_summary:(t,v,e)=>`${t} total IDs processed (${v} valid, ${e} errors)`,
+  kpi_total:'Total', kpi_valid:'Valid', kpi_errors:'Errors',
+  filter_all:'All', filter_valid:'Valid', filter_error:'Errors', search_ph:'Search…',
+  btn_excel:'Excel', btn_csv:'CSV', btn_copy:'Copy', copy_visible_title:'Copy visible rows',
+  no_matching_rows:'No matching rows',
+  col_id:'National ID', col_status:'Status', col_century:'Century', col_birthdate:'Birth Date', col_weekday:'Weekday',
+  col_age:'Age', col_totaldays:'Total Days', col_gender:'Gender', col_govcode:'Gov Code', col_gov:'Governorate', col_serial:'Serial',
+  col_check:'Check', col_retireage:'Retire Age', col_retiredate:'Retire Date', col_yearstoretire:'Yrs to Retire',
+  col_career:'Career %', col_flags:'Flags', col_error:'Error',
+  status_valid:'Valid', status_error:'Error',
+  upload_drop_title:'Drop a file or tap to browse', upload_drop_types:'.xlsx, .xls, or .csv',
+  upload_col_label:'National ID column', upload_file_default:'File: —', upload_rows:n=>`${n} rows`,
+  btn_extract:'Extract & Process', upload_results_title:'File results', upload_summary:(n,v,note)=>`${n} rows processed (${v} valid)${note}`,
+  upload_file_label:name=>`File: ${name}`, upload_rows_detected:n=>`${n} rows detected`,
+  toast_no_rows_file:'No rows found in file', toast_processing:'Processing…', toast_file_processed:'File processed', toast_file_downloaded:'File downloaded',
+  upload_shown_note:(shown,total)=>` — showing first ${shown} of ${total}`,
+  upload_col_birth:'Extracted Birth Date', upload_col_age:'Age', upload_col_totaldays:'Total Days',
+  upload_col_retireage:'Retirement Age', upload_col_retiredate:'Retirement Date', upload_col_gov:'Governorate', upload_col_notes:'Notes', upload_col_status:'ID Status',
+  formula_title:'Excel / Sheets Formulas', reference_mode:'Reference mode', mode_table:'Table column', mode_cell:'Single cell',
+  lbl_table_name:'Table name', lbl_col_id_name:'ID column name', lbl_cell_ref:'ID cell reference',
+  ph_table1:'Table1', ph_national_id:'National ID', ph_a2:'A2',
+  card_birth:'Birth date', card_gender:'Gender', card_retirement:'Retirement age & date', lbl_paste_in:'Paste in',
+  auto_assign_title:'Auto-assign location',
+  dates_title:'Date Tools', sub_between:'Between Dates', sub_age:'Age', sub_weekday:'Weekday', sub_leap:'Leap Years',
+  lbl_start_date:'Start date', lbl_end_date:'End date', lbl_working_days:'Working days',
+  lbl_birth_date:'Birth date', lbl_asof:'As of (optional)', lbl_any_date:'Any date',
+  lbl_single_year:'Single year', lbl_year_range:'Year range', ph_year_eg:'e.g. 2028',
+  dt_pick_start_end:'Pick a start and end date.', dt_total_days:'Total days', dt_reversed:' (reversed)', dt_calendar_span:'Calendar span',
+  dt_pick_birth:'Pick a birth date.', dt_exact_age:'Exact age', dt_total_days_lived:'Total days lived', dt_days_to_next_bday:'Days to next birthday', dt_born_on:'Born on',
+  dt_pick_date:'Pick a date.', dt_day_of_year:'Day of year', dt_week_number:'Week number', dt_leap_year:'Leap year', dt_leap_yes:'Yes — 366 days', dt_leap_no:'No — 365 days',
+  dt_enter_valid_year:'Enter a valid year.', dt_is_leap:n=>`${n} is a leap year`, dt_is_not_leap:n=>`${n} is not a leap year`,
+  dt_div_rule:(y,d4,d100,d400)=>`${y}/4=${d4}, ${y}/100=${d100}, ${y}/400=${d400} — divisible by 4 and (not by 100, or by 400)`,
+  dt_enter_valid_years:'Enter valid years.', dt_range_too_large:'Range too large — keep it under 500 years.',
+  dt_leap_years_found:'Leap years found', dt_none_in_range:'None in range',
+  reference_title:'Reference', ref_structure:'ID Structure', ref_gov:'Governorates', ref_law:'Retirement Law',
+  struct_title:'14 digits, six meanings',
+  struct_desc:'Every Egyptian national ID packs birth date, sex, and place of registration into a single number. Here\u2019s how the positions break down.',
+  struct1_t:'Century digit', struct1_d:'Digit 1. 2 means born in the 1900s, 3 means born in the 2000s.',
+  struct2_t:'Birth date', struct2_d:'Digits 2\u20137, as YY MM DD. Combined with the century digit this gives the full birth date.',
+  struct3_t:'Governorate code', struct3_d:'Digits 8\u20139. Identifies where the ID was first registered \u2014 see the Governorates tab for the full list.',
+  struct4_t:'Serial number', struct4_d:'Digits 10\u201312. A sequential registration number for that birth date and governorate.',
+  struct5_t:'Gender digit', struct5_d:'Digit 13. Odd means Male, even means Female.',
+  struct6_t:'Check digit', struct6_d:'Digit 14. A verification digit issued with the card; this tool records it but doesn\u2019t independently validate it.',
+  gov_label:'Governorate codes', gov_count:(a,b)=>`${a} of ${b}`, gov_search_ph:'Search by code or name…',
+  gov_col_code:'Code', gov_col_name:'Governorate', gov_empty:'No matching governorates.', gov_unknown:'Unknown',
+  law_badge:'Law 148/2019', law_title:'Egypt\u2019s phased retirement age increase',
+  law_desc:'The standard pension age of 60 steps up gradually until it reaches 65. The age that applies to a given person depends on their birth date.',
+  law_col_from:'Applies from', law_col_age:'Retirement age', law_years:n=>`${n} years`, law_baseline:'Before 1 Jul 2032',
+  settings_theme:'Theme', theme_system:'System', theme_light:'Light', theme_dark:'Dark',
+  settings_surface:'Surface style', settings_typeface:'Typeface', settings_footer:'Saved to this browser only — nothing is sent anywhere.',
+  cmdk_ph:'Type a command…', cmdk_nav:'Navigate', cmdk_select:'Select', cmdk_close:'Close',
+  confirm_title:'Are you sure?', confirm_message:'This action cannot be undone.', btn_cancel:'Cancel', btn_confirm:'Confirm',
+  clear_cache_title:'Clear cached local data?', clear_cache_msg:'This clears saved inputs and preferences from this browser. This cannot be undone.',
+  toast_clipboard_empty:'Clipboard is empty', toast_pasted:'Pasted from clipboard', toast_clipboard_denied:'Clipboard access denied — try Ctrl/Cmd+V',
+  toast_sample_loaded:'Sample IDs loaded', toast_cleared:'Cleared', toast_enter_id:'Paste at least one ID first',
+  toast_analyzing:'Analyzing…', toast_analyzed:n=>`Analyzed ${n} IDs`, toast_row_copied:'Row copied',
+  toast_no_rows_copy:'No visible rows to copy', toast_no_rows_export:'No visible rows to export',
+  toast_rows_copied:n=>`${n} rows copied`, toast_rows_downloaded:n=>`${n} rows downloaded`, toast_summary_copied:'Summary copied',
+  toast_copied_generic:'Copied to clipboard', toast_clipboard_fail:'Could not access clipboard', toast_formula_copied:'Formula copied',
+  toast_lang_switched:'Language switched to English',
+  toast_save_failed:'Local save failed — your changes may not persist', toast_cache_cleared:'Cached data cleared', toast_system_theme:'Following system theme',
+  gender_male:'Male', gender_female:'Female',
+  flags:{'fake-pattern':'Fake pattern','unknown-governorate':'Unknown governorate','duplicate-id':'Duplicate ID','future-birth':'Future birth date','very-early-birth-year':'Unusually early birth year','jan-1-of-century':'Jan 1 placeholder date'},
+  checks:{len14:'14-digit length',century:'Century digit valid (2 or 3)',realdate:'Real calendar date',notfake:'Not a repeating/sequential pattern',gov:'Governorate code recognized',notfuture:'Birth date not in the future',feb29:'Feb 29 birth date (leap-year edge case)'},
+  err_empty:'Empty value', err_scientific:'Scientific notation detected — format the cell as text',
+  err_length:n=>`Invalid length: ${n} digits (expected 14)`,
+  err_century:d=>`Invalid century digit '${d}' (must be 2 for 1900s or 3 for 2000s)`,
+  err_month:mm=>`Invalid month (${mm})`, err_day:(dd,mn,yr)=>`Invalid day (${dd}) for ${mn} ${yr}`,
+  identity_title:'Identity', country_name:'Arab Republic of Egypt',
+  seg_cent:'Cent.', seg_year:'Year', seg_month:'Month', seg_day:'Day', seg_gov:'Gov', seg_serial:'Serial', seg_gender:'Gender', seg_check:'Check',
+  age_label:'Age', weekday_label:'Weekday', gov_field_label:'Governorate', retire_age_years:n=>`${n}-year retirement age`,
+  total_days_lived:n=>`${n.toLocaleString('en-US')} days lived (total)`,
+  retires_label:'Retires', already_eligible:'Already eligible', years_remaining:n=>`${n} years remaining`,
+  checks_title:n=>`Checks — ${n.p}/${n.t} passed`,
+  invalid_id:'Invalid national ID', normalized_input:'Normalized input:',
+  copy_summary_id:res=>`National ID: ${res.id}\nGender: ${res.gender}\nBirth Date: ${res.birthDateStr} (${res.birthDayOfWeek})\nGovernorate: ${res.governorate} (${res.govCode})\nCurrent Age: ${res.currentAgeYears}y ${res.currentAgeMonths}m ${res.currentAgeDays}d\nTotal Days Lived: ${res.totalDaysLived}\nRetirement Age: ${res.retireAge} years\nRetirement Date: ${res.retireDateStr}\nStructural checks: ${res.checksPassed}/${res.checksTotal} passed`,
+},
+ar:{
+  brand_subtitle:'أداة الرقم القومي والمعاش',
+  nav_idtools:'أدوات الهوية', nav_formula:'الصيغ', nav_dates:'التواريخ', nav_reference:'المرجع',
+  cmdk_title:'لوحة الأوامر', settings_title:'الإعدادات', theme_title:'تبديل المظهر الفاتح والداكن', lang_title:'التبديل إلى الإنجليزية',
+  idtools_title:'أدوات الهوية', sub_single:'فردي', sub_batch:'دفعة', sub_upload:'رفع ملف',
+  single_placeholder:'أدخل الرقم القومي المكوَّن من 14 رقمًا…', paste_title:'لصق', sample_title:'رقم تجريبي',
+  batch_label:'الصق قائمة الأرقام القومية لإجراء تحليل معمّق', batch_count:n=>`تم اكتشاف ${n}`,
+  btn_paste:'لصق', btn_sample:'رقم تجريبي', btn_clear:'مسح', btn_run_analytics:'تشغيل التحليل',
+  batch_empty:'الصق قائمة الأرقام أعلاه وشغّل التحليل لعرض التفاصيل الكاملة هنا.',
+  results_title:'النتائج', results_summary:(t,v,e)=>`تمت معالجة ${t} رقمًا إجماليًا (${v} صحيح، ${e} بها أخطاء)`,
+  kpi_total:'الإجمالي', kpi_valid:'صحيح', kpi_errors:'أخطاء',
+  filter_all:'الكل', filter_valid:'صحيح', filter_error:'أخطاء', search_ph:'بحث…',
+  btn_excel:'إكسل', btn_csv:'CSV', btn_copy:'نسخ', copy_visible_title:'نسخ الصفوف الظاهرة',
+  no_matching_rows:'لا توجد صفوف مطابقة',
+  col_id:'الرقم القومي', col_status:'الحالة', col_century:'القرن', col_birthdate:'تاريخ الميلاد', col_weekday:'يوم الأسبوع',
+  col_age:'العمر', col_totaldays:'إجمالي الأيام', col_gender:'النوع', col_govcode:'كود المحافظة', col_gov:'المحافظة', col_serial:'الرقم التسلسلي',
+  col_check:'رقم التحقق', col_retireage:'سن المعاش', col_retiredate:'تاريخ المعاش', col_yearstoretire:'سنوات حتى المعاش',
+  col_career:'نسبة العمر الوظيفي', col_flags:'ملاحظات', col_error:'الخطأ',
+  status_valid:'صحيح', status_error:'خطأ',
+  upload_drop_title:'أفلت ملفًا هنا أو اضغط للاستعراض', upload_drop_types:'‎.xlsx أو ‎.xls أو ‎.csv',
+  upload_col_label:'عمود الرقم القومي', upload_file_default:'الملف: —', upload_rows:n=>`${n} صفًا`,
+  btn_extract:'استخراج ومعالجة', upload_results_title:'نتائج الملف', upload_summary:(n,v,note)=>`تمت معالجة ${n} صفًا (${v} صحيح)${note}`,
+  upload_file_label:name=>`الملف: ${name}`, upload_rows_detected:n=>`تم رصد ${n} صفًا`,
+  toast_no_rows_file:'لم يتم العثور على صفوف في الملف', toast_processing:'جارٍ المعالجة…', toast_file_processed:'تمت معالجة الملف', toast_file_downloaded:'تم تنزيل الملف',
+  upload_shown_note:(shown,total)=>` — يُعرض أول ${shown} من ${total}`,
+  upload_col_birth:'تاريخ الميلاد المستخرج', upload_col_age:'العمر', upload_col_totaldays:'إجمالي الأيام',
+  upload_col_retireage:'سن المعاش', upload_col_retiredate:'تاريخ المعاش', upload_col_gov:'المحافظة', upload_col_notes:'ملاحظات', upload_col_status:'حالة الرقم',
+  formula_title:'صيغ Excel / Sheets', reference_mode:'وضع المرجع', mode_table:'عمود في جدول', mode_cell:'خلية مفردة',
+  lbl_table_name:'اسم الجدول', lbl_col_id_name:'اسم عمود الرقم القومي', lbl_cell_ref:'مرجع خلية الرقم القومي',
+  ph_table1:'Table1', ph_national_id:'الرقم القومي', ph_a2:'A2',
+  card_birth:'تاريخ الميلاد', card_gender:'النوع', card_retirement:'سن وتاريخ المعاش', lbl_paste_in:'الصق في',
+  auto_assign_title:'تعيين الموقع تلقائيًا',
+  dates_title:'أدوات التاريخ', sub_between:'بين تاريخين', sub_age:'العمر', sub_weekday:'يوم الأسبوع', sub_leap:'السنوات الكبيسة',
+  lbl_start_date:'تاريخ البداية', lbl_end_date:'تاريخ النهاية', lbl_working_days:'أيام العمل',
+  lbl_birth_date:'تاريخ الميلاد', lbl_asof:'حتى تاريخ (اختياري)', lbl_any_date:'أي تاريخ',
+  lbl_single_year:'سنة واحدة', lbl_year_range:'نطاق سنوات', ph_year_eg:'مثال: 2028',
+  dt_pick_start_end:'اختر تاريخ البداية والنهاية.', dt_total_days:'إجمالي الأيام', dt_reversed:' (معكوس)', dt_calendar_span:'الفارق التقويمي',
+  dt_pick_birth:'اختر تاريخ الميلاد.', dt_exact_age:'العمر الدقيق', dt_total_days_lived:'إجمالي أيام العمر', dt_days_to_next_bday:'أيام حتى عيد الميلاد القادم', dt_born_on:'وُلد في',
+  dt_pick_date:'اختر تاريخًا.', dt_day_of_year:'اليوم في السنة', dt_week_number:'رقم الأسبوع', dt_leap_year:'سنة كبيسة', dt_leap_yes:'نعم — 366 يومًا', dt_leap_no:'لا — 365 يومًا',
+  dt_enter_valid_year:'أدخل سنة صحيحة.', dt_is_leap:n=>`${n} سنة كبيسة`, dt_is_not_leap:n=>`${n} ليست سنة كبيسة`,
+  dt_div_rule:(y,d4,d100,d400)=>`${y}/4=${d4}، ${y}/100=${d100}، ${y}/400=${d400} — تُقسَم على 4 وليست على 100، أو تُقسَم على 400`,
+  dt_enter_valid_years:'أدخل سنوات صحيحة.', dt_range_too_large:'النطاق كبير جدًا — اجعله أقل من 500 عام.',
+  dt_leap_years_found:'السنوات الكبيسة الموجودة', dt_none_in_range:'لا توجد ضمن النطاق',
+  reference_title:'المرجع', ref_structure:'بنية الرقم القومي', ref_gov:'المحافظات', ref_law:'قانون المعاشات',
+  struct_title:'14 رقمًا، ست دلالات',
+  struct_desc:'يحمل كل رقم قومي مصري تاريخ الميلاد والنوع ومكان القيد في رقم واحد. إليك كيفية توزيع الخانات.',
+  struct1_t:'رقم القرن', struct1_d:'الخانة الأولى. الرقم 2 يعني الميلاد في القرن العشرين، والرقم 3 يعني الميلاد بعد عام 2000.',
+  struct2_t:'تاريخ الميلاد', struct2_d:'الخانات من 2 إلى 7، بصيغة سنة‑شهر‑يوم. مع رقم القرن يُستنتج تاريخ الميلاد كاملًا.',
+  struct3_t:'كود المحافظة', struct3_d:'الخانتان 8 و9. تحدد مكان القيد الأول للرقم القومي — راجع تبويب المحافظات للقائمة الكاملة.',
+  struct4_t:'الرقم التسلسلي', struct4_d:'الخانات من 10 إلى 12. رقم تسلسلي للقيد ضمن نفس تاريخ الميلاد والمحافظة.',
+  struct5_t:'رقم النوع', struct5_d:'الخانة 13. الرقم الفردي يعني ذكر، والزوجي يعني أنثى.',
+  struct6_t:'رقم التحقق', struct6_d:'الخانة 14. رقم تحقق يُصدر مع البطاقة؛ تسجّله هذه الأداة دون التحقق منه بشكل مستقل.',
+  gov_label:'أكواد المحافظات', gov_count:(a,b)=>`${a} من ${b}`, gov_search_ph:'ابحث بالكود أو الاسم…',
+  gov_col_code:'الكود', gov_col_name:'المحافظة', gov_empty:'لا توجد محافظات مطابقة.', gov_unknown:'غير معروفة',
+  law_badge:'القانون رقم 148 لسنة 2019', law_title:'الزيادة التدريجية لسن المعاش في مصر',
+  law_desc:'يرتفع سن المعاش القياسي البالغ 60 عامًا تدريجيًا حتى يصل إلى 65 عامًا. السن المطبَّق على كل شخص يعتمد على تاريخ ميلاده.',
+  law_col_from:'يُطبَّق اعتبارًا من', law_col_age:'سن المعاش', law_years:n=>`${n} عامًا`, law_baseline:'قبل 1 يوليو 2032',
+  settings_theme:'المظهر', theme_system:'النظام', theme_light:'فاتح', theme_dark:'داكن',
+  settings_surface:'نمط السطح', settings_typeface:'الخط', settings_footer:'يُحفظ في هذا المتصفح فقط — لا يُرسَل شيء إلى أي جهة.',
+  cmdk_ph:'اكتب أمرًا…', cmdk_nav:'تنقّل', cmdk_select:'اختيار', cmdk_close:'إغلاق',
+  confirm_title:'هل أنت متأكد؟', confirm_message:'لا يمكن التراجع عن هذا الإجراء.', btn_cancel:'إلغاء', btn_confirm:'تأكيد',
+  clear_cache_title:'مسح البيانات المحفوظة محليًا؟', clear_cache_msg:'سيؤدي هذا إلى مسح المدخلات والتفضيلات المحفوظة في هذا المتصفح. لا يمكن التراجع عن هذا الإجراء.',
+  toast_clipboard_empty:'الحافظة فارغة', toast_pasted:'تم اللصق من الحافظة', toast_clipboard_denied:'تم رفض الوصول إلى الحافظة — جرّب Ctrl/Cmd+V',
+  toast_sample_loaded:'تم تحميل أرقام تجريبية', toast_cleared:'تم المسح', toast_enter_id:'الصق رقمًا واحدًا على الأقل أولًا',
+  toast_analyzing:'جارٍ التحليل…', toast_analyzed:n=>`تم تحليل ${n} رقمًا`, toast_row_copied:'تم نسخ الصف',
+  toast_no_rows_copy:'لا توجد صفوف ظاهرة للنسخ', toast_no_rows_export:'لا توجد صفوف ظاهرة للتصدير',
+  toast_rows_copied:n=>`تم نسخ ${n} صفًا`, toast_rows_downloaded:n=>`تم تنزيل ${n} صفًا`, toast_summary_copied:'تم نسخ الملخص',
+  toast_copied_generic:'تم النسخ إلى الحافظة', toast_clipboard_fail:'تعذّر الوصول إلى الحافظة', toast_formula_copied:'تم نسخ الصيغة',
+  toast_lang_switched:'تم تبديل اللغة إلى العربية',
+  toast_save_failed:'فشل الحفظ المحلي — قد لا تُحفظ تغييراتك', toast_cache_cleared:'تم مسح البيانات المخزّنة', toast_system_theme:'اتباع مظهر النظام',
+  gender_male:'ذكر', gender_female:'أنثى',
+  flags:{'fake-pattern':'نمط غير واقعي','unknown-governorate':'محافظة غير معروفة','duplicate-id':'رقم مكرر','future-birth':'تاريخ ميلاد مستقبلي','very-early-birth-year':'سنة ميلاد مبكرة بشكل غير معتاد','jan-1-of-century':'تاريخ افتراضي (1 يناير)'},
+  checks:{len14:'الطول 14 رقمًا',century:'رقم القرن صحيح (2 أو 3)',realdate:'تاريخ تقويمي حقيقي',notfake:'ليس نمطًا متكررًا أو متسلسلًا',gov:'كود المحافظة معروف',notfuture:'تاريخ الميلاد ليس في المستقبل',feb29:'ميلاد في 29 فبراير (حالة سنة كبيسة)'},
+  err_empty:'قيمة فارغة', err_scientific:'تم رصد ترميز علمي — نسّق الخلية كنص',
+  err_length:n=>`طول غير صحيح: ${n} رقمًا (المطلوب 14)`,
+  err_century:d=>`رقم قرن غير صالح '${d}' (يجب أن يكون 2 لمواليد القرن العشرين أو 3 لمواليد ما بعد 2000)`,
+  err_month:mm=>`شهر غير صالح (${mm})`, err_day:(dd,mn,yr)=>`يوم غير صالح (${dd}) في ${mn} ${yr}`,
+  identity_title:'الهوية', country_name:'جمهورية مصر العربية',
+  seg_cent:'القرن', seg_year:'السنة', seg_month:'الشهر', seg_day:'اليوم', seg_gov:'المحافظة', seg_serial:'تسلسلي', seg_gender:'النوع', seg_check:'تحقق',
+  age_label:'العمر', weekday_label:'يوم الأسبوع', gov_field_label:'المحافظة', retire_age_years:n=>`سن معاش ${n} عامًا`,
+  total_days_lived:n=>`${n.toLocaleString('en-US')} يومًا (الإجمالي منذ الميلاد)`,
+  retires_label:'يبلغ سن المعاش في', already_eligible:'مستحق بالفعل', years_remaining:n=>`${n} عامًا متبقيًا`,
+  checks_title:n=>`الفحوصات — اجتاز ${n.p} من ${n.t}`,
+  invalid_id:'رقم قومي غير صالح', normalized_input:'المدخل بعد التنسيق:',
+  copy_summary_id:res=>`الرقم القومي: ${res.id}\nالنوع: ${t('gender_'+(res.gender==='Male'?'male':'female'))}\nتاريخ الميلاد: ${res.birthDateStr} (${dayName(res.birthDayIndex)})\nالمحافظة: ${govDisplay(res.govCode)} (${res.govCode})\nالعمر الحالي: ${res.currentAgeYears} سنة ${res.currentAgeMonths} شهر ${res.currentAgeDays} يوم\nإجمالي أيام العمر: ${res.totalDaysLived}\nسن المعاش: ${res.retireAge} عامًا\nتاريخ المعاش: ${res.retireDateStr}\nالفحوصات الهيكلية: ${res.checksPassed}/${res.checksTotal} اجتازت`,
+}
+};
+function t(key,...args){
+  const v=(I18N[currentLang]&&I18N[currentLang][key]!==undefined)?I18N[currentLang][key]:I18N.en[key];
+  return typeof v==='function'?v(...args):v;
+}
+function flagLabel(f){const d=I18N[currentLang].flags||{};return d[f]||f.replace(/-/g,' ');}
+function checkLabel(key){const d=I18N[currentLang].checks||{};return d[key]||key;}
+const DAY_NAMES_AR=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const MONTH_NAMES_AR=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
+function dayName(idx){return (currentLang==='ar'?DAY_NAMES_AR:DAY_NAMES)[idx];}
+function monthName(idx){return (currentLang==='ar'?MONTH_NAMES_AR:MONTH_NAMES)[idx];}
+function govDisplay(code){const src=currentLang==='ar'?GOVERNORATES_AR:GOVERNORATES;return src[code]||t('gov_unknown');}
+function applyStaticTranslations(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{el.textContent=t(el.dataset.i18n);});
+  document.querySelectorAll('[data-i18n-ph]').forEach(el=>{el.placeholder=t(el.dataset.i18nPh);});
+  document.querySelectorAll('[data-i18n-title]').forEach(el=>{const v=t(el.dataset.i18nTitle);el.title=v;el.setAttribute('aria-label',v);});
+  const langBtn=document.getElementById('lang-btn');
+  if(langBtn){langBtn.textContent=currentLang==='ar'?'EN':'ع';langBtn.title=t('lang_title');langBtn.setAttribute('aria-label',t('lang_title'));}
+  document.title=currentLang==='ar'?'LX ID — أداة الرقم القومي والمعاش المصري':'LX ID — Egyptian National ID & Retirement Toolkit';
+}
+function refreshDynamicContent(){
+  if(document.getElementById('inspector-input').value.trim()) inspectID();
+  updateBatchCount();
+  renderBatchTable();
+  if(typeof renderGovTable==='function') renderGovTable();
+  if(typeof renderLawTable==='function') renderLawTable();
+  if(typeof updateFormulas==='function') updateFormulas();
+  if(typeof renderWorkdayPicker==='function') renderWorkdayPicker();
+  if(typeof computeBetweenDates==='function') computeBetweenDates();
+  if(typeof computeAge==='function') computeAge();
+  if(typeof computeWeekday==='function') computeWeekday();
+  if(typeof computeLeapSingle==='function') computeLeapSingle();
+  if(typeof computeLeapRange==='function') computeLeapRange();
+}
+function applyLangFont(){
+  if(currentLang==='ar'){
+    document.documentElement.style.setProperty('--font-display',"'Cairo',sans-serif");
+    document.documentElement.style.setProperty('--font-body',"'Cairo',sans-serif");
+  }else{
+    const state=loadState();
+    applyFontPairing(state.fontPairing||'fraunces',false);
+  }
+}
+function toggleLang(){setLang(currentLang==='ar'?'en':'ar');}
+function setLang(lang){
+  currentLang=lang;
+  document.documentElement.lang=lang;
+  document.documentElement.dir=lang==='ar'?'rtl':'ltr';
+  applyLangFont();
+  applyStaticTranslations();
+  refreshDynamicContent();
+  saveState({lang});
+  showToast(t('toast_lang_switched'),'check_circle');
+}
 const GOVERNORATES={'01':'Cairo','02':'Alexandria','03':'Port Said','04':'Suez','11':'Damietta','12':'Dakahlia','13':'Sharqia','14':'Qalyubia','15':'Kafr El Sheikh','16':'Gharbia','17':'Monufia','18':'Beheira','19':'Ismailia','21':'Giza','22':'Beni Suef','23':'Fayoum','24':'Minya','25':'Asyut','26':'Sohag','27':'Qena','28':'Aswan','29':'Luxor','31':'Red Sea','32':'New Valley','33':'Matrouh','34':'North Sinai','35':'South Sinai','88':'Foreign'};
+const GOVERNORATES_AR={'01':'القاهرة','02':'الإسكندرية','03':'بورسعيد','04':'السويس','11':'دمياط','12':'الدقهلية','13':'الشرقية','14':'القليوبية','15':'كفر الشيخ','16':'الغربية','17':'المنوفية','18':'البحيرة','19':'الإسماعيلية','21':'الجيزة','22':'بني سويف','23':'الفيوم','24':'المنيا','25':'أسيوط','26':'سوهاج','27':'قنا','28':'أسوان','29':'الأقصر','31':'البحر الأحمر','32':'الوادي الجديد','33':'مطروح','34':'شمال سيناء','35':'جنوب سيناء','88':'خارج البلاد'};
 const DAY_NAMES=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
 const MONTH_NAMES=['January','February','March','April','May','June','July','August','September','October','November','December'];
 const VALID_CENTURY_DIGITS=[2,3];
@@ -896,19 +1188,17 @@ const RETIREMENT_LAW=[
   {date:new Date(2040,6,1),age:65,label:'1 Jul 2040'}
 ];
 const SAMPLE_IDS=['29805121401234','30101011509876','27510202100001','26501010100001','29202290001234','30501010100001'];
-const STORAGE_KEY='lxid-state-v7';
+const STORAGE_KEY='lxid-state-v8';
 
-let processedPasteResults=[];
 let uploadedSheetData=[];
 let processedUploadResults=[];
 let formulaMode='table';
-let currentFilter='all';
 let saveTimer=null;
 let workDaySet=new Set([0,1,2,3,4]);
 let activeToast=null;
-let inspectorMode='single';
-let inspectorBatchResults=[];
-let inspectorBatchFilter='all';
+let batchResults=[];
+let batchFilter='all';
+let batchSearch='';
 
 let storageWarned=false;
 function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);return raw?JSON.parse(raw):{};}catch(e){return{};}}
@@ -920,13 +1210,13 @@ function saveState(patch){
   }catch(e){
     if(!storageWarned){
       storageWarned=true;
-      showToast('Local save failed — your changes may not persist','error');
+      showToast(t('toast_save_failed'),'error');
     }
     return false;
   }
 }
 function saveStateDebounced(patch){clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveState(patch),350);}
-function clearAllCache(){localStorage.removeItem(STORAGE_KEY);showToast('Cached data cleared','delete_sweep');}
+function clearAllCache(){localStorage.removeItem(STORAGE_KEY);showToast(t('toast_cache_cleared'),'delete_sweep');}
 
 let pendingConfirmAction=null;
 function openConfirm(title,message,onConfirm){
@@ -947,7 +1237,7 @@ function runPendingConfirm(){
 document.getElementById('confirm-action-btn')?.addEventListener?.('click',runPendingConfirm);
 
 function confirmClearCache(){
-  openConfirm('Clear cached local data?','This removes every saved input, theme choice, and preference stored in this browser. It cannot be undone.',clearAllCache);
+  openConfirm(t('clear_cache_title'),t('clear_cache_msg'),clearAllCache);
 }
 
 function systemPrefersDark(){
@@ -984,10 +1274,9 @@ function useSystemTheme(){
   delete patch.theme;
   try{localStorage.setItem(STORAGE_KEY,JSON.stringify(patch));}catch(e){}
   applyTheme(systemPrefersDark());
-  showToast('Following system theme','contrast');
+  showToast(t('toast_system_theme'),'contrast');
 }
 
-/* ---- Settings: theme / surface style / typeface ---- */
 function setThemePref(pref){
   if(pref==='system') useSystemTheme();
   else{applyTheme(pref==='dark');saveState({theme:pref});}
@@ -1024,10 +1313,6 @@ function renderStylePicker(){
     </button>`).join('');
 }
 
-/* Typeface pairings. Note: these are curated, freely-licensed Google Fonts pairings chosen to
-   evoke the same warm-serif-plus-clean-sans feel used across modern AI apps — not Anthropic's
-   actual in-product typefaces, which aren't public/redistributable. Fraunces + Inter (the
-   app's original pairing) remains the default. */
 const FONT_PAIRINGS=[
   {id:'fraunces',label:'Fraunces + Inter (default)',sample:'Fraunces',display:"'Fraunces',serif",body:"'Inter',-apple-system,BlinkMacSystemFont,sans-serif",href:null},
   {id:'newsreader',label:'Newsreader + Inter',sample:'Newsreader',display:"'Newsreader',serif",body:"'Inter',-apple-system,BlinkMacSystemFont,sans-serif",href:'https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,450;6..72,600;6..72,700&display=swap'},
@@ -1115,14 +1400,6 @@ function pad2(n){return String(n).padStart(2,'0');}
 function clampInt(n,min,max){return Math.min(max,Math.max(min,n));}
 function formatCaption(d){return `${DAY_NAMES[d.getDay()].slice(0,3)}, ${MONTH_NAMES[d.getMonth()].slice(0,3)} ${d.getDate()}, ${d.getFullYear()}`;}
 
-/* Custom date field — built entirely in-house instead of leaning on native
-   <input type="date"> rendering. Native datetime-edit segments are styled
-   inconsistently (or not at all) across browsers, which is what caused the
-   illegible focus state — this sidesteps that completely: three plain text
-   segments we fully own, plus a calendar popover that matches the app's
-   own design system. The original element is kept in the DOM (as a hidden
-   input, same id) so all existing app logic reading `.value` keeps working
-   unchanged. */
 function closeAllDateCalendars(except){
   document.querySelectorAll('.datecal-popover.open').forEach(p=>{if(p!==except) p.classList.remove('open');});
 }
@@ -1361,7 +1638,7 @@ async function copyText(text,btnEl,label){
     catch(e2){ok=false;}
   }
   if(ok&&btnEl) flashCopied(btnEl);
-  showToast(ok?(label||'Copied to clipboard'):'Could not access clipboard',ok?'check_circle':'block');
+  showToast(ok?(label||t('toast_copied_generic')):t('toast_clipboard_fail'),ok?'check_circle':'block');
 }
 function flashCopied(btnEl){
   if(!btnEl||btnEl.dataset.flashing==='1') return;
@@ -1470,22 +1747,22 @@ function calcAge(birthDate,asOf){
 
 function parseID(rawInput){
   const trace=[];
-  const out={valid:false,error:'',trace,raw:String(rawInput??''),normalized:'',id:'',centuryDigit:'',centuryLabel:'',birthYear:null,birthMonth:null,birthDay:null,birthDateObj:null,birthDateStr:'',birthDayOfWeek:'',govCode:'',governorate:'',governorateKnown:false,serial:'',checkDigit:'',genderDigit:null,gender:'',retireAge:null,retireDateObj:null,retireDateStr:'',currentAgeYears:0,currentAgeMonths:0,currentAgeDays:0,yearsUntilRetire:0,daysUntilRetire:0,isEligible:false,careerPercent:0,fakePattern:false,retireRule:'',flags:[],checks:[]};
+  const out={valid:false,error:'',trace,raw:String(rawInput??''),normalized:'',id:'',centuryDigit:'',centuryLabel:'',birthYear:null,birthMonth:null,birthDay:null,birthDateObj:null,birthDateStr:'',birthDayOfWeek:'',birthDayIndex:0,govCode:'',governorate:'',governorateKnown:false,serial:'',checkDigit:'',genderDigit:null,gender:'',retireAge:null,retireDateObj:null,retireDateStr:'',currentAgeYears:0,currentAgeMonths:0,currentAgeDays:0,totalDaysLived:0,yearsUntilRetire:0,daysUntilRetire:0,isEligible:false,careerPercent:0,fakePattern:false,retireRule:'',flags:[],checks:[]};
 
-  if(rawInput===null||rawInput===undefined){out.error='Empty value';trace.push('Input is null or undefined');return out;}
+  if(rawInput===null||rawInput===undefined){out.error=t('err_empty');trace.push('Input is null or undefined');return out;}
   const originalStr=String(rawInput).trim();
-  if(originalStr===''){out.error='Empty value';trace.push('Input is empty after trim');return out;}
-  if(/[0-9]\.?[0-9]*e\+?\d+/i.test(originalStr)){out.error='Scientific notation detected — format the cell as text';trace.push('Input matches scientific notation pattern');return out;}
+  if(originalStr===''){out.error=t('err_empty');trace.push('Input is empty after trim');return out;}
+  if(/[0-9]\.?[0-9]*e\+?\d+/i.test(originalStr)){out.error=t('err_scientific');trace.push('Input matches scientific notation pattern');return out;}
 
   const cleaned=normalizeIDInput(originalStr);
   out.normalized=cleaned;
   trace.push(`Normalized "${originalStr}" → ${cleaned.length} digits (Arabic-Indic digits supported)`);
 
-  if(cleaned.length!==14){out.error=`Invalid length: ${cleaned.length} digits (expected 14)`;trace.push(`Length check failed: got ${cleaned.length}, need 14`);return out;}
+  if(cleaned.length!==14){out.error=t('err_length',cleaned.length);trace.push(`Length check failed: got ${cleaned.length}, need 14`);return out;}
   if(isFakePattern(cleaned)){out.fakePattern=true;out.flags.push('fake-pattern');trace.push('Fake pattern detected: repeated or sequential digits');}
 
   const centuryNum=parseInt(cleaned[0],10);
-  if(!VALID_CENTURY_DIGITS.includes(centuryNum)){out.error=`Invalid century digit '${cleaned[0]}' (must be 2 for 1900s or 3 for 2000s)`;trace.push(`Century digit '${cleaned[0]}' is not a currently-issued century block`);return out;}
+  if(!VALID_CENTURY_DIGITS.includes(centuryNum)){out.error=t('err_century',cleaned[0]);trace.push(`Century digit '${cleaned[0]}' is not a currently-issued century block`);return out;}
   const baseYear=(centuryNum-2)*100+1900;
   out.centuryDigit=cleaned[0];
   out.centuryLabel=`${baseYear}s`;
@@ -1498,15 +1775,16 @@ function parseID(rawInput){
   out.birthYear=birthYear;out.birthMonth=mm;out.birthDay=dd;
   trace.push(`Birth year: ${baseYear} + ${yy} = ${birthYear}`);
 
-  if(mm<1||mm>12){out.error=`Invalid month (${mm})`;trace.push(`Month check failed: ${mm} is out of range 1–12`);return out;}
+  if(mm<1||mm>12){out.error=t('err_month',mm);trace.push(`Month check failed: ${mm} is out of range 1–12`);return out;}
   const checkDate=new Date(birthYear,mm-1,dd);
-  if(checkDate.getFullYear()!==birthYear||checkDate.getMonth()!==mm-1||checkDate.getDate()!==dd){out.error=`Invalid day (${dd}) for ${MONTH_NAMES[mm-1]} ${birthYear}`;trace.push(`Date validation failed: ${dd}/${mm}/${birthYear} is not a real calendar date`);return out;}
+  if(checkDate.getFullYear()!==birthYear||checkDate.getMonth()!==mm-1||checkDate.getDate()!==dd){out.error=t('err_day',dd,monthName(mm-1),birthYear);trace.push(`Date validation failed: ${dd}/${mm}/${birthYear} is not a real calendar date`);return out;}
 
   const now=new Date();
   if(checkDate>now){out.flags.push('future-birth');trace.push(`Warning: birth date ${birthYear}-${mm}-${dd} is in the future`);}
 
   out.birthDateObj=checkDate;
   out.birthDateStr=`${birthYear}-${pad2(mm)}-${pad2(dd)}`;
+  out.birthDayIndex=checkDate.getDay();
   out.birthDayOfWeek=DAY_NAMES[checkDate.getDay()];
   trace.push(`Birth date validated: ${out.birthDateStr} (${out.birthDayOfWeek})`);
 
@@ -1535,6 +1813,7 @@ function parseID(rawInput){
 
   const age=calcAge(checkDate,now);
   out.currentAgeYears=age.years;out.currentAgeMonths=age.months;out.currentAgeDays=age.days;
+  out.totalDaysLived=daysBetween(checkDate,now);
   trace.push(`Current age: ${age.years}y ${age.months}m ${age.days}d (as of ${now.toDateString()})`);
 
   out.daysUntilRetire=daysBetween(now,retire.retireDate);
@@ -1545,14 +1824,14 @@ function parseID(rawInput){
   trace.push(`Retirement eligibility: ${out.isEligible?'Eligible now':out.yearsUntilRetire+' years remaining'}`);
 
   out.checks=[
-    {label:'14-digit length',pass:true},
-    {label:'Century digit valid (2 or 3)',pass:true},
-    {label:'Real calendar date',pass:true},
-    {label:'Not a repeating/sequential pattern',pass:!out.fakePattern},
-    {label:'Governorate code recognized',pass:out.governorateKnown},
-    {label:'Birth date not in the future',pass:checkDate<=now}
+    {key:'len14',pass:true},
+    {key:'century',pass:true},
+    {key:'realdate',pass:true},
+    {key:'notfake',pass:!out.fakePattern},
+    {key:'gov',pass:out.governorateKnown},
+    {key:'notfuture',pass:checkDate<=now}
   ];
-  if(mm===2&&dd===29){out.checks.push({label:'Feb 29 birth date (leap-year edge case)',pass:true,note:true});trace.push('Note: Feb 29 birth date — an unusual but valid edge case, handled without drift');}
+  if(mm===2&&dd===29){out.checks.push({key:'feb29',pass:true,note:true});trace.push('Note: Feb 29 birth date — an unusual but valid edge case, handled without drift');}
   if(birthYear<1905){out.flags.push('very-early-birth-year');trace.push('Note: birth year is unusually early for a living person');}
   if(yy===0&&mm===1&&dd===1){out.flags.push('jan-1-of-century');trace.push('Note: Jan 1 of the century block is a common placeholder date');}
   out.checksPassed=out.checks.filter(c=>c.pass).length;
@@ -1568,7 +1847,7 @@ function parseID(rawInput){
 function genderBadge(gender,size){
   const isM=gender==='Male';
   const icon=isM?'man':'woman';
-  return `<span class="gender-badge ${isM?'gender-m':'gender-f'}"><span class="material-symbols-rounded" style="font-size:${size||'1rem'};">${icon}</span>${gender}</span>`;
+  return `<span class="gender-badge ${isM?'gender-m':'gender-f'}"><span class="material-symbols-rounded" style="font-size:${size||'1rem'};">${icon}</span>${t(isM?'gender_male':'gender_female')}</span>`;
 }
 
 function toCSV(headers,rows){
@@ -1601,7 +1880,7 @@ function switchTab(tabName){
   document.querySelectorAll('.navitem[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tabName));
   moveTopIndicator();
   if(tabName==='formula') updateFormulas();
-  if(tabName==='inspector'){const inp=document.getElementById('inspector-input');if(inp.value.trim()) inspectID();}
+  if(tabName==='idtools'){const inp=document.getElementById('inspector-input');if(inp.value.trim()) inspectID();}
   saveState({activeTab:tabName});
 }
 function moveTopIndicator(){
@@ -1624,174 +1903,209 @@ function switchDateSub(name){
   saveState({activeDateSub:name});
 }
 
-function setInspectorMode(mode){
-  inspectorMode=mode;
-  document.getElementById('inspector-single').classList.toggle('hide',mode!=='single');
-  document.getElementById('inspector-batch').classList.toggle('hide',mode!=='batch');
-  document.querySelectorAll('.pill[data-mode]').forEach(b=>b.classList.toggle('active',b.dataset.mode===mode));
-  saveState({inspectorMode:mode});
+function switchRefSub(name){
+  document.querySelectorAll('.refsubpanel').forEach(el=>el.classList.add('hide'));
+  document.getElementById('refsub-'+name).classList.remove('hide');
+  document.querySelectorAll('.pill[data-refsub]').forEach(b=>b.classList.toggle('active',b.dataset.refsub===name));
+  saveState({activeRefSub:name});
 }
 
-function updateLiveCount(){
-  const raw=document.getElementById('paste-input').value;
+function updateBatchCount(){
+  const raw=document.getElementById('batch-input').value;
   const lines=raw.split('\n').map(l=>l.trim()).filter(Boolean);
-  document.getElementById('paste-count').textContent=`${lines.length} detected`;
-  saveStateDebounced({pasteInput:raw});
+  document.getElementById('batch-count').textContent=t('batch_count',lines.length);
+  saveStateDebounced({batchInput:raw});
 }
 
-async function pasteFromClipboard(){
+async function batchPasteFromClipboard(){
   try{
     const text=await navigator.clipboard.readText();
-    if(!text){showToast('Clipboard is empty','info');return;}
-    document.getElementById('paste-input').value=text;
-    updateLiveCount();
-    saveState({pasteInput:text});
-    showToast('Pasted from clipboard','content_paste_go');
-  }catch(e){showToast('Clipboard access denied — try Ctrl/Cmd+V','block');}
+    if(!text){showToast(t('toast_clipboard_empty'),'info');return;}
+    document.getElementById('batch-input').value=text;
+    updateBatchCount();
+    saveState({batchInput:text});
+    showToast(t('toast_pasted'),'content_paste_go');
+  }catch(e){showToast(t('toast_clipboard_denied'),'block');}
 }
-function loadSampleData(){
-  document.getElementById('paste-input').value=SAMPLE_IDS.join('\n');
-  updateLiveCount();
-  showToast('Sample IDs loaded','auto_awesome');
+function batchLoadSample(){
+  document.getElementById('batch-input').value=SAMPLE_IDS.join('\n');
+  updateBatchCount();
+  showToast(t('toast_sample_loaded'),'auto_awesome');
 }
-function clearPasteData(){
-  document.getElementById('paste-input').value='';
-  updateLiveCount();
-  processedPasteResults=[];
-  renderPasteTable();
-  updatePasteKPIs(0,0,0);
-  document.getElementById('paste-summary').textContent='Awaiting input…';
-  ['btn-copy','btn-xlsx','btn-csv'].forEach(id=>document.getElementById(id).disabled=true);
-  showToast('Cleared','delete');
+function batchClear(){
+  document.getElementById('batch-input').value='';
+  updateBatchCount();
+  batchResults=[];
+  batchFilter='all';
+  batchSearch='';
+  renderBatchTable();
+  showToast(t('toast_cleared'),'delete');
 }
 
-function processPasteData(){
-  const raw=document.getElementById('paste-input').value;
+function processBatch(){
+  const raw=document.getElementById('batch-input').value;
   const lines=raw.split('\n').map(l=>l.trim()).filter(Boolean);
-  if(lines.length===0){showToast('Paste at least one ID first','info');return;}
-  const btn=document.getElementById('btn-process-paste');
-  setBusy(btn,true,'Processing…');
+  if(lines.length===0){showToast(t('toast_enter_id'),'info');return;}
+  const btn=document.getElementById('btn-run-analytics');
+  setBusy(btn,true,t('toast_analyzing'));
   chunkProcess(lines,parseID,{onDone:results=>{
-    processedPasteResults=results;
-    markDuplicates(processedPasteResults);
-    const valid=processedPasteResults.filter(r=>r.valid).length;
-    const errors=processedPasteResults.length-valid;
-    updatePasteKPIs(processedPasteResults.length,valid,errors);
-    currentFilter='all';
-    document.querySelectorAll('.pill[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter==='all'));
-    document.getElementById('search-input').value='';
-    renderPasteTable();
-    const hasResults=processedPasteResults.length>0;
-    ['btn-copy','btn-xlsx','btn-csv'].forEach(id=>document.getElementById(id).disabled=!hasResults);
+    batchResults=results;
+    markDuplicates(batchResults);
+    batchFilter='all';
+    batchSearch='';
+    renderBatchTable();
     setBusy(btn,false);
-    showToast(`Processed ${processedPasteResults.length} IDs`,'task_alt');
+    showToast(t('toast_analyzed',batchResults.length),'task_alt');
   }});
 }
 
-function setFilter(f){
-  currentFilter=f;
-  document.querySelectorAll('.pill[data-filter]').forEach(b=>b.classList.toggle('active',b.dataset.filter===f));
-  renderPasteTable();
-}
+function setBatchFilter(f){batchFilter=f;renderBatchTable();}
+function onBatchSearch(val){batchSearch=val;renderBatchTable();}
+function clearBatchSearch(){batchSearch='';renderBatchTable();}
 
-let lastPasteRows=[];
+let lastBatchRows=[];
 
 function rowCopyBtn(rowId,idx,fnName){
   return `<span class="material-symbols-rounded rowcopy focusable" id="${rowId}" role="button" tabindex="0" title="Copy row" onclick="${fnName}(${idx},'${rowId}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${fnName}(${idx},'${rowId}')}">content_copy</span>`;
 }
 
-function renderPasteTable(){
-  const tbody=document.getElementById('paste-tbody');
-  const searchTerm=(document.getElementById('search-input').value||'').toLowerCase();
-  let filtered=processedPasteResults;
-  if(currentFilter==='valid') filtered=filtered.filter(r=>r.valid);
-  if(currentFilter==='error') filtered=filtered.filter(r=>!r.valid);
-  if(searchTerm) filtered=filtered.filter(r=>(r.raw+' '+(r.id||'')+' '+(r.error||'')+' '+(r.governorate||'')).toLowerCase().includes(searchTerm));
-  lastPasteRows=filtered;
-  if(filtered.length===0){
-    tbody.innerHTML=`<tr><td colspan="9" style="text-align:center;padding:3rem 1rem;color:var(--ink-3);">No matching results found.</td></tr>`;
+function renderBatchTable(){
+  const resultEl=document.getElementById('batch-result');
+  const total=batchResults.length;
+  if(total===0){
+    resultEl.innerHTML=`<div class="card pad" style="text-align:center;padding:3rem 1.5rem;color:var(--ink-3);font-size:.85rem;">${t('batch_empty')}</div>`;
     return;
   }
-  tbody.innerHTML=filtered.map((r,idx)=>{
-    const rowId=`prow-${idx}`;
+  const validCount=batchResults.filter(r=>r.valid).length;
+  const errorCount=total-validCount;
+  const searchTerm=batchSearch.toLowerCase();
+  let rows=batchResults;
+  if(batchFilter==='valid') rows=rows.filter(r=>r.valid);
+  if(batchFilter==='error') rows=rows.filter(r=>!r.valid);
+  if(searchTerm) rows=rows.filter(r=>(r.raw+' '+(r.id||'')+' '+(r.error||'')+' '+(r.governorate||'')).toLowerCase().includes(searchTerm));
+  lastBatchRows=rows;
+  const cols=[t('col_id'),t('col_status'),t('col_century'),t('col_birthdate'),t('col_weekday'),t('col_age'),t('col_totaldays'),t('col_gender'),t('col_govcode'),t('col_gov'),t('col_serial'),t('col_check'),t('col_retireage'),t('col_retiredate'),t('col_yearstoretire'),t('col_career'),t('col_flags')];
+
+  const rowHtml=rows.map((r,idx)=>{
+    const rowId=`brow-${idx}`;
     if(r.valid){
-      const fakeBadge=r.fakePattern?'<span class="chip" style="margin-left:.3rem;">Fake pattern</span>':'';
-      const govBadge=!r.governorateKnown?'<span class="chip" style="margin-left:.3rem;">Unknown gov</span>':'';
+      const flagsText=r.flags.length?r.flags.map(f=>flagLabel(f)).join(', '):'—';
       return `<tr>
-        <td>${rowCopyBtn(rowId,idx,'copyPasteRow')}</td>
-        <td class="mono" style="font-weight:650;">${r.id}${fakeBadge}${govBadge}</td>
-        <td><span class="statuspill"><span class="statdot ok"></span>Valid</span></td>
-        <td>${genderBadge(r.gender)}</td>
+        <td>${rowCopyBtn(rowId,idx,'copyBatchRow')}</td>
+        <td class="mono" style="font-weight:650;">${r.id}</td>
+        <td><span class="statuspill"><span class="statdot ok"></span>${t('status_valid')}</span></td>
+        <td>${r.centuryLabel}</td>
         <td>${r.birthDateStr}</td>
-        <td>${r.currentAgeYears}y</td>
-        <td style="color:var(--amber-text);font-weight:650;">${r.retireAge} yrs</td>
+        <td>${dayName(r.birthDayIndex)}</td>
+        <td>${r.currentAgeYears}</td>
+        <td class="mono">${r.totalDaysLived.toLocaleString('en-US')}</td>
+        <td>${genderBadge(r.gender,'.85rem')}</td>
+        <td class="mono">${r.govCode}</td>
+        <td style="${r.governorateKnown?'':'font-style:italic;color:var(--ink-2);'}">${govDisplay(r.govCode)}</td>
+        <td class="mono">${r.serial}</td>
+        <td class="mono">${r.checkDigit||'—'}</td>
+        <td style="color:var(--amber-text);font-weight:650;">${r.retireAge}</td>
         <td style="color:var(--amber);font-weight:650;">${r.retireDateStr}</td>
-        <td style="font-size:.72rem;color:var(--ink-2);">${r.flags.length?r.flags.map(f=>f.replace(/-/g,' ')).join(', '):'No anomalies'}</td>
+        <td>${r.yearsUntilRetire}</td>
+        <td>${r.careerPercent}%</td>
+        <td style="font-size:.7rem;color:var(--ink-2);">${flagsText}</td>
       </tr>`;
     }
     return `<tr>
-      <td>${rowCopyBtn(rowId,idx,'copyPasteRow')}</td>
+      <td>${rowCopyBtn(rowId,idx,'copyBatchRow')}</td>
       <td class="mono" style="font-weight:650;">${escapeHtml(r.raw)}</td>
-      <td><span class="statuspill"><span class="statdot bad"></span>Error</span></td>
-      <td style="color:var(--ink-3);">—</td><td style="color:var(--ink-3);">—</td><td style="color:var(--ink-3);">—</td><td style="color:var(--ink-3);">—</td><td style="color:var(--ink-3);">—</td>
-      <td style="color:var(--scarlet);font-weight:600;">${escapeHtml(r.error)}</td>
+      <td><span class="statuspill"><span class="statdot bad"></span>${t('status_error')}</span></td>
+      <td colspan="14" style="color:var(--scarlet);font-weight:600;">${escapeHtml(r.error)}</td>
+      <td>—</td>
     </tr>`;
   }).join('');
+
+  resultEl.innerHTML=`
+    <div class="card pad stack">
+      <div class="row-between">
+        <div>
+          <h3 class="cardtitle">${t('results_title')}</h3>
+          <p style="font-size:.75rem;color:var(--ink-2);margin:.15rem 0 0;">${t('results_summary',total,validCount,errorCount)}</p>
+        </div>
+        <div class="row" style="gap:.4rem;">
+          <button onclick="copyBatchTable(event)" class="iconbtn focusable" data-i18n-title="copy_visible_title" title="Copy visible rows" aria-label="Copy visible rows"><span class="material-symbols-rounded" style="font-size:1.15rem;">content_copy</span></button>
+          <button onclick="exportBatch('xlsx')" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">download</span>${t('btn_excel')}</button>
+          <button onclick="exportBatch('csv')" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">csv</span>${t('btn_csv')}</button>
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;">
+        <div class="kpi"><div class="lbl">${t('kpi_total')}</div><div class="num disp">${total}</div></div>
+        <div class="kpi kpi-mint"><div class="lbl">${t('kpi_valid')}</div><div class="num disp" style="color:var(--mint);">${validCount}</div></div>
+        <div class="kpi kpi-scarlet"><div class="lbl">${t('kpi_errors')}</div><div class="num disp" style="color:var(--scarlet);">${errorCount}</div></div>
+      </div>
+      <div class="row" style="flex-wrap:wrap;gap:.5rem;">
+        <div class="pillrow">
+          <button class="pill${batchFilter==='all'?' active':''} focusable" onclick="setBatchFilter('all')">${t('filter_all')}</button>
+          <button class="pill${batchFilter==='valid'?' active':''} focusable" onclick="setBatchFilter('valid')">${t('filter_valid')}</button>
+          <button class="pill${batchFilter==='error'?' active':''} focusable" onclick="setBatchFilter('error')">${t('filter_error')}</button>
+        </div>
+        <div class="field-clearable" style="flex:1;min-width:130px;">
+          <input type="text" id="batch-search" placeholder="${t('search_ph')}" class="field-input focusable" style="width:100%;padding-block:.5rem;padding-inline:.8rem 2.1rem;font-size:.78rem;" value="${escapeHtml(batchSearch)}" oninput="onBatchSearch(this.value)">
+          <button type="button" class="field-clear-btn" tabindex="-1" onclick="clearBatchSearch()" aria-label="Clear search"><span class="material-symbols-rounded">cancel</span></button>
+        </div>
+      </div>
+      <div class="scrollx" style="border-radius:16px;border:1px solid var(--edge);">
+        <div style="max-height:460px;overflow:auto;">
+          <table class="dtable"><thead><tr><th></th>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
+          <tbody>${rowHtml||`<tr><td colspan="${cols.length+1}" style="text-align:center;padding:3rem;color:var(--ink-3);">${t('no_matching_rows')}</td></tr>`}</tbody></table>
+        </div>
+      </div>
+    </div>`;
 }
 
-function copyPasteRow(idx,elId){
-  const r=lastPasteRows[idx];
+function copyBatchRow(idx,elId){
+  const r=lastBatchRows[idx];
   if(!r) return;
-  const line=r.valid?`${r.id}\tVALID\t${r.gender}\t${r.birthDateStr}\t${r.currentAgeYears}\t${r.retireAge}\t${r.retireDateStr}\t${(r.flags||[]).map(f=>f.replace(/-/g,' ')).join(', ')}`:`${r.raw}\tERROR\t${r.error}`;
-  copyText(line,null,'Row copied');
+  const line=r.valid?`${r.id}\t${t('status_valid').toUpperCase()}\t${r.centuryLabel}\t${r.birthDateStr}\t${dayName(r.birthDayIndex)}\t${r.currentAgeYears}\t${r.totalDaysLived}\t${r.gender}\t${r.govCode}\t${govDisplay(r.govCode)}\t${r.serial}\t${r.checkDigit}\t${r.retireAge}\t${r.retireDateStr}\t${r.yearsUntilRetire}\t${r.careerPercent}%\t${(r.flags||[]).map(f=>flagLabel(f)).join(', ')}`:`${r.raw}\t${t('status_error').toUpperCase()}\t${r.error}`;
+  copyText(line,null,t('toast_row_copied'));
   const el=document.getElementById(elId);
-  if(el){el.textContent='check';el.style.color='var(--mint)';el.style.opacity='1';setTimeout(()=>{el.textContent='content_copy';el.style.color='';},1200);}
+  if(el){el.textContent='check';el.style.color='var(--mint)';setTimeout(()=>{el.textContent='content_copy';el.style.color='';},1200);}
 }
 
-function updatePasteKPIs(total,valid,errors){
-  document.getElementById('kpi-total').textContent=total;
-  document.getElementById('kpi-valid').textContent=valid;
-  document.getElementById('kpi-errors').textContent=errors;
-  document.getElementById('paste-summary').textContent=`${total} total IDs processed (${valid} valid, ${errors} errors)`;
-}
-
-function copyPasteTable(evt){
-  if(lastPasteRows.length===0){showToast('No visible rows to copy','info');return;}
-  let tsv='National ID\tStatus\tGender\tBirth Date\tAge\tRetirement Age\tRetirement Date\tNotes\tError\n';
-  lastPasteRows.forEach(r=>{
-    tsv+=r.valid?`${r.id}\tVALID\t${r.gender}\t${r.birthDateStr}\t${r.currentAgeYears}\t${r.retireAge}\t${r.retireDateStr}\t${(r.flags||[]).map(f=>f.replace(/-/g,' ')).join(', ')}\t\n`:`${r.raw}\tERROR\t\t\t\t\t\t\t${r.error}\n`;
+function copyBatchTable(evt){
+  if(lastBatchRows.length===0){showToast(t('toast_no_rows_copy'),'info');return;}
+  let tsv=[t('col_id'),t('col_status'),t('col_century'),t('col_birthdate'),t('col_weekday'),t('col_age'),t('col_totaldays'),t('col_gender'),t('col_govcode'),t('col_gov'),t('col_serial'),t('col_check'),t('col_retireage'),t('col_retiredate'),t('col_yearstoretire'),t('col_career'),t('col_flags'),t('col_error')].join('\t')+'\n';
+  lastBatchRows.forEach(r=>{
+    tsv+=r.valid?`${r.id}\t${t('status_valid').toUpperCase()}\t${r.centuryLabel}\t${r.birthDateStr}\t${dayName(r.birthDayIndex)}\t${r.currentAgeYears}\t${r.totalDaysLived}\t${r.gender}\t${r.govCode}\t${govDisplay(r.govCode)}\t${r.serial}\t${r.checkDigit}\t${r.retireAge}\t${r.retireDateStr}\t${r.yearsUntilRetire}\t${r.careerPercent}%\t${r.flags.map(f=>flagLabel(f)).join(', ')}\t\n`:`${r.raw}\t${t('status_error').toUpperCase()}\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t${r.error}\n`;
   });
-  copyText(tsv,evt?evt.currentTarget:document.getElementById('btn-copy'),`${lastPasteRows.length} rows copied`);
+  copyText(tsv,evt?evt.currentTarget:null,t('toast_rows_copied',lastBatchRows.length));
 }
 
-function exportPaste(format){
-  if(lastPasteRows.length===0){showToast('No visible rows to export','info');return;}
-  const data=lastPasteRows.map(r=>({
-    'National ID':r.valid?r.id:r.raw,'Status':r.valid?'VALID':'ERROR','Gender':r.valid?r.gender:'','Birth Date':r.valid?r.birthDateStr:'',
-    'Age':r.valid?r.currentAgeYears:'','Retirement Age':r.valid?r.retireAge:'','Retirement Date':r.valid?r.retireDateStr:'',
-    'Governorate':r.valid?r.governorate:'','Notes':r.valid?(r.flags||[]).map(f=>f.replace(/-/g,' ')).join(', '):'','Fake Pattern':r.valid?(r.fakePattern?'YES':'NO'):'','Error':r.error||''
+function exportBatch(format){
+  if(lastBatchRows.length===0){showToast(t('toast_no_rows_export'),'info');return;}
+  const data=lastBatchRows.map(r=>({
+    [t('col_id')]:r.valid?r.id:r.raw,[t('col_status')]:r.valid?'VALID':'ERROR',[t('col_century')]:r.valid?r.centuryLabel:'',[t('col_birthdate')]:r.valid?r.birthDateStr:'',
+    [t('col_weekday')]:r.valid?dayName(r.birthDayIndex):'',[t('col_age')]:r.valid?r.currentAgeYears:'',[t('col_totaldays')]:r.valid?r.totalDaysLived:'',[t('col_gender')]:r.valid?r.gender:'',[t('col_govcode')]:r.valid?r.govCode:'',
+    [t('col_gov')]:r.valid?govDisplay(r.govCode):'',[t('col_serial')]:r.valid?r.serial:'',[t('col_check')]:r.valid?r.checkDigit:'',[t('col_retireage')]:r.valid?r.retireAge:'',
+    [t('col_retiredate')]:r.valid?r.retireDateStr:'',[t('col_yearstoretire')]:r.valid?r.yearsUntilRetire:'',[t('col_career')]:r.valid?r.careerPercent:'',
+    [t('col_flags')]:r.valid?r.flags.map(f=>flagLabel(f)).join(', '):'',[t('col_error')]:r.error||''
   }));
   if(format==='csv'){
     const headers=Object.keys(data[0]);
-    downloadBlob(toCSV(headers,data.map(row=>headers.map(h=>row[h]))),'national_id_results.csv','text/csv;charset=utf-8;');
+    downloadBlob(toCSV(headers,data.map(row=>headers.map(h=>row[h]))),'id_batch_analytics.csv','text/csv;charset=utf-8;');
   }else{
-    downloadXLSX(data,'Results','national_id_results.xlsx');
+    downloadXLSX(data,t('results_title'),'id_batch_analytics.xlsx');
   }
-  showToast(`${lastPasteRows.length} rows downloaded`,'download_done');
+  showToast(t('toast_rows_downloaded',lastBatchRows.length),'download_done');
 }
 
 function handleFileUpload(e){
   const file=e.target.files[0];
   if(!file) return;
-  document.getElementById('file-info-text').textContent=`File: ${file.name}`;
+  document.getElementById('file-info-text').textContent=t('upload_file_label',file.name);
   const reader=new FileReader();
   reader.onload=function(evt){
     const data=new Uint8Array(evt.target.result);
     const wb=XLSX.read(data,{type:'array',codepage:65001});
     const firstSheet=wb.SheetNames[0];
     uploadedSheetData=XLSX.utils.sheet_to_json(wb.Sheets[firstSheet],{defval:''});
-    if(uploadedSheetData.length===0){showToast('No rows found in file','error');return;}
-    document.getElementById('file-rows-text').textContent=`${uploadedSheetData.length} rows detected`;
+    if(uploadedSheetData.length===0){showToast(t('toast_no_rows_file'),'error');return;}
+    document.getElementById('file-rows-text').textContent=t('upload_rows_detected',uploadedSheetData.length);
     const headers=Object.keys(uploadedSheetData[0]);
     const select=document.getElementById('column-select');
     select.innerHTML='';
@@ -1810,7 +2124,7 @@ function processUploadedFile(){
   const idCol=document.getElementById('column-select').value;
   if(!idCol) return;
   const btn=document.getElementById('btn-extract-process');
-  setBusy(btn,true,'Processing…');
+  setBusy(btn,true,t('toast_processing'));
   chunkProcess(uploadedSheetData,row=>parseID(row[idCol]),{onDone:reses=>{
     processedUploadResults=[];
     let validCount=0;
@@ -1819,33 +2133,35 @@ function processUploadedFile(){
     uploadedSheetData.forEach((row,i)=>{
       const res=reses[i];
       if(res.valid) validCount++;
-      const notesParts=res.valid?(res.flags||[]).map(f=>f.replace(/-/g,' ')):[];
-      if(res.valid&&idCounts[res.id]>1) notesParts.push('duplicate id');
+      const notesParts=res.valid?(res.flags||[]).map(f=>flagLabel(f)):[];
+      if(res.valid&&idCounts[res.id]>1) notesParts.push(flagLabel('duplicate-id'));
       processedUploadResults.push(Object.assign({},row,{
-        'Extracted Birth Date':res.valid?res.birthDateStr:'',
-        'Gender':res.valid?res.gender:'',
-        'Age':res.valid?res.currentAgeYears:'',
-        'Retirement Age':res.valid?res.retireAge:'',
-        'Retirement Date':res.valid?res.retireDateStr:'',
-        'Governorate':res.valid?res.governorate:'',
-        'Notes':notesParts.join(', '),
-        'ID Status':res.valid?'VALID':`ERROR: ${res.error}`
+        [t('upload_col_birth')]:res.valid?res.birthDateStr:'',
+        [t('col_gender')]:res.valid?res.gender:'',
+        [t('upload_col_age')]:res.valid?res.currentAgeYears:'',
+        [t('upload_col_totaldays')]:res.valid?res.totalDaysLived:'',
+        [t('upload_col_retireage')]:res.valid?res.retireAge:'',
+        [t('upload_col_retiredate')]:res.valid?res.retireDateStr:'',
+        [t('upload_col_gov')]:res.valid?govDisplay(res.govCode):'',
+        [t('upload_col_notes')]:notesParts.join(', '),
+        [t('upload_col_status')]:res.valid?'VALID':`ERROR: ${res.error}`
       }));
     });
     const cols=Object.keys(processedUploadResults[0]);
+    const genderKey=t('col_gender');
     document.getElementById('upload-thead').innerHTML=`<tr>${cols.map(c=>`<th>${escapeHtml(c)}</th>`).join('')}</tr>`;
     const tbody=document.getElementById('upload-tbody');
     tbody.innerHTML=processedUploadResults.slice(0,150).map(row=>{
       return `<tr>${cols.map(c=>{
-        if(c==='Gender'&&row[c]) return `<td>${genderBadge(row[c],'.9rem')}</td>`;
+        if(c===genderKey&&row[c]) return `<td>${genderBadge(row[c],'.9rem')}</td>`;
         return `<td>${escapeHtml(row[c])}</td>`;
       }).join('')}</tr>`;
     }).join('');
-    const shownNote=processedUploadResults.length>150?` — showing first 150 of ${processedUploadResults.length}`:'';
-    document.getElementById('upload-summary').textContent=`${processedUploadResults.length} rows processed (${validCount} valid)${shownNote}`;
+    const shownNote=processedUploadResults.length>150?t('upload_shown_note',150,processedUploadResults.length):'';
+    document.getElementById('upload-summary').textContent=t('upload_summary',processedUploadResults.length,validCount,shownNote);
     document.getElementById('upload-results').classList.remove('hide');
     setBusy(btn,false);
-    showToast('File processed','auto_fix_high');
+    showToast(t('toast_file_processed'),'auto_fix_high');
   }});
 }
 
@@ -1857,17 +2173,17 @@ function downloadUpload(format){
   }else{
     downloadXLSX(processedUploadResults,'Processed','processed_national_ids.xlsx');
   }
-  showToast('File downloaded','download_done');
+  showToast(t('toast_file_downloaded'),'download_done');
 }
 
 async function pasteIntoInspector(){
   try{
     const text=await navigator.clipboard.readText();
-    if(!text){showToast('Clipboard is empty','info');return;}
+    if(!text){showToast(t('toast_clipboard_empty'),'info');return;}
     document.getElementById('inspector-input').value=text.trim();
     inspectID();
-    showToast('Pasted from clipboard','content_paste_go');
-  }catch(e){showToast('Clipboard access denied — try Ctrl/Cmd+V','block');}
+    showToast(t('toast_pasted'),'content_paste_go');
+  }catch(e){showToast(t('toast_clipboard_denied'),'block');}
 }
 function loadSampleIntoInspector(){
   document.getElementById('inspector-input').value=SAMPLE_IDS[Math.floor(Math.random()*SAMPLE_IDS.length)];
@@ -1901,22 +2217,22 @@ function renderInspectorResult(res){
     return `<div class="card pad" style="text-align:center;padding:2.5rem 1.5rem;">
       <div class="emptybox" style="background:var(--scarlet-soft);"><span class="material-symbols-rounded" style="color:var(--scarlet);opacity:1;">error</span></div>
       <h3 class="disp" style="font-weight:640;font-size:1rem;margin:0 0 .3rem;">${escapeHtml(res.error)}</h3>
-      <p style="font-size:.78rem;color:var(--ink-2);margin:0;">Normalized input: <span class="mono">${escapeHtml(res.normalized||res.raw)}</span></p>
+      <p style="font-size:.78rem;color:var(--ink-2);margin:0;">${t('normalized_input')} <span class="mono">${escapeHtml(res.normalized||res.raw)}</span></p>
     </div>`;
   }
   const segGroups=[
-    {items:[{val:res.centuryDigit,label:'Cent.'},{val:String(res.birthYear).slice(-2),label:'Year'},{val:pad2(res.birthMonth),label:'Month'},{val:pad2(res.birthDay),label:'Day'}]},
-    {items:[{val:res.govCode,label:'Gov'},{val:res.serial,label:'Serial'}]},
-    {items:[{val:String(res.genderDigit),label:'Gender'},{val:res.checkDigit,label:'Check'}]}
+    {items:[{val:res.centuryDigit,label:t('seg_cent')},{val:String(res.birthYear).slice(-2),label:t('seg_year')},{val:pad2(res.birthMonth),label:t('seg_month')},{val:pad2(res.birthDay),label:t('seg_day')}]},
+    {items:[{val:res.govCode,label:t('seg_gov')},{val:res.serial,label:t('seg_serial')}]},
+    {items:[{val:String(res.genderDigit),label:t('seg_gender')},{val:res.checkDigit,label:t('seg_check')}]}
   ];
   const segHtml=segGroups.map((g,gi)=>{
     const items=g.items.map(s=>`<div class="idseg"><span>${s.val}</span><span class="tag">${s.label}</span></div>`).join('');
     return `<div class="idseg-group">${items}</div>${gi<segGroups.length-1?'<div class="idseg-divider"></div>':''}`;
   }).join('');
-  const flagsHtml=res.flags.length?res.flags.map(f=>`<span class="chip">${f.replace(/-/g,' ')}</span>`).join(''):'';
+  const flagsHtml=res.flags.length?res.flags.map(f=>`<span class="chip">${flagLabel(f)}</span>`).join(''):'';
   const checksHtml=res.checks.map(c=>`<div class="row" style="gap:.55rem;padding:.5rem 0;border-bottom:1px solid var(--edge);">
       <span class="material-symbols-rounded" style="font-size:1.1rem;color:${c.pass?'var(--mint)':'var(--scarlet)'};">${c.pass?'check_circle':'cancel'}</span>
-      <span style="font-size:.8rem;">${c.label}</span>
+      <span style="font-size:.8rem;">${checkLabel(c.key)}</span>
     </div>`).join('');
 
   return `
@@ -1929,7 +2245,7 @@ function renderInspectorResult(res){
           <div class="row" style="gap:.75rem;">
             <div class="idchip"></div>
             <div>
-              <div style="font-size:.66rem;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3);font-weight:700;">Arab Republic of Egypt</div>
+              <div style="font-size:.66rem;text-transform:uppercase;letter-spacing:.09em;color:var(--ink-3);font-weight:700;">${t('country_name')}</div>
               <div class="mono" style="font-size:1.55rem;font-weight:700;letter-spacing:.02em;line-height:1.2;">${res.id}</div>
             </div>
           </div>
@@ -1941,12 +2257,12 @@ function renderInspectorResult(res){
 
     <div class="grid2">
       <div class="card pad stack">
-        <h4 class="cardtitle">Identity</h4>
+        <h4 class="cardtitle" data-i18n="identity_title">${t('identity_title')}</h4>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-          <div class="row" style="gap:.55rem;align-items:flex-start;"><span class="material-symbols-rounded" style="font-size:1.05rem;color:var(--amber-text);margin-top:.15rem;">cake</span><div><div class="eyebrow">Birth date</div><div style="font-weight:650;font-size:.95rem;">${res.birthDateStr}</div></div></div>
-          <div class="row" style="gap:.55rem;align-items:flex-start;"><span class="material-symbols-rounded" style="font-size:1.05rem;color:var(--amber-text);margin-top:.15rem;">calendar_month</span><div><div class="eyebrow">Weekday</div><div style="font-weight:650;font-size:.95rem;">${res.birthDayOfWeek}</div></div></div>
-          <div class="row" style="gap:.55rem;align-items:flex-start;"><span class="material-symbols-rounded" style="font-size:1.05rem;color:var(--amber-text);margin-top:.15rem;">functions</span><div><div class="eyebrow">Age</div><div style="font-weight:650;font-size:.95rem;">${res.currentAgeYears}y ${res.currentAgeMonths}m ${res.currentAgeDays}d</div></div></div>
-          <div class="row" style="gap:.55rem;align-items:flex-start;"><span class="material-symbols-rounded" style="font-size:1.05rem;color:var(--amber-text);margin-top:.15rem;">fingerprint</span><div><div class="eyebrow">Governorate</div><div style="font-weight:650;font-size:.95rem;${res.governorateKnown?'':'font-style:italic;color:var(--ink-2);'}">${res.governorate}</div></div></div>
+          <div class="row" style="gap:.55rem;align-items:flex-start;"><span class="material-symbols-rounded" style="font-size:1.05rem;color:var(--amber-text);margin-top:.15rem;">cake</span><div><div class="eyebrow">${t('lbl_birth_date')}</div><div style="font-weight:650;font-size:.95rem;">${res.birthDateStr}</div></div></div>
+          <div class="row" style="gap:.55rem;align-items:flex-start;"><span class="material-symbols-rounded" style="font-size:1.05rem;color:var(--amber-text);margin-top:.15rem;">calendar_month</span><div><div class="eyebrow">${t('weekday_label')}</div><div style="font-weight:650;font-size:.95rem;">${dayName(res.birthDayIndex)}</div></div></div>
+          <div class="row" style="gap:.55rem;align-items:flex-start;"><span class="material-symbols-rounded" style="font-size:1.05rem;color:var(--amber-text);margin-top:.15rem;">functions</span><div><div class="eyebrow">${t('age_label')}</div><div style="font-weight:650;font-size:.95rem;">${res.currentAgeYears}y ${res.currentAgeMonths}m ${res.currentAgeDays}d</div><div class="row" style="gap:.3rem;align-items:center;margin-top:.2rem;"><span class="num" style="font-size:.72rem;color:var(--ink-2);">${t('total_days_lived',res.totalDaysLived)}</span><span class="material-symbols-rounded rowcopy focusable" id="days-copy-icon" role="button" tabindex="0" title="${t('copy_visible_title')}" style="font-size:.95rem;" onclick="copyPlainNumber(this,${res.totalDaysLived})" onkeydown="if(event.key==='Enter'){copyPlainNumber(this,${res.totalDaysLived})}">content_copy</span></div></div></div>
+          <div class="row" style="gap:.55rem;align-items:flex-start;"><span class="material-symbols-rounded" style="font-size:1.05rem;color:var(--amber-text);margin-top:.15rem;">fingerprint</span><div><div class="eyebrow">${t('gov_field_label')}</div><div style="font-weight:650;font-size:.95rem;${res.governorateKnown?'':'font-style:italic;color:var(--ink-2);'}">${govDisplay(res.govCode)}</div></div></div>
         </div>
         ${res.flags.length?`<div class="row" style="flex-wrap:wrap;gap:.35rem;">${flagsHtml}</div>`:''}
       </div>
@@ -1960,10 +2276,10 @@ function renderInspectorResult(res){
             </div>
           </div>
           <div class="stack" style="gap:.4rem;">
-            <div class="chip chip-accent" style="width:fit-content;">Law 148/2019</div>
-            <div style="font-size:.92rem;font-weight:650;">${res.retireAge}-year retirement age</div>
-            <div style="font-size:.87rem;">Retires <span class="num" style="color:var(--amber-text);font-weight:700;">${res.retireDateStr}</span></div>
-            <div style="font-size:.78rem;color:var(--ink-2);">${res.isEligible?'Already eligible':res.yearsUntilRetire+' years remaining'}</div>
+            <div class="chip chip-accent" style="width:fit-content;">${t('law_badge')}</div>
+            <div style="font-size:.92rem;font-weight:650;">${t('retire_age_years',res.retireAge)}</div>
+            <div style="font-size:.87rem;">${t('retires_label')} <span class="num" style="color:var(--amber-text);font-weight:700;">${res.retireDateStr}</span></div>
+            <div style="font-size:.78rem;color:var(--ink-2);">${res.isEligible?t('already_eligible'):t('years_remaining',res.yearsUntilRetire)}</div>
           </div>
         </div>
       </div>
@@ -1971,157 +2287,25 @@ function renderInspectorResult(res){
 
     <div class="card pad stack">
       <div class="row-between">
-        <h4 class="cardtitle">Checks — ${res.checksPassed}/${res.checksTotal} passed</h4>
-        <button onclick="copyInspectorSummary()" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>Copy</button>
+        <h4 class="cardtitle">${t('checks_title',{p:res.checksPassed,t:res.checksTotal})}</h4>
+        <button onclick="copyInspectorSummary()" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>${t('btn_copy')}</button>
       </div>
       <div>${checksHtml}</div>
     </div>
   </div>`;
 }
 
+function copyPlainNumber(el,n){
+  copyText(String(n),null,t('toast_row_copied'));
+  if(el){const orig=el.textContent;el.textContent='check';el.style.color='var(--mint)';setTimeout(()=>{el.textContent=orig;el.style.color='';},1200);}
+}
+
 function copyInspectorSummary(){
   const raw=document.getElementById('inspector-input').value;
   const res=parseID(raw);
   if(!res.valid) return;
-  const summary=`National ID: ${res.id}\nGender: ${res.gender}\nBirth Date: ${res.birthDateStr} (${res.birthDayOfWeek})\nGovernorate: ${res.governorate} (${res.govCode})\nCurrent Age: ${res.currentAgeYears}y ${res.currentAgeMonths}m ${res.currentAgeDays}d\nRetirement Age: ${res.retireAge} years\nRetirement Date: ${res.retireDateStr}\nStructural checks: ${res.checksPassed}/${res.checksTotal} passed`;
-  copyText(summary,null,'Summary copied');
-}
-
-function updateInspectorBatchCount(){
-  const raw=document.getElementById('inspector-batch-input').value;
-  const lines=raw.split('\n').map(l=>l.trim()).filter(Boolean);
-  document.getElementById('inspector-batch-count').textContent=`${lines.length} detected`;
-  saveStateDebounced({inspectorBatchInput:raw});
-}
-function loadSampleIntoInspectorBatch(){
-  document.getElementById('inspector-batch-input').value=SAMPLE_IDS.join('\n');
-  updateInspectorBatchCount();
-}
-
-function processInspectorBatch(){
-  const raw=document.getElementById('inspector-batch-input').value;
-  const lines=raw.split('\n').map(l=>l.trim()).filter(Boolean);
-  if(lines.length===0){showToast('Paste at least one ID first','info');return;}
-  const btn=document.getElementById('btn-run-analytics');
-  setBusy(btn,true,'Analyzing…');
-  chunkProcess(lines,parseID,{onDone:results=>{
-    inspectorBatchResults=results;
-    markDuplicates(inspectorBatchResults);
-    inspectorBatchFilter='all';
-    renderInspectorBatchTable();
-    setBusy(btn,false);
-    showToast(`Analyzed ${inspectorBatchResults.length} IDs`,'task_alt');
-  }});
-}
-function setInspectorBatchFilter(f){inspectorBatchFilter=f;renderInspectorBatchTable();}
-
-let lastInspectorBatchRows=[];
-
-function renderInspectorBatchTable(){
-  const resultEl=document.getElementById('inspector-batch-result');
-  const total=inspectorBatchResults.length;
-  const validCount=inspectorBatchResults.filter(r=>r.valid).length;
-  const errorCount=total-validCount;
-  let rows=inspectorBatchResults;
-  if(inspectorBatchFilter==='valid') rows=rows.filter(r=>r.valid);
-  if(inspectorBatchFilter==='error') rows=rows.filter(r=>!r.valid);
-  lastInspectorBatchRows=rows;
-  const cols=['National ID','Status','Century','Birth Date','Weekday','Age','Gender','Gov Code','Governorate','Serial','Check','Retire Age','Retire Date','Yrs to Retire','Career %','Flags'];
-
-  const rowHtml=rows.map((r,idx)=>{
-    const rowId=`irow-${idx}`;
-    if(r.valid){
-      const flagsText=r.flags.length?r.flags.map(f=>f.replace(/-/g,' ')).join(', '):'—';
-      return `<tr>
-        <td>${rowCopyBtn(rowId,idx,'copyInspectorBatchRow')}</td>
-        <td class="mono" style="font-weight:650;">${r.id}</td>
-        <td><span class="statuspill"><span class="statdot ok"></span>Valid</span></td>
-        <td>${r.centuryLabel}</td>
-        <td>${r.birthDateStr}</td>
-        <td>${r.birthDayOfWeek}</td>
-        <td>${r.currentAgeYears}</td>
-        <td>${genderBadge(r.gender,'.85rem')}</td>
-        <td class="mono">${r.govCode}</td>
-        <td style="${r.governorateKnown?'':'font-style:italic;color:var(--ink-2);'}">${r.governorate}</td>
-        <td class="mono">${r.serial}</td>
-        <td class="mono">${r.checkDigit||'—'}</td>
-        <td style="color:var(--amber-text);font-weight:650;">${r.retireAge}</td>
-        <td style="color:var(--amber);font-weight:650;">${r.retireDateStr}</td>
-        <td>${r.yearsUntilRetire}</td>
-        <td>${r.careerPercent}%</td>
-        <td style="font-size:.7rem;color:var(--ink-2);">${flagsText}</td>
-      </tr>`;
-    }
-    return `<tr>
-      <td>${rowCopyBtn(rowId,idx,'copyInspectorBatchRow')}</td>
-      <td class="mono" style="font-weight:650;">${escapeHtml(r.raw)}</td>
-      <td><span class="statuspill"><span class="statdot bad"></span>Error</span></td>
-      <td colspan="12" style="color:var(--scarlet);font-weight:600;">${escapeHtml(r.error)}</td>
-      <td>—</td>
-    </tr>`;
-  }).join('');
-
-  resultEl.innerHTML=`
-    <div class="card pad stack">
-      <div class="row-between">
-        <div>
-          <h3 class="cardtitle">Batch analytics table</h3>
-          <p style="font-size:.75rem;color:var(--ink-2);margin:.15rem 0 0;">${total} total IDs (${validCount} valid, ${errorCount} errors) — ${cols.length} columns</p>
-        </div>
-        <div class="row" style="gap:.4rem;">
-          <button onclick="copyInspectorBatchTable(event)" class="btn btn-ghost btn-sm focusable" title="Copy visible rows"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>Copy</button>
-          <button onclick="exportInspectorBatch('xlsx')" class="btn btn-soft btn-sm focusable" title="Export visible rows to Excel"><span class="material-symbols-rounded" style="font-size:.95rem;">download</span>Excel</button>
-          <button onclick="exportInspectorBatch('csv')" class="btn btn-ghost btn-sm focusable" title="Export visible rows to CSV"><span class="material-symbols-rounded" style="font-size:.95rem;">csv</span>CSV</button>
-        </div>
-      </div>
-      <div class="pillrow">
-        <button class="pill${inspectorBatchFilter==='all'?' active':''} focusable" onclick="setInspectorBatchFilter('all')">All</button>
-        <button class="pill${inspectorBatchFilter==='valid'?' active':''} focusable" onclick="setInspectorBatchFilter('valid')">Valid</button>
-        <button class="pill${inspectorBatchFilter==='error'?' active':''} focusable" onclick="setInspectorBatchFilter('error')">Errors</button>
-      </div>
-      <div class="scrollx" style="border-radius:16px;border:1px solid var(--edge);">
-        <div style="max-height:460px;overflow:auto;">
-          <table class="dtable"><thead><tr><th></th>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
-          <tbody>${rowHtml||`<tr><td colspan="${cols.length+1}" style="text-align:center;padding:3rem;color:var(--ink-3);">No matching rows</td></tr>`}</tbody></table>
-        </div>
-      </div>
-    </div>`;
-}
-
-function copyInspectorBatchRow(idx,elId){
-  const r=lastInspectorBatchRows[idx];
-  if(!r) return;
-  const line=r.valid?`${r.id}\tVALID\t${r.centuryLabel}\t${r.birthDateStr}\t${r.birthDayOfWeek}\t${r.currentAgeYears}\t${r.gender}\t${r.govCode}\t${r.governorate}\t${r.serial}\t${r.checkDigit}\t${r.retireAge}\t${r.retireDateStr}\t${r.yearsUntilRetire}\t${r.careerPercent}%\t${(r.flags||[]).map(f=>f.replace(/-/g,' ')).join(', ')}`:`${r.raw}\tERROR\t${r.error}`;
-  copyText(line,null,'Row copied');
-  const el=document.getElementById(elId);
-  if(el){el.textContent='check';el.style.color='var(--mint)';setTimeout(()=>{el.textContent='content_copy';el.style.color='';},1200);}
-}
-
-function copyInspectorBatchTable(evt){
-  if(lastInspectorBatchRows.length===0){showToast('No visible rows to copy','info');return;}
-  let tsv='National ID\tStatus\tCentury\tBirth Date\tWeekday\tAge\tGender\tGov Code\tGovernorate\tSerial\tCheck\tRetire Age\tRetire Date\tYrs to Retire\tCareer %\tFlags\tError\n';
-  lastInspectorBatchRows.forEach(r=>{
-    tsv+=r.valid?`${r.id}\tVALID\t${r.centuryLabel}\t${r.birthDateStr}\t${r.birthDayOfWeek}\t${r.currentAgeYears}\t${r.gender}\t${r.govCode}\t${r.governorate}\t${r.serial}\t${r.checkDigit}\t${r.retireAge}\t${r.retireDateStr}\t${r.yearsUntilRetire}\t${r.careerPercent}%\t${r.flags.map(f=>f.replace(/-/g,' ')).join(', ')}\t\n`:`${r.raw}\tERROR\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t${r.error}\n`;
-  });
-  copyText(tsv,evt?evt.currentTarget:null,`${lastInspectorBatchRows.length} rows copied`);
-}
-
-function exportInspectorBatch(format){
-  if(lastInspectorBatchRows.length===0){showToast('No visible rows to export','info');return;}
-  const data=lastInspectorBatchRows.map(r=>({
-    'National ID':r.valid?r.id:r.raw,'Status':r.valid?'VALID':'ERROR','Century':r.valid?r.centuryLabel:'','Birth Date':r.valid?r.birthDateStr:'',
-    'Weekday':r.valid?r.birthDayOfWeek:'','Age':r.valid?r.currentAgeYears:'','Gender':r.valid?r.gender:'','Gov Code':r.valid?r.govCode:'',
-    'Governorate':r.valid?r.governorate:'','Serial':r.valid?r.serial:'','Check Digit':r.valid?r.checkDigit:'','Retirement Age':r.valid?r.retireAge:'',
-    'Retirement Date':r.valid?r.retireDateStr:'','Years To Retire':r.valid?r.yearsUntilRetire:'','Career %':r.valid?r.careerPercent:'',
-    'Fake Pattern':r.valid?(r.fakePattern?'YES':'NO'):'','Flags':r.valid?r.flags.map(f=>f.replace(/-/g,' ')).join(', '):'','Error':r.error||''
-  }));
-  if(format==='csv'){
-    const headers=Object.keys(data[0]);
-    downloadBlob(toCSV(headers,data.map(row=>headers.map(h=>row[h]))),'id_batch_analytics.csv','text/csv;charset=utf-8;');
-  }else{
-    downloadXLSX(data,'Batch Analytics','id_batch_analytics.xlsx');
-  }
-  showToast(`${lastInspectorBatchRows.length} rows downloaded`,'download_done');
+  const summary=t('copy_summary_id',res);
+  copyText(summary,null,t('toast_summary_copied'));
 }
 
 const destOrder=['birth','gender','retirement'];
@@ -2267,7 +2451,7 @@ function updateFormulas(){
 
 function copyFormula(elementId,evt){
   const text=document.getElementById(elementId).textContent;
-  copyText(text,evt?evt.currentTarget:null,'Formula copied');
+  copyText(text,evt?evt.currentTarget:null,t('toast_formula_copied'));
 }
 
 function parseDateInput(id){
@@ -2278,9 +2462,8 @@ function parseDateInput(id){
 }
 
 function renderWorkdayPicker(){
-  const days=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
   const el=document.getElementById('workday-picker');
-  el.innerHTML=days.map((d,i)=>`<button type="button" class="pill${workDaySet.has(i)?' active':''} focusable" onclick="toggleWorkday(${i})">${d}</button>`).join('');
+  el.innerHTML=DAY_NAMES.map((d,i)=>`<button type="button" class="pill${workDaySet.has(i)?' active':''} focusable" onclick="toggleWorkday(${i})">${dayName(i).slice(0,currentLang==='ar'?99:3)}</button>`).join('');
 }
 function toggleWorkday(i){
   if(workDaySet.has(i)) workDaySet.delete(i); else workDaySet.add(i);
@@ -2294,7 +2477,7 @@ function computeBetweenDates(){
   const end=parseDateInput('dt-end');
   const box=document.getElementById('between-result');
   saveStateDebounced({dtStart:document.getElementById('dt-start').value,dtEnd:document.getElementById('dt-end').value});
-  if(!start||!end){box.innerHTML=`<div style="text-align:center;padding:2rem 1rem;color:var(--ink-3);">Pick a start and end date.</div>`;return;}
+  if(!start||!end){box.innerHTML=`<div style="text-align:center;padding:2rem 1rem;color:var(--ink-3);">${t('dt_pick_start_end')}</div>`;return;}
   const s=stripTime(start),e=stripTime(end);
   const reversed=s>e;
   const lo=reversed?e:s,hi=reversed?s:e;
@@ -2310,10 +2493,10 @@ function computeBetweenDates(){
   box.innerHTML=`
     <div class="stack">
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;">
-        <div class="kpi"><div class="lbl">Total days</div><div class="num disp">${totalDays}${reversed?' (reversed)':''}</div></div>
-        <div class="kpi"><div class="lbl">Working days</div><div class="num disp" style="color:var(--amber-text);">${workdays}</div></div>
+        <div class="kpi"><div class="lbl">${t('dt_total_days')}</div><div class="num disp">${totalDays}${reversed?t('dt_reversed'):''}</div></div>
+        <div class="kpi"><div class="lbl">${t('lbl_working_days')}</div><div class="num disp" style="color:var(--amber-text);">${workdays}</div></div>
       </div>
-      <div class="kpi"><div class="lbl">Calendar span</div><div style="font-size:1.05rem;font-weight:650;" class="disp">${years}y ${months}m ${days}d</div></div>
+      <div class="kpi"><div class="lbl">${t('dt_calendar_span')}</div><div style="font-size:1.05rem;font-weight:650;" class="disp">${years}y ${months}m ${days}d</div></div>
     </div>`;
 }
 
@@ -2323,7 +2506,7 @@ function computeAge(){
   const asof=asofVal?parseDateInput('dt-asof'):new Date();
   const box=document.getElementById('age-result');
   saveStateDebounced({dtBirth:document.getElementById('dt-birth').value,dtAsof:asofVal});
-  if(!birth){box.innerHTML=`<div style="text-align:center;padding:2rem 1rem;color:var(--ink-3);">Pick a birth date.</div>`;return;}
+  if(!birth){box.innerHTML=`<div style="text-align:center;padding:2rem 1rem;color:var(--ink-3);">${t('dt_pick_birth')}</div>`;return;}
   const age=calcAge(birth,asof);
   let cursorYears=age.years;
   let bday=addYears(birth,cursorYears);
@@ -2331,12 +2514,12 @@ function computeAge(){
   const daysToNext=daysBetween(stripTime(asof),stripTime(bday));
   box.innerHTML=`
     <div class="stack">
-      <div class="kpi"><div class="lbl">Exact age</div><div style="font-size:1.3rem;font-weight:650;" class="disp">${age.years}y ${age.months}m ${age.days}d</div></div>
+      <div class="kpi"><div class="lbl">${t('dt_exact_age')}</div><div style="font-size:1.3rem;font-weight:650;" class="disp">${age.years}y ${age.months}m ${age.days}d</div></div>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;">
-        <div class="kpi"><div class="lbl">Total days lived</div><div class="num disp">${age.totalDays}</div></div>
-        <div class="kpi"><div class="lbl">Days to next birthday</div><div class="num disp" style="color:var(--amber-text);">${daysToNext}</div></div>
+        <div class="kpi"><div class="lbl">${t('dt_total_days_lived')}</div><div class="num disp">${age.totalDays}</div></div>
+        <div class="kpi"><div class="lbl">${t('dt_days_to_next_bday')}</div><div class="num disp" style="color:var(--amber-text);">${daysToNext}</div></div>
       </div>
-      <div class="kpi"><div class="lbl">Born on</div><div style="font-weight:650;">${DAY_NAMES[birth.getDay()]}, ${MONTH_NAMES[birth.getMonth()]} ${birth.getDate()}, ${birth.getFullYear()}</div></div>
+      <div class="kpi"><div class="lbl">${t('dt_born_on')}</div><div style="font-weight:650;">${dayName(birth.getDay())}, ${monthName(birth.getMonth())} ${birth.getDate()}, ${birth.getFullYear()}</div></div>
     </div>`;
 }
 
@@ -2344,18 +2527,18 @@ function computeWeekday(){
   const date=parseDateInput('dt-weekday');
   const box=document.getElementById('weekday-result');
   saveStateDebounced({dtWeekday:document.getElementById('dt-weekday').value});
-  if(!date){box.innerHTML=`<div style="text-align:center;padding:2rem 1rem;color:var(--ink-3);">Pick a date.</div>`;return;}
+  if(!date){box.innerHTML=`<div style="text-align:center;padding:2rem 1rem;color:var(--ink-3);">${t('dt_pick_date')}</div>`;return;}
   const dow=date.getDay();
   const dayOfYear=daysBetween(new Date(date.getFullYear(),0,1),date)+1;
   const weekNum=Math.ceil((dayOfYear+new Date(date.getFullYear(),0,1).getDay())/7);
   box.innerHTML=`
     <div class="stack">
-      <div class="kpi"><div class="lbl">Weekday</div><div style="font-size:1.3rem;font-weight:650;" class="disp">${DAY_NAMES[dow]}</div></div>
+      <div class="kpi"><div class="lbl">${t('weekday_label')}</div><div style="font-size:1.3rem;font-weight:650;" class="disp">${dayName(dow)}</div></div>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;">
-        <div class="kpi"><div class="lbl">Day of year</div><div class="num disp">${dayOfYear}</div></div>
-        <div class="kpi"><div class="lbl">Week number</div><div class="num disp">${weekNum}</div></div>
+        <div class="kpi"><div class="lbl">${t('dt_day_of_year')}</div><div class="num disp">${dayOfYear}</div></div>
+        <div class="kpi"><div class="lbl">${t('dt_week_number')}</div><div class="num disp">${weekNum}</div></div>
       </div>
-      <div class="kpi"><div class="lbl">Leap year</div><div style="font-weight:650;">${isLeapYear(date.getFullYear())?'Yes — 366 days':'No — 365 days'}</div></div>
+      <div class="kpi"><div class="lbl">${t('dt_leap_year')}</div><div style="font-weight:650;">${isLeapYear(date.getFullYear())?t('dt_leap_yes'):t('dt_leap_no')}</div></div>
     </div>`;
 }
 
@@ -2365,14 +2548,14 @@ function computeLeapSingle(){
   saveStateDebounced({lyYear:raw});
   if(!raw){box.innerHTML='';return;}
   const y=parseInt(raw,10);
-  if(!Number.isFinite(y)){box.innerHTML=`<p style="color:var(--scarlet);font-size:.8rem;">Enter a valid year.</p>`;return;}
+  if(!Number.isFinite(y)){box.innerHTML=`<p style="color:var(--scarlet);font-size:.8rem;">${t('dt_enter_valid_year')}</p>`;return;}
   const leap=isLeapYear(y);
   box.innerHTML=`<div class="kpi" style="margin-top:.7rem;">
     <div class="row" style="gap:.5rem;">
       <span class="material-symbols-rounded" style="color:${leap?'var(--mint)':'var(--scarlet)'};">${leap?'check_circle':'cancel'}</span>
-      <div style="font-weight:650;">${y} is ${leap?'a leap year':'not a leap year'}</div>
+      <div style="font-weight:650;">${leap?t('dt_is_leap',y):t('dt_is_not_leap',y)}</div>
     </div>
-    <div style="font-size:.75rem;color:var(--ink-2);margin-top:.4rem;">${y}/4=${(y%4===0)}, ${y}/100=${(y%100===0)}, ${y}/400=${(y%400===0)} — divisible by 4 and (not by 100, or by 400)</div>
+    <div style="font-size:.75rem;color:var(--ink-2);margin-top:.4rem;">${t('dt_div_rule',y,(y%4===0),(y%100===0),(y%400===0))}</div>
   </div>`;
 }
 
@@ -2383,34 +2566,36 @@ function computeLeapRange(){
   saveStateDebounced({lyFrom:fromRaw,lyTo:toRaw});
   if(!fromRaw||!toRaw){box.innerHTML='';return;}
   let from=parseInt(fromRaw,10),to=parseInt(toRaw,10);
-  if(!Number.isFinite(from)||!Number.isFinite(to)){box.innerHTML=`<p style="color:var(--scarlet);font-size:.8rem;margin-top:.7rem;">Enter valid years.</p>`;return;}
+  if(!Number.isFinite(from)||!Number.isFinite(to)){box.innerHTML=`<p style="color:var(--scarlet);font-size:.8rem;margin-top:.7rem;">${t('dt_enter_valid_years')}</p>`;return;}
   if(from>to){[from,to]=[to,from];}
-  if(to-from>500){box.innerHTML=`<p style="color:var(--scarlet);font-size:.8rem;margin-top:.7rem;">Range too large — keep it under 500 years.</p>`;return;}
+  if(to-from>500){box.innerHTML=`<p style="color:var(--scarlet);font-size:.8rem;margin-top:.7rem;">${t('dt_range_too_large')}</p>`;return;}
   const leaps=[];
   for(let y=from;y<=to;y++){if(isLeapYear(y)) leaps.push(y);}
   box.innerHTML=`
     <div class="kpi" style="margin-top:.7rem;">
-      <div class="lbl">Leap years found</div>
+      <div class="lbl">${t('dt_leap_years_found')}</div>
       <div class="num disp" style="color:var(--amber-text);">${leaps.length}</div>
     </div>
     <div class="scrollx" style="max-height:140px;overflow-y:auto;margin-top:.6rem;">
-      <div class="row" style="flex-wrap:wrap;gap:.35rem;">${leaps.map(y=>`<span class="chip">${y}</span>`).join('')||'<span style="color:var(--ink-3);font-size:.8rem;">None in range</span>'}</div>
+      <div class="row" style="flex-wrap:wrap;gap:.35rem;">${leaps.map(y=>`<span class="chip">${y}</span>`).join('')||`<span style="color:var(--ink-3);font-size:.8rem;">${t('dt_none_in_range')}</span>`}</div>
     </div>`;
 }
 
 const COMMANDS=[
-  {id:'go-processor-paste',label:'Batch Processor — Paste IDs',group:'Navigate',icon:'content_paste',run:()=>{switchTab('processor');switchSubTab('paste');}},
-  {id:'go-processor-upload',label:'Batch Processor — Upload File',group:'Navigate',icon:'upload_file',run:()=>{switchTab('processor');switchSubTab('upload');}},
-  {id:'go-inspector-single',label:'Inspector — Single ID',group:'Navigate',icon:'fingerprint',run:()=>{switchTab('inspector');setInspectorMode('single');}},
-  {id:'go-inspector-batch',label:'Inspector — Batch Analytics',group:'Navigate',icon:'table_rows',run:()=>{switchTab('inspector');setInspectorMode('batch');}},
+  {id:'go-idtools-single',label:'ID Tools — Single ID',group:'Navigate',icon:'fingerprint',run:()=>{switchTab('idtools');switchSubTab('single');}},
+  {id:'go-idtools-batch',label:'ID Tools — Batch Analytics',group:'Navigate',icon:'table_rows',run:()=>{switchTab('idtools');switchSubTab('batch');}},
+  {id:'go-idtools-upload',label:'ID Tools — Upload File',group:'Navigate',icon:'upload_file',run:()=>{switchTab('idtools');switchSubTab('upload');}},
   {id:'go-formula',label:'Excel / Sheets Formulas',group:'Navigate',icon:'functions',run:()=>switchTab('formula')},
   {id:'go-dates-between',label:'Date Tools — Between Dates',group:'Navigate',icon:'date_range',run:()=>{switchTab('datetools');switchDateSub('between');}},
   {id:'go-dates-age',label:'Date Tools — Age Calculator',group:'Navigate',icon:'cake',run:()=>{switchTab('datetools');switchDateSub('age');}},
   {id:'go-dates-weekday',label:'Date Tools — Weekday Finder',group:'Navigate',icon:'view_week',run:()=>{switchTab('datetools');switchDateSub('weekday');}},
   {id:'go-dates-leap',label:'Date Tools — Leap Years',group:'Navigate',icon:'event_repeat',run:()=>{switchTab('datetools');switchDateSub('leapyears');}},
-  {id:'act-paste-clipboard',label:'Paste ID List From Clipboard',group:'Actions',icon:'content_paste_go',run:()=>{switchTab('processor');switchSubTab('paste');pasteFromClipboard();}},
-  {id:'act-sample-processor',label:'Load Sample Data (Batch Processor)',group:'Actions',icon:'science',run:()=>{switchTab('processor');switchSubTab('paste');loadSampleData();}},
-  {id:'act-sample-inspector',label:'Load Sample ID (Inspector)',group:'Actions',icon:'science',run:()=>{switchTab('inspector');setInspectorMode('single');loadSampleIntoInspector();}},
+  {id:'go-reference-structure',label:'Reference — ID Structure',group:'Navigate',icon:'fingerprint',run:()=>{switchTab('reference');switchRefSub('structure');}},
+  {id:'go-reference-gov',label:'Reference — Governorates',group:'Navigate',icon:'public',run:()=>{switchTab('reference');switchRefSub('governorates');}},
+  {id:'go-reference-law',label:'Reference — Retirement Law',group:'Navigate',icon:'gavel',run:()=>{switchTab('reference');switchRefSub('law');}},
+  {id:'act-paste-clipboard',label:'Paste ID List From Clipboard',group:'Actions',icon:'content_paste_go',run:()=>{switchTab('idtools');switchSubTab('batch');batchPasteFromClipboard();}},
+  {id:'act-sample-batch',label:'Load Sample Data (Batch Analytics)',group:'Actions',icon:'science',run:()=>{switchTab('idtools');switchSubTab('batch');batchLoadSample();}},
+  {id:'act-sample-single',label:'Load Sample ID (Single)',group:'Actions',icon:'science',run:()=>{switchTab('idtools');switchSubTab('single');loadSampleIntoInspector();}},
   {id:'act-theme',label:'Toggle Light / Dark Theme',group:'Actions',icon:'contrast',run:()=>toggleTheme()},
   {id:'act-theme-system',label:'Use System Theme',group:'Actions',icon:'contrast',run:()=>useSystemTheme()},
   {id:'act-clear-cache',label:'Clear Cached Local Data',group:'Actions',icon:'layers_clear',run:()=>confirmClearCache()}
@@ -2452,9 +2637,48 @@ function moveCmdSelection(delta){
 function runCmdByIndex(i){const cmd=cmdkFiltered[i];if(!cmd) return;closeCmdk();cmd.run();}
 function runActiveCmd(){runCmdByIndex(cmdkActiveIndex);}
 
+function renderGovTable(){
+  const tbody=document.getElementById('gov-tbody');
+  const searchTerm=(document.getElementById('gov-search').value||'').toLowerCase();
+  const src=currentLang==='ar'?GOVERNORATES_AR:GOVERNORATES;
+  const entries=Object.entries(src).filter(([code,name])=>!searchTerm||code.includes(searchTerm)||name.toLowerCase().includes(searchTerm));
+  document.getElementById('gov-count').textContent=t('gov_count',entries.length,Object.keys(src).length);
+  if(entries.length===0){
+    tbody.innerHTML=`<tr><td colspan="3" style="text-align:center;padding:2.5rem 1rem;color:var(--ink-3);">${t('gov_empty')}</td></tr>`;
+    return;
+  }
+  tbody.innerHTML=entries.map(([code,name],idx)=>{
+    const rowId=`govrow-${idx}`;
+    return `<tr>
+      <td><span class="material-symbols-rounded rowcopy focusable" id="${rowId}" role="button" tabindex="0" title="${t('copy_visible_title')}" onclick="copyGovRow('${code}','${name}','${rowId}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();copyGovRow('${code}','${name}','${rowId}')}">content_copy</span></td>
+      <td class="mono" style="font-weight:650;">${code}</td>
+      <td>${name}</td>
+    </tr>`;
+  }).join('');
+}
+function copyGovRow(code,name,elId){
+  copyText(`${code}\t${name}`,null,t('toast_row_copied'));
+  const el=document.getElementById(elId);
+  if(el){el.textContent='check';el.style.color='var(--mint)';setTimeout(()=>{el.textContent='content_copy';el.style.color='';},1200);}
+}
+
+function formatLawDate(d){
+  return currentLang==='ar'?`${d.getDate()} ${monthName(d.getMonth())} ${d.getFullYear()}`:`${d.getDate()} ${monthName(d.getMonth()).slice(0,3)} ${d.getFullYear()}`;
+}
+function renderLawTable(){
+  const tbody=document.getElementById('law-tbody');
+  const baseline=`<tr><td>${t('law_baseline')}</td><td style="color:var(--amber-text);font-weight:650;">${t('law_years',60)}</td></tr>`;
+  tbody.innerHTML=baseline+RETIREMENT_LAW.map(rule=>`<tr><td>${formatLawDate(rule.date)}</td><td style="color:var(--amber-text);font-weight:650;">${t('law_years',rule.age)}</td></tr>`).join('');
+}
+
 function restoreCachedState(){
   const state=loadState();
-  if(state.pasteInput){document.getElementById('paste-input').value=state.pasteInput;updateLiveCount();}
+  if(state.lang&&state.lang!==currentLang){
+    currentLang=state.lang;
+    document.documentElement.lang=state.lang;
+    document.documentElement.dir=state.lang==='ar'?'rtl':'ltr';
+  }
+  if(state.batchInput){document.getElementById('batch-input').value=state.batchInput;updateBatchCount();}
   if(state.formulaTableName) document.getElementById('cfg-table-name').value=state.formulaTableName;
   if(state.formulaColId) document.getElementById('cfg-col-id').value=state.formulaColId;
   if(state.formulaCellId) document.getElementById('cfg-cell-id').value=state.formulaCellId;
@@ -2467,7 +2691,6 @@ function restoreCachedState(){
   }
   recomputeDestinations();
   if(state.inspectorValue) document.getElementById('inspector-input').value=state.inspectorValue;
-  if(state.inspectorBatchInput){document.getElementById('inspector-batch-input').value=state.inspectorBatchInput;updateInspectorBatchCount();}
   if(Array.isArray(state.workDays)&&state.workDays.length) workDaySet=new Set(state.workDays);
   if(state.dtStart) document.getElementById('dt-start').value=state.dtStart;
   if(state.dtEnd) document.getElementById('dt-end').value=state.dtEnd;
@@ -2477,15 +2700,18 @@ function restoreCachedState(){
   if(state.lyYear) document.getElementById('ly-year').value=state.lyYear;
   if(state.lyFrom) document.getElementById('ly-from').value=state.lyFrom;
   if(state.lyTo) document.getElementById('ly-to').value=state.lyTo;
-  if(state.activeTab&&state.activeTab!=='processor') switchTab(state.activeTab);
-  if(state.activeSubtab&&state.activeSubtab!=='paste') switchSubTab(state.activeSubtab);
+  if(state.activeTab&&state.activeTab!=='idtools') switchTab(state.activeTab);
+  if(state.activeSubtab&&state.activeSubtab!=='single') switchSubTab(state.activeSubtab);
   if(state.activeDateSub&&state.activeDateSub!=='between') switchDateSub(state.activeDateSub);
-  if(state.inspectorMode==='batch') setInspectorMode('batch');
+  if(state.activeRefSub&&state.activeRefSub!=='structure') switchRefSub(state.activeRefSub);
 }
 
 window.onload=function(){
+  restoreCachedState();
+  applyStaticTranslations();
   initTheme();
   initAppearance();
+  applyLangFont();
   buildAllDateFields();
   const topbarEl=document.querySelector('.topbar');
   if(topbarEl){
@@ -2515,7 +2741,6 @@ window.onload=function(){
     else if(e.key==='Enter'){e.preventDefault();runActiveCmd();}
   });
   renderWorkdayPicker();
-  restoreCachedState();
   updateFormulas();
   moveTopIndicator();
   computeBetweenDates();
@@ -2524,7 +2749,8 @@ window.onload=function(){
   computeLeapSingle();
   computeLeapRange();
   refreshAllDateFields();
-  document.getElementById('paste-input').addEventListener('input',updateLiveCount);
+  renderGovTable();
+  renderLawTable();
   const dropZone=document.getElementById('drop-zone');
   dropZone.addEventListener('dragover',e=>{e.preventDefault();dropZone.classList.add('dragging');});
   dropZone.addEventListener('dragleave',()=>dropZone.classList.remove('dragging'));
