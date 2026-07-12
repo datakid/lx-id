@@ -371,8 +371,21 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
 .codeblock{background:var(--ink);color:var(--bg);font-family:'JetBrains Mono',monospace;font-size:.74rem;line-height:1.75;padding:1.1rem;border-radius:var(--r2);overflow-x:auto;white-space:pre;border:1px solid var(--edge-strong)}
 .dark .codeblock{background:#0A0807;color:#F3ECDE}
 
-.dropzone{border:1.5px dashed var(--edge-strong);background:var(--milk);border-radius:var(--r1);padding:2.4rem 1.5rem;text-align:center;cursor:pointer;transition:all .25s}
-.dropzone:hover,.dropzone.dragging{border-color:var(--amber);background:var(--amber-soft)}
+.dropzone{border:1.5px dashed var(--edge-strong);background:var(--milk);border-radius:var(--r1);padding:2.6rem 1.5rem;text-align:center;cursor:pointer;transition:border-color .25s ease,background .25s ease,transform .25s cubic-bezier(.16,1,.3,1),box-shadow .25s ease}
+.dropzone:hover{border-color:var(--edge-strong);background:var(--milk-strong);box-shadow:var(--sh-1)}
+.dropzone.dragging{border-color:var(--amber);background:var(--amber-soft);transform:scale(1.006);box-shadow:var(--sh-2)}
+.dropzone .emptybox{transition:transform .3s cubic-bezier(.16,1,.3,1)}
+.dropzone:hover .emptybox{transform:scale(1.05)}
+.dropzone.dragging .emptybox{transform:scale(1.08)}
+.dropzone-hint{font-size:.68rem;color:var(--ink-3);margin-top:.85rem;font-weight:600;letter-spacing:.01em}
+
+.filecard{display:flex;align-items:center;gap:.85rem;background:var(--milk);border:1px solid var(--edge);border-radius:16px;padding:.75rem .8rem .75rem .75rem}
+.filecard-icon{width:2.7rem;height:2.7rem;border-radius:12px;background:var(--amber-soft);color:var(--amber-text);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.filecard-icon .material-symbols-rounded{font-size:1.35rem}
+.filecard-body{min-width:0;flex:1}
+.filecard-name{font-weight:650;font-size:.82rem;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.filecard-meta{font-size:.71rem;color:var(--ink-2);margin:.2rem 0 0}
+.filecard-remove{flex-shrink:0;width:2.1rem;height:2.1rem}
 
 #toasts{position:fixed;top:calc(1rem + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;align-items:center;pointer-events:none}
 .toast{background:var(--ink);color:var(--bg);padding-block:.55rem;padding-inline:.55rem 1.1rem;border-radius:999px;box-shadow:var(--sh-3);display:flex;align-items:center;gap:.55rem;font-size:.8rem;font-weight:640;
@@ -587,20 +600,23 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
         <div>
           <h3 class="cardtitle" data-i18n="upload_drop_title">Drop a file or tap to browse</h3>
           <p style="font-size:.78rem;color:var(--ink-2);margin:.25rem 0 0;" data-i18n="upload_drop_types">.xlsx, .xls, or .csv</p>
+          <p class="dropzone-hint" data-i18n="upload_drop_hint">Up to 25 MB · processed locally in your browser</p>
         </div>
       </div>
     </div>
     <div id="upload-mapping" class="card pad hide" style="margin-top:1.1rem;">
       <div style="display:grid;grid-template-columns:1fr;gap:.9rem;">
+        <div class="filecard">
+          <div class="filecard-icon"><span class="material-symbols-rounded">description</span></div>
+          <div class="filecard-body">
+            <p class="filecard-name" id="file-info-text">—</p>
+            <p class="filecard-meta" id="file-rows-text">0 rows</p>
+          </div>
+          <button type="button" class="iconbtn filecard-remove focusable" onclick="clearUploadedFile()" data-i18n-title="upload_remove_title" title="Remove file" aria-label="Remove uploaded file"><span class="material-symbols-rounded" style="font-size:1.1rem;">close</span></button>
+        </div>
         <div>
           <label class="eyebrow" data-i18n="upload_col_label">National ID column</label>
           <select id="column-select" class="field-select focusable"></select>
-        </div>
-        <div class="row-between" style="background:var(--milk);border-radius:14px;padding:.7rem .9rem;">
-          <div>
-            <p style="font-weight:650;font-size:.8rem;margin:0;" id="file-info-text">File: —</p>
-            <p style="font-size:.7rem;color:var(--ink-2);margin:.1rem 0 0;" id="file-rows-text">0 rows</p>
-          </div>
         </div>
         <button onclick="processUploadedFile()" id="btn-extract-process" class="btn btn-primary btn-block focusable"><span class="material-symbols-rounded" style="font-size:1.1rem;">auto_fix_high</span><span data-i18n="btn_extract">Extract &amp; Process</span></button>
       </div>
@@ -970,6 +986,7 @@ const ICON_DEFS={
   event_repeat:'<rect x="3.5" y="5" width="12.5" height="15" rx="3"/><path d="M3.5 10h12.5"/><path d="M7 3v4"/><path d="M16.5 14.5a3.3 3.3 0 015.5-2.3M22 12v-3.2M22 12h-3.2"/><path d="M20.7 17.5a3.3 3.3 0 01-5.5 2.3M15.5 20v-3.2M15.5 20h3.2"/>',
   expand_more:'<path d="M6 9l6 6 6-6"/>',
   remove:'<path d="M5 12h14"/>',
+  description:'<path d="M6.5 3h7l4 4v13a1.2 1.2 0 01-1.2 1.2H6.5A1.2 1.2 0 015.3 20V4.2A1.2 1.2 0 016.5 3z"/><path d="M13.5 3v4h4"/><path d="M8.2 12.6h7.6M8.2 16h5.4"/>',
   fingerprint:'<circle cx="12" cy="12" r="8.4" stroke-dasharray="35 60" transform="rotate(-40 12 12)"/><circle cx="12" cy="12" r="5.6" stroke-dasharray="24 40" transform="rotate(25 12 12)"/><circle cx="12" cy="12" r="3" stroke-dasharray="12 30" transform="rotate(80 12 12)"/><circle cx="12" cy="12" r=".9" fill="currentColor" stroke="none"/>',
   functions:'<path d="M16.5 4.5H9.2a1 1 0 00-.9 1.5l3.2 5.8-3.4 6.2a1 1 0 00.9 1.5h7.5"/><path d="M8 12.2h4.4"/>',
   info:'<circle cx="12" cy="12" r="9"/><path d="M12 10.7v5.3"/><circle cx="12" cy="7.8" r="1" fill="currentColor" stroke="none"/>',
@@ -1038,13 +1055,15 @@ en:{
   status_valid:'Valid', status_error:'Error', status_null:'Null',
   upload_drop_title:'Drop a file or tap to browse', upload_drop_types:'.xlsx, .xls, or .csv',
   upload_col_label:'National ID column', upload_file_default:'File: —', upload_rows:n=>`${n} rows`,
+  upload_drop_hint:'Up to 25 MB · processed locally in your browser', upload_remove_title:'Remove file',
   btn_extract:'Extract & Process', upload_results_title:'File results', upload_summary:(n,v,e,nl,note)=>`${n} rows processed (${v} valid, ${e} errors${nl?`, ${nl} null`:''})${note}`,
-  upload_file_label:name=>`File: ${name}`, upload_rows_detected:n=>`${n} rows detected`,
+  upload_file_label:name=>name, upload_rows_detected:n=>`${n} rows detected`,
   toast_no_rows_file:'No rows found in file', toast_processing:'Processing…', toast_file_processed:'File processed', toast_file_downloaded:'File downloaded',
   toast_file_too_large:'File is too large (max 25 MB)', toast_file_read_error:'Could not read the file', toast_file_parse_error:'Could not read this file — check it\'s a valid Excel or CSV file',
   upload_shown_note:(shown,total)=>` — showing first ${shown} of ${total}`,
   upload_col_birth:'Extracted Birth Date', upload_col_age:'Age', upload_col_totaldays:'Total Days',
   upload_col_retireage:'Retirement Age', upload_col_retiredate:'Retirement Date', upload_col_gov:'Governorate', upload_col_notes:'Notes', upload_col_status:'ID Status',
+  upload_col_original:'from your file', toast_column_renamed:'Some of your columns shared a name with a generated column — the originals were kept and relabeled',
   formula_title:'Excel / Sheets Formulas', reference_mode:'Reference mode', mode_table:'Table column', mode_cell:'Single cell',
   lbl_table_name:'Table name', lbl_col_id_name:'ID column name', lbl_cell_ref:'ID cell reference',
   ph_table1:'Table1', ph_national_id:'National ID', ph_a2:'A2',
@@ -1128,13 +1147,15 @@ ar:{
   status_valid:'صحيح', status_error:'خطأ', status_null:'فارغ',
   upload_drop_title:'أفلت ملفًا هنا أو اضغط للاستعراض', upload_drop_types:'‎.xlsx أو ‎.xls أو ‎.csv',
   upload_col_label:'عمود الرقم القومي', upload_file_default:'الملف: —', upload_rows:n=>`${n} صفًا`,
+  upload_drop_hint:'حتى 25 ميجابايت · تتم المعالجة محليًا داخل متصفحك', upload_remove_title:'إزالة الملف',
   btn_extract:'استخراج ومعالجة', upload_results_title:'نتائج الملف', upload_summary:(n,v,e,nl,note)=>`تمت معالجة ${n} صفًا (${v} صحيح، ${e} أخطاء${nl?`، ${nl} فارغ`:''})${note}`,
-  upload_file_label:name=>`الملف: ${name}`, upload_rows_detected:n=>`تم رصد ${n} صفًا`,
+  upload_file_label:name=>name, upload_rows_detected:n=>`تم رصد ${n} صفًا`,
   toast_no_rows_file:'لم يتم العثور على صفوف في الملف', toast_processing:'جارٍ المعالجة…', toast_file_processed:'تمت معالجة الملف', toast_file_downloaded:'تم تنزيل الملف',
   toast_file_too_large:'الملف كبير جدًا (الحد الأقصى 25 ميجابايت)', toast_file_read_error:'تعذرت قراءة الملف', toast_file_parse_error:'تعذرت قراءة هذا الملف — تأكد أنه ملف إكسل أو CSV صالح',
   upload_shown_note:(shown,total)=>` — يُعرض أول ${shown} من ${total}`,
   upload_col_birth:'تاريخ الميلاد المستخرج', upload_col_age:'العمر', upload_col_totaldays:'إجمالي الأيام',
   upload_col_retireage:'سن المعاش', upload_col_retiredate:'تاريخ المعاش', upload_col_gov:'المحافظة', upload_col_notes:'ملاحظات', upload_col_status:'حالة الرقم',
+  upload_col_original:'من ملفك', toast_column_renamed:'بعض أعمدة ملفك تشارك الاسم مع عمود مُنشأ — تم الاحتفاظ بالأصل تحت اسم مختلف',
   formula_title:'صيغ Excel / Sheets', reference_mode:'وضع المرجع', mode_table:'عمود في جدول', mode_cell:'خلية مفردة',
   lbl_table_name:'اسم الجدول', lbl_col_id_name:'اسم عمود الرقم القومي', lbl_cell_ref:'مرجع خلية الرقم القومي',
   ph_table1:'Table1', ph_national_id:'الرقم القومي', ph_a2:'A2',
@@ -1784,7 +1805,6 @@ function isFakePattern(cleaned){
 
 function isLeapYear(y){return (y%4===0&&y%100!==0)||(y%400===0);}
 function daysInMonth(y,m){return new Date(y,m+1,0).getDate();}
-function pad2(n){return String(n).padStart(2,'0');}
 
 function addYears(date,years){
   const y=date.getFullYear()+years,m=date.getMonth(),d=date.getDate();
@@ -2339,6 +2359,11 @@ function resetUploadState(){
   document.getElementById('upload-results').classList.add('hide');
 }
 
+function clearUploadedFile(){
+  resetUploadState();
+  document.getElementById('file-input').value='';
+}
+
 function handleFileUpload(e){
   const file=e.target.files[0];
   if(!file) return;
@@ -2389,6 +2414,8 @@ function processUploadedFile(){
   if(!idCol) return;
   const btn=document.getElementById('btn-extract-process');
   setBusy(btn,true,t('toast_processing'));
+  const synthKeys=[t('upload_col_birth'),t('col_gender'),t('upload_col_age'),t('upload_col_totaldays'),t('upload_col_retireage'),t('upload_col_retiredate'),t('upload_col_gov'),t('upload_col_notes'),t('upload_col_status')];
+  let collisionHit=false;
   chunkProcess(uploadedSheetData,(row,i)=>{
     const displayVal=(uploadedSheetDisplayData[i]||{})[idCol];
     if(/[0-9]\.?[0-9]*e\+?\d+/i.test(String(displayVal??''))) return parseID(displayVal);
@@ -2405,7 +2432,17 @@ function processUploadedFile(){
       const notesParts=res.valid?(res.flags||[]).map(f=>flagLabel(f)):[];
       if(res.valid&&idCounts[res.id]>1) notesParts.push(flagLabel('duplicate-id'));
       const statusText=res.valid?'VALID':(res.isNull?'NULL':`ERROR: ${res.error}`);
-      processedUploadResults.push(Object.assign({},row,{
+      const base=Object.assign({},row);
+      synthKeys.forEach(k=>{
+        if(Object.prototype.hasOwnProperty.call(base,k)){
+          let altKey=`${k} (${t('upload_col_original')})`,n=2;
+          while(Object.prototype.hasOwnProperty.call(base,altKey)){altKey=`${k} (${t('upload_col_original')} ${n})`;n++;}
+          base[altKey]=base[k];
+          delete base[k];
+          collisionHit=true;
+        }
+      });
+      processedUploadResults.push(Object.assign(base,{
         [t('upload_col_birth')]:res.valid?res.birthDateStr:'',
         [t('col_gender')]:res.valid?res.gender:'',
         [t('upload_col_age')]:res.valid?res.currentAgeYears:'',
@@ -2439,6 +2476,7 @@ function processUploadedFile(){
     document.getElementById('upload-results').classList.remove('hide');
     setBusy(btn,false);
     showToast(t('toast_file_processed'),'auto_fix_high');
+    if(collisionHit) showToast(t('toast_column_renamed'),'info');
   }});
 }
 
