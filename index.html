@@ -298,6 +298,36 @@ body{
 .kpi.kpi-mint::before{background:var(--mint)}
 .kpi.kpi-scarlet::before{background:var(--scarlet)}
 .kpi.kpi-amber::before{background:var(--amber)}
+.kpi.kpi-sun::before{background:var(--sun)}
+
+.toggle-row{display:inline-flex;align-items:center;gap:.55rem;cursor:pointer;user-select:none}
+.toggle-row input{position:absolute;opacity:0;width:0;height:0}
+.toggle-track{position:relative;width:2.5rem;height:1.4rem;border-radius:999px;background:var(--edge-strong);transition:background .18s ease;flex-shrink:0}
+.toggle-track::after{content:'';position:absolute;top:2px;inset-inline-start:2px;width:calc(1.4rem - 4px);height:calc(1.4rem - 4px);border-radius:50%;background:var(--bg);box-shadow:var(--sh-1);transition:transform .18s cubic-bezier(.16,1,.3,1)}
+.toggle-row input:checked+.toggle-track{background:var(--mint)}
+.toggle-row input:checked+.toggle-track::after{transform:translateX(1.1rem)}
+[dir="rtl"] .toggle-row input:checked+.toggle-track::after{transform:translateX(-1.1rem)}
+.toggle-row .toggle-label{font-size:.78rem;font-weight:600;color:var(--ink-2);white-space:nowrap}
+.toggle-row:hover .toggle-label{color:var(--ink)}
+
+.batch-dropwrap{position:relative;display:inline-flex}
+.batch-dropmenu{
+  position:absolute;top:calc(100% + .5rem);inset-inline-end:0;z-index:60;min-width:13rem;
+  background:var(--bg);border:1px solid var(--edge-strong);border-radius:var(--r3);
+  box-shadow:var(--sh-3),inset 0 1px 1px var(--glass-hi);padding:.4rem;
+  opacity:0;transform:translateY(-6px) scale(.98);pointer-events:none;transition:opacity .16s ease,transform .16s cubic-bezier(.16,1,.3,1);
+}
+.batch-dropmenu.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
+.batch-dropmenu-section{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.5rem .6rem;border-radius:10px;transition:background .15s}
+.batch-dropmenu-section:hover{background:var(--milk-strong)}
+.batch-dropmenu-label{display:flex;align-items:center;gap:.5rem;font-size:.78rem;font-weight:600;color:var(--ink);cursor:pointer;flex:1}
+.batch-dropmenu-label .material-symbols-rounded{font-size:1.05rem;color:var(--ink-3)}
+.batch-dropmenu-count{font-size:.66rem;font-weight:700;color:var(--ink-3);background:var(--milk-strong);border-radius:999px;padding:.1rem .45rem;flex-shrink:0}
+.batch-dropmenu-fmts{display:flex;gap:.2rem;flex-shrink:0}
+.batch-dropmenu-fmtbtn{width:1.7rem;height:1.7rem;border:none;background:transparent;color:var(--ink-3);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,color .15s}
+.batch-dropmenu-fmtbtn:hover{background:var(--milk-strong);color:var(--amber-text)}
+.batch-dropmenu-fmtbtn .material-symbols-rounded{font-size:1.05rem}
+.batch-dropmenu-div{height:1px;background:var(--edge);margin:.3rem .2rem}
 .kpi .num{font-size:1.7rem;line-height:1}
 .kpi .lbl{font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.07em;font-weight:650;color:var(--ink-3);margin-bottom:.3rem}
 
@@ -504,10 +534,17 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
         <span class="chip" id="batch-count">0 detected</span>
       </div>
       <textarea id="batch-input" rows="8" placeholder="29805121401234&#10;30101011509876&#10;27510202100001" class="field-area focusable" style="font-size:.78rem;" oninput="updateBatchCount()"></textarea>
-      <div class="row" style="flex-wrap:wrap;gap:.5rem;">
-        <button onclick="batchPasteFromClipboard()" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">content_paste_go</span><span data-i18n="btn_paste">Paste</span></button>
-        <button onclick="batchLoadSample()" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">auto_awesome</span><span data-i18n="btn_sample">Sample</span></button>
-        <button onclick="batchClear()" class="btn btn-ghost btn-sm focusable" style="margin-inline-start:auto;"><span class="material-symbols-rounded" style="font-size:1rem;">delete</span><span data-i18n="btn_clear">Clear</span></button>
+      <div class="row-between" style="flex-wrap:wrap;gap:.5rem;">
+        <div class="row" style="flex-wrap:wrap;gap:.5rem;">
+          <button onclick="batchPasteFromClipboard()" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">content_paste_go</span><span data-i18n="btn_paste">Paste</span></button>
+          <button onclick="batchLoadSample()" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">auto_awesome</span><span data-i18n="btn_sample">Sample</span></button>
+          <button onclick="batchClear()" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">delete</span><span data-i18n="btn_clear">Clear</span></button>
+        </div>
+        <label class="toggle-row focusable" for="batch-ignore-nulls">
+          <input type="checkbox" id="batch-ignore-nulls" onchange="toggleBatchIgnoreNulls(this.checked)">
+          <span class="toggle-track"></span>
+          <span class="toggle-label" data-i18n="toggle_ignore_nulls">Ignore blank rows</span>
+        </label>
       </div>
       <button onclick="processBatch()" id="btn-run-analytics" class="btn btn-primary btn-block focusable"><span class="material-symbols-rounded" style="font-size:1.1rem;">play_arrow</span><span data-i18n="btn_run_analytics">Run Analytics</span></button>
     </div>
@@ -958,16 +995,18 @@ en:{
   batch_label:'Paste ID list for deep analytics', batch_count:n=>`${n} detected`,
   btn_paste:'Paste', btn_sample:'Sample', btn_clear:'Clear', btn_run_analytics:'Run Analytics',
   batch_empty:'Paste a list of IDs above and run analytics to see the full breakdown here.',
-  results_title:'Results', results_summary:(t,v,e)=>`${t} total IDs processed (${v} valid, ${e} errors)`,
-  kpi_total:'Total', kpi_valid:'Valid', kpi_errors:'Errors',
-  filter_all:'All', filter_valid:'Valid', filter_error:'Errors', search_ph:'Search…',
-  btn_excel:'Excel', btn_csv:'CSV', btn_copy:'Copy', copy_visible_title:'Copy visible rows',
+  results_title:'Results', results_summary:(t,v,e,n)=>`${t} total rows processed (${v} valid, ${e} errors${n?`, ${n} null`:''})`,
+  kpi_total:'Total', kpi_valid:'Valid', kpi_errors:'Errors', kpi_null:'Null',
+  filter_all:'All', filter_valid:'Valid', filter_error:'Errors', filter_null:'Null', search_ph:'Search…',
+  btn_excel:'Excel', btn_csv:'CSV', btn_copy:'Copy', btn_download:'Download', copy_visible_title:'Copy visible rows',
+  scope_all:'All rows', scope_valid:'Valid only', scope_error:'Errors only', scope_null:'Null only',
+  toggle_ignore_nulls:'Ignore blank rows',
   no_matching_rows:'No matching rows',
   col_id:'National ID', col_status:'Status', col_century:'Century', col_birthdate:'Birth Date', col_weekday:'Weekday',
   col_age:'Age', col_totaldays:'Total Days', col_gender:'Gender', col_govcode:'Gov Code', col_gov:'Governorate', col_serial:'Serial',
   col_check:'Check', col_retireage:'Retire Age', col_retiredate:'Retire Date', col_yearstoretire:'Yrs to Retire',
   col_career:'Career %', col_flags:'Flags', col_error:'Error',
-  status_valid:'Valid', status_error:'Error',
+  status_valid:'Valid', status_error:'Error', status_null:'Null',
   upload_drop_title:'Drop a file or tap to browse', upload_drop_types:'.xlsx, .xls, or .csv',
   upload_col_label:'National ID column', upload_file_default:'File: —', upload_rows:n=>`${n} rows`,
   btn_extract:'Extract & Process', upload_results_title:'File results', upload_summary:(n,v,note)=>`${n} rows processed (${v} valid)${note}`,
@@ -1044,16 +1083,18 @@ ar:{
   batch_label:'الصق قائمة الأرقام القومية لإجراء تحليل معمّق', batch_count:n=>`تم اكتشاف ${n}`,
   btn_paste:'لصق', btn_sample:'رقم تجريبي', btn_clear:'مسح', btn_run_analytics:'تشغيل التحليل',
   batch_empty:'الصق قائمة الأرقام أعلاه وشغّل التحليل لعرض التفاصيل الكاملة هنا.',
-  results_title:'النتائج', results_summary:(t,v,e)=>`تمت معالجة ${t} رقمًا إجماليًا (${v} صحيح، ${e} بها أخطاء)`,
-  kpi_total:'الإجمالي', kpi_valid:'صحيح', kpi_errors:'أخطاء',
-  filter_all:'الكل', filter_valid:'صحيح', filter_error:'أخطاء', search_ph:'بحث…',
-  btn_excel:'إكسل', btn_csv:'CSV', btn_copy:'نسخ', copy_visible_title:'نسخ الصفوف الظاهرة',
+  results_title:'النتائج', results_summary:(t,v,e,n)=>`تمت معالجة ${t} صفًا إجماليًا (${v} صحيح، ${e} بها أخطاء${n?`، ${n} فارغ`:''})`,
+  kpi_total:'الإجمالي', kpi_valid:'صحيح', kpi_errors:'أخطاء', kpi_null:'فارغ',
+  filter_all:'الكل', filter_valid:'صحيح', filter_error:'أخطاء', filter_null:'فارغ', search_ph:'بحث…',
+  btn_excel:'إكسل', btn_csv:'CSV', btn_copy:'نسخ', btn_download:'تنزيل', copy_visible_title:'نسخ الصفوف الظاهرة',
+  scope_all:'كل الصفوف', scope_valid:'الصحيح فقط', scope_error:'الأخطاء فقط', scope_null:'الفارغ فقط',
+  toggle_ignore_nulls:'تجاهل الصفوف الفارغة',
   no_matching_rows:'لا توجد صفوف مطابقة',
   col_id:'الرقم القومي', col_status:'الحالة', col_century:'القرن', col_birthdate:'تاريخ الميلاد', col_weekday:'يوم الأسبوع',
   col_age:'العمر', col_totaldays:'إجمالي الأيام', col_gender:'النوع', col_govcode:'كود المحافظة', col_gov:'المحافظة', col_serial:'الرقم التسلسلي',
   col_check:'رقم التحقق', col_retireage:'سن المعاش', col_retiredate:'تاريخ المعاش', col_yearstoretire:'سنوات حتى المعاش',
   col_career:'نسبة العمر الوظيفي', col_flags:'ملاحظات', col_error:'الخطأ',
-  status_valid:'صحيح', status_error:'خطأ',
+  status_valid:'صحيح', status_error:'خطأ', status_null:'فارغ',
   upload_drop_title:'أفلت ملفًا هنا أو اضغط للاستعراض', upload_drop_types:'‎.xlsx أو ‎.xls أو ‎.csv',
   upload_col_label:'عمود الرقم القومي', upload_file_default:'الملف: —', upload_rows:n=>`${n} صفًا`,
   btn_extract:'استخراج ومعالجة', upload_results_title:'نتائج الملف', upload_summary:(n,v,note)=>`تمت معالجة ${n} صفًا (${v} صحيح)${note}`,
@@ -1747,17 +1788,18 @@ function calcAge(birthDate,asOf){
 
 function parseID(rawInput){
   const trace=[];
-  const out={valid:false,error:'',trace,raw:String(rawInput??''),normalized:'',id:'',centuryDigit:'',centuryLabel:'',birthYear:null,birthMonth:null,birthDay:null,birthDateObj:null,birthDateStr:'',birthDayOfWeek:'',birthDayIndex:0,govCode:'',governorate:'',governorateKnown:false,serial:'',checkDigit:'',genderDigit:null,gender:'',retireAge:null,retireDateObj:null,retireDateStr:'',currentAgeYears:0,currentAgeMonths:0,currentAgeDays:0,totalDaysLived:0,yearsUntilRetire:0,daysUntilRetire:0,isEligible:false,careerPercent:0,fakePattern:false,retireRule:'',flags:[],checks:[]};
+  const out={valid:false,isNull:false,error:'',trace,raw:String(rawInput??''),normalized:'',id:'',centuryDigit:'',centuryLabel:'',birthYear:null,birthMonth:null,birthDay:null,birthDateObj:null,birthDateStr:'',birthDayOfWeek:'',birthDayIndex:0,govCode:'',governorate:'',governorateKnown:false,serial:'',checkDigit:'',genderDigit:null,gender:'',retireAge:null,retireDateObj:null,retireDateStr:'',currentAgeYears:0,currentAgeMonths:0,currentAgeDays:0,totalDaysLived:0,yearsUntilRetire:0,daysUntilRetire:0,isEligible:false,careerPercent:0,fakePattern:false,retireRule:'',flags:[],checks:[]};
 
-  if(rawInput===null||rawInput===undefined){out.error=t('err_empty');trace.push('Input is null or undefined');return out;}
+  if(rawInput===null||rawInput===undefined){out.isNull=true;out.error=t('err_empty');trace.push('Input is null or undefined');return out;}
   const originalStr=String(rawInput).trim();
-  if(originalStr===''){out.error=t('err_empty');trace.push('Input is empty after trim');return out;}
+  if(originalStr===''){out.isNull=true;out.error=t('err_empty');trace.push('Input is empty after trim — likely a blank cell copied from a spreadsheet');return out;}
   if(/[0-9]\.?[0-9]*e\+?\d+/i.test(originalStr)){out.error=t('err_scientific');trace.push('Input matches scientific notation pattern');return out;}
 
   const cleaned=normalizeIDInput(originalStr);
   out.normalized=cleaned;
   trace.push(`Normalized "${originalStr}" → ${cleaned.length} digits (Arabic-Indic digits supported)`);
 
+  if(cleaned.length===0){out.isNull=true;out.error=t('err_empty');trace.push('No digits found after normalization (stray spaces or invisible characters) — treated as a blank row');return out;}
   if(cleaned.length!==14){out.error=t('err_length',cleaned.length);trace.push(`Length check failed: got ${cleaned.length}, need 14`);return out;}
   if(isFakePattern(cleaned)){out.fakePattern=true;out.flags.push('fake-pattern');trace.push('Fake pattern detected: repeated or sequential digits');}
 
@@ -1910,9 +1952,16 @@ function switchRefSub(name){
   saveState({activeRefSub:name});
 }
 
+function splitBatchLines(raw){
+  let lines=raw.split('\n').map(l=>l.trim());
+  if(lines.length===1&&lines[0]==='')return [];
+  if(lines.length>1&&lines[lines.length-1]==='')lines.pop();
+  return lines;
+}
+
 function updateBatchCount(){
   const raw=document.getElementById('batch-input').value;
-  const lines=raw.split('\n').map(l=>l.trim()).filter(Boolean);
+  const lines=splitBatchLines(raw);
   document.getElementById('batch-count').textContent=t('batch_count',lines.length);
   saveStateDebounced({batchInput:raw});
 }
@@ -1939,29 +1988,46 @@ function batchClear(){
   batchFilter='all';
   batchSearch='';
   renderBatchTable();
+  saveState({batchResultsCache:null,batchFilter:'all',batchSearch:''});
   showToast(t('toast_cleared'),'delete');
+}
+
+let batchIgnoreNulls=false;
+function toggleBatchIgnoreNulls(checked){
+  batchIgnoreNulls=checked;
+  saveState({batchIgnoreNulls:checked});
+  if(document.getElementById('batch-input').value.trim()!=='') processBatch();
 }
 
 function processBatch(){
   const raw=document.getElementById('batch-input').value;
-  const lines=raw.split('\n').map(l=>l.trim()).filter(Boolean);
+  const lines=splitBatchLines(raw);
   if(lines.length===0){showToast(t('toast_enter_id'),'info');return;}
   const btn=document.getElementById('btn-run-analytics');
   setBusy(btn,true,t('toast_analyzing'));
   chunkProcess(lines,parseID,{onDone:results=>{
-    batchResults=results;
+    batchResults=batchIgnoreNulls?results.filter(r=>!r.isNull):results;
     markDuplicates(batchResults);
     batchFilter='all';
     batchSearch='';
     renderBatchTable();
+    cacheBatchResults();
     setBusy(btn,false);
     showToast(t('toast_analyzed',batchResults.length),'task_alt');
   }});
 }
 
-function setBatchFilter(f){batchFilter=f;renderBatchTable();}
-function onBatchSearch(val){batchSearch=val;renderBatchTable();}
-function clearBatchSearch(){batchSearch='';renderBatchTable();}
+function cacheBatchResults(){
+  const lightweight=batchResults.map(r=>{
+    const {trace,checks,birthDateObj,retireDateObj,...rest}=r;
+    return rest;
+  });
+  saveState({batchResultsCache:lightweight,batchFilter,batchSearch,batchIgnoreNulls});
+}
+
+function setBatchFilter(f){batchFilter=f;renderBatchTable();saveStateDebounced({batchFilter:f});}
+function onBatchSearch(val){batchSearch=val;renderBatchTable();saveStateDebounced({batchSearch:val});}
+function clearBatchSearch(){batchSearch='';renderBatchTable();saveStateDebounced({batchSearch:''});}
 
 let lastBatchRows=[];
 
@@ -1977,11 +2043,14 @@ function renderBatchTable(){
     return;
   }
   const validCount=batchResults.filter(r=>r.valid).length;
-  const errorCount=total-validCount;
+  const nullCount=batchResults.filter(r=>r.isNull).length;
+  const errorCount=total-validCount-nullCount;
+  const showNullBucket=nullCount>0;
   const searchTerm=batchSearch.toLowerCase();
   let rows=batchResults;
   if(batchFilter==='valid') rows=rows.filter(r=>r.valid);
-  if(batchFilter==='error') rows=rows.filter(r=>!r.valid);
+  if(batchFilter==='error') rows=rows.filter(r=>!r.valid&&!r.isNull);
+  if(batchFilter==='null') rows=rows.filter(r=>r.isNull);
   if(searchTerm) rows=rows.filter(r=>(r.raw+' '+(r.id||'')+' '+(r.error||'')+' '+(r.governorate||'')).toLowerCase().includes(searchTerm));
   lastBatchRows=rows;
   const cols=[t('col_id'),t('col_status'),t('col_century'),t('col_birthdate'),t('col_weekday'),t('col_age'),t('col_totaldays'),t('col_gender'),t('col_govcode'),t('col_gov'),t('col_serial'),t('col_check'),t('col_retireage'),t('col_retiredate'),t('col_yearstoretire'),t('col_career'),t('col_flags')];
@@ -2011,6 +2080,15 @@ function renderBatchTable(){
         <td style="font-size:.7rem;color:var(--ink-2);">${flagsText}</td>
       </tr>`;
     }
+    if(r.isNull){
+      return `<tr>
+        <td>${rowCopyBtn(rowId,idx,'copyBatchRow')}</td>
+        <td class="mono" style="font-weight:650;color:var(--ink-3);font-style:italic;">—</td>
+        <td><span class="statuspill"><span class="statdot warn"></span>${t('status_null')}</span></td>
+        <td colspan="14" style="color:var(--ink-3);font-style:italic;">${escapeHtml(r.error)}</td>
+        <td>—</td>
+      </tr>`;
+    }
     return `<tr>
       <td>${rowCopyBtn(rowId,idx,'copyBatchRow')}</td>
       <td class="mono" style="font-weight:650;">${escapeHtml(r.raw)}</td>
@@ -2025,24 +2103,31 @@ function renderBatchTable(){
       <div class="row-between">
         <div>
           <h3 class="cardtitle">${t('results_title')}</h3>
-          <p style="font-size:.75rem;color:var(--ink-2);margin:.15rem 0 0;">${t('results_summary',total,validCount,errorCount)}</p>
+          <p style="font-size:.75rem;color:var(--ink-2);margin:.15rem 0 0;">${t('results_summary',total,validCount,errorCount,nullCount)}</p>
         </div>
         <div class="row" style="gap:.4rem;">
-          <button onclick="copyBatchTable(event)" class="iconbtn focusable" data-i18n-title="copy_visible_title" title="Copy visible rows" aria-label="Copy visible rows"><span class="material-symbols-rounded" style="font-size:1.15rem;">content_copy</span></button>
-          <button onclick="exportBatch('xlsx')" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">download</span>${t('btn_excel')}</button>
-          <button onclick="exportBatch('csv')" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">csv</span>${t('btn_csv')}</button>
+          <div class="batch-dropwrap">
+            <button onclick="event.stopPropagation();toggleBatchMenu('copy')" class="iconbtn focusable" title="${t('copy_visible_title')}" aria-label="${t('copy_visible_title')}"><span class="material-symbols-rounded" style="font-size:1.15rem;">content_copy</span></button>
+            ${batchScopeMenuHtml('copy')}
+          </div>
+          <div class="batch-dropwrap">
+            <button onclick="event.stopPropagation();toggleBatchMenu('download')" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">download</span>${t('btn_download')}<span class="material-symbols-rounded" style="font-size:1rem;">expand_more</span></button>
+            ${batchScopeMenuHtml('download')}
+          </div>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;">
+      <div style="display:grid;grid-template-columns:repeat(${showNullBucket?4:3},1fr);gap:.6rem;">
         <div class="kpi"><div class="lbl">${t('kpi_total')}</div><div class="num disp">${total}</div></div>
         <div class="kpi kpi-mint"><div class="lbl">${t('kpi_valid')}</div><div class="num disp" style="color:var(--mint);">${validCount}</div></div>
         <div class="kpi kpi-scarlet"><div class="lbl">${t('kpi_errors')}</div><div class="num disp" style="color:var(--scarlet);">${errorCount}</div></div>
+        ${showNullBucket?`<div class="kpi kpi-sun"><div class="lbl">${t('kpi_null')}</div><div class="num disp" style="color:var(--sun);">${nullCount}</div></div>`:''}
       </div>
       <div class="row" style="flex-wrap:wrap;gap:.5rem;">
         <div class="pillrow">
           <button class="pill${batchFilter==='all'?' active':''} focusable" onclick="setBatchFilter('all')">${t('filter_all')}</button>
           <button class="pill${batchFilter==='valid'?' active':''} focusable" onclick="setBatchFilter('valid')">${t('filter_valid')}</button>
           <button class="pill${batchFilter==='error'?' active':''} focusable" onclick="setBatchFilter('error')">${t('filter_error')}</button>
+          ${showNullBucket?`<button class="pill${batchFilter==='null'?' active':''} focusable" onclick="setBatchFilter('null')">${t('filter_null')}</button>`:''}
         </div>
         <div class="field-clearable" style="flex:1;min-width:130px;">
           <input type="text" id="batch-search" placeholder="${t('search_ph')}" class="field-input focusable" style="width:100%;padding-block:.5rem;padding-inline:.8rem 2.1rem;font-size:.78rem;" value="${escapeHtml(batchSearch)}" oninput="onBatchSearch(this.value)">
@@ -2058,40 +2143,101 @@ function renderBatchTable(){
     </div>`;
 }
 
+function batchScopeMenuHtml(kind){
+  const scopes=[
+    {key:'all',icon:'list_alt',label:t('scope_all'),count:batchResults.length},
+    {key:'valid',icon:'check_circle',label:t('scope_valid'),count:batchResults.filter(r=>r.valid).length},
+    {key:'error',icon:'error',label:t('scope_error'),count:batchResults.filter(r=>!r.valid&&!r.isNull).length},
+    {key:'null',icon:'remove_circle',label:t('scope_null'),count:batchResults.filter(r=>r.isNull).length}
+  ];
+  const rowsHtml=scopes.map(s=>{
+    if(kind==='copy'){
+      return `<div class="batch-dropmenu-section">
+        <span class="batch-dropmenu-label" onclick="copyBatchScope('${s.key}')"><span class="material-symbols-rounded">${s.icon}</span>${s.label}</span>
+        <span class="batch-dropmenu-count">${s.count}</span>
+      </div>`;
+    }
+    return `<div class="batch-dropmenu-section">
+      <span class="batch-dropmenu-label" onclick="downloadBatchScope('${s.key}','xlsx')"><span class="material-symbols-rounded">${s.icon}</span>${s.label}</span>
+      <span class="batch-dropmenu-count">${s.count}</span>
+      <div class="batch-dropmenu-fmts">
+        <button class="batch-dropmenu-fmtbtn focusable" title="Excel" onclick="downloadBatchScope('${s.key}','xlsx')"><span class="material-symbols-rounded">table_view</span></button>
+        <button class="batch-dropmenu-fmtbtn focusable" title="CSV" onclick="downloadBatchScope('${s.key}','csv')"><span class="material-symbols-rounded">csv</span></button>
+      </div>
+    </div>`;
+  }).join('');
+  return `<div class="batch-dropmenu" id="batch-menu-${kind}">${rowsHtml}</div>`;
+}
+
+function toggleBatchMenu(name){
+  const el=document.getElementById('batch-menu-'+name);
+  if(!el) return;
+  const wasOpen=el.classList.contains('open');
+  closeBatchMenus();
+  if(!wasOpen) el.classList.add('open');
+}
+function closeBatchMenus(){
+  document.querySelectorAll('.batch-dropmenu.open').forEach(m=>m.classList.remove('open'));
+}
+document.addEventListener('click',()=>closeBatchMenus());
+document.addEventListener('keydown',(e)=>{if(e.key==='Escape') closeBatchMenus();});
+
+function getScopedBatchRows(scope){
+  if(scope==='valid') return batchResults.filter(r=>r.valid);
+  if(scope==='error') return batchResults.filter(r=>!r.valid&&!r.isNull);
+  if(scope==='null') return batchResults.filter(r=>r.isNull);
+  return batchResults.slice();
+}
+
 function copyBatchRow(idx,elId){
   const r=lastBatchRows[idx];
   if(!r) return;
-  const line=r.valid?`${r.id}\t${t('status_valid').toUpperCase()}\t${r.centuryLabel}\t${r.birthDateStr}\t${dayName(r.birthDayIndex)}\t${r.currentAgeYears}\t${r.totalDaysLived}\t${r.gender}\t${r.govCode}\t${govDisplay(r.govCode)}\t${r.serial}\t${r.checkDigit}\t${r.retireAge}\t${r.retireDateStr}\t${r.yearsUntilRetire}\t${r.careerPercent}%\t${(r.flags||[]).map(f=>flagLabel(f)).join(', ')}`:`${r.raw}\t${t('status_error').toUpperCase()}\t${r.error}`;
+  const status=r.valid?t('status_valid'):(r.isNull?t('status_null'):t('status_error'));
+  const line=r.valid?`${r.id}\t${status.toUpperCase()}\t${r.centuryLabel}\t${r.birthDateStr}\t${dayName(r.birthDayIndex)}\t${r.currentAgeYears}\t${r.totalDaysLived}\t${r.gender}\t${r.govCode}\t${govDisplay(r.govCode)}\t${r.serial}\t${r.checkDigit}\t${r.retireAge}\t${r.retireDateStr}\t${r.yearsUntilRetire}\t${r.careerPercent}%\t${(r.flags||[]).map(f=>flagLabel(f)).join(', ')}`:`${r.raw}\t${status.toUpperCase()}\t${r.error}`;
   copyText(line,null,t('toast_row_copied'));
   const el=document.getElementById(elId);
   if(el){el.textContent='check';el.style.color='var(--mint)';setTimeout(()=>{el.textContent='content_copy';el.style.color='';},1200);}
 }
 
-function copyBatchTable(evt){
-  if(lastBatchRows.length===0){showToast(t('toast_no_rows_copy'),'info');return;}
+function buildBatchTSV(rows){
   let tsv=[t('col_id'),t('col_status'),t('col_century'),t('col_birthdate'),t('col_weekday'),t('col_age'),t('col_totaldays'),t('col_gender'),t('col_govcode'),t('col_gov'),t('col_serial'),t('col_check'),t('col_retireage'),t('col_retiredate'),t('col_yearstoretire'),t('col_career'),t('col_flags'),t('col_error')].join('\t')+'\n';
-  lastBatchRows.forEach(r=>{
-    tsv+=r.valid?`${r.id}\t${t('status_valid').toUpperCase()}\t${r.centuryLabel}\t${r.birthDateStr}\t${dayName(r.birthDayIndex)}\t${r.currentAgeYears}\t${r.totalDaysLived}\t${r.gender}\t${r.govCode}\t${govDisplay(r.govCode)}\t${r.serial}\t${r.checkDigit}\t${r.retireAge}\t${r.retireDateStr}\t${r.yearsUntilRetire}\t${r.careerPercent}%\t${r.flags.map(f=>flagLabel(f)).join(', ')}\t\n`:`${r.raw}\t${t('status_error').toUpperCase()}\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t${r.error}\n`;
+  rows.forEach(r=>{
+    const status=r.valid?t('status_valid'):(r.isNull?t('status_null'):t('status_error'));
+    tsv+=r.valid?`${r.id}\t${status.toUpperCase()}\t${r.centuryLabel}\t${r.birthDateStr}\t${dayName(r.birthDayIndex)}\t${r.currentAgeYears}\t${r.totalDaysLived}\t${r.gender}\t${r.govCode}\t${govDisplay(r.govCode)}\t${r.serial}\t${r.checkDigit}\t${r.retireAge}\t${r.retireDateStr}\t${r.yearsUntilRetire}\t${r.careerPercent}%\t${r.flags.map(f=>flagLabel(f)).join(', ')}\t\n`:`${r.raw}\t${status.toUpperCase()}\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t${r.error}\n`;
   });
-  copyText(tsv,evt?evt.currentTarget:null,t('toast_rows_copied',lastBatchRows.length));
+  return tsv;
 }
 
-function exportBatch(format){
-  if(lastBatchRows.length===0){showToast(t('toast_no_rows_export'),'info');return;}
-  const data=lastBatchRows.map(r=>({
-    [t('col_id')]:r.valid?r.id:r.raw,[t('col_status')]:r.valid?'VALID':'ERROR',[t('col_century')]:r.valid?r.centuryLabel:'',[t('col_birthdate')]:r.valid?r.birthDateStr:'',
+function copyBatchScope(scope){
+  const rows=getScopedBatchRows(scope);
+  closeBatchMenus();
+  if(rows.length===0){showToast(t('toast_no_rows_copy'),'info');return;}
+  copyText(buildBatchTSV(rows),null,t('toast_rows_copied',rows.length));
+}
+
+function buildBatchExportData(rows){
+  return rows.map(r=>({
+    [t('col_id')]:r.valid?r.id:r.raw,[t('col_status')]:r.valid?'VALID':(r.isNull?'NULL':'ERROR'),[t('col_century')]:r.valid?r.centuryLabel:'',[t('col_birthdate')]:r.valid?r.birthDateStr:'',
     [t('col_weekday')]:r.valid?dayName(r.birthDayIndex):'',[t('col_age')]:r.valid?r.currentAgeYears:'',[t('col_totaldays')]:r.valid?r.totalDaysLived:'',[t('col_gender')]:r.valid?r.gender:'',[t('col_govcode')]:r.valid?r.govCode:'',
     [t('col_gov')]:r.valid?govDisplay(r.govCode):'',[t('col_serial')]:r.valid?r.serial:'',[t('col_check')]:r.valid?r.checkDigit:'',[t('col_retireage')]:r.valid?r.retireAge:'',
     [t('col_retiredate')]:r.valid?r.retireDateStr:'',[t('col_yearstoretire')]:r.valid?r.yearsUntilRetire:'',[t('col_career')]:r.valid?r.careerPercent:'',
     [t('col_flags')]:r.valid?r.flags.map(f=>flagLabel(f)).join(', '):'',[t('col_error')]:r.error||''
   }));
+}
+
+function downloadBatchScope(scope,format){
+  const rows=getScopedBatchRows(scope);
+  closeBatchMenus();
+  if(rows.length===0){showToast(t('toast_no_rows_export'),'info');return;}
+  const data=buildBatchExportData(rows);
+  const fname=`id_batch_${scope}`;
   if(format==='csv'){
     const headers=Object.keys(data[0]);
-    downloadBlob(toCSV(headers,data.map(row=>headers.map(h=>row[h]))),'id_batch_analytics.csv','text/csv;charset=utf-8;');
+    downloadBlob(toCSV(headers,data.map(row=>headers.map(h=>row[h]))),`${fname}.csv`,'text/csv;charset=utf-8;');
   }else{
-    downloadXLSX(data,t('results_title'),'id_batch_analytics.xlsx');
+    downloadXLSX(data,t('results_title'),`${fname}.xlsx`);
   }
-  showToast(t('toast_rows_downloaded',lastBatchRows.length),'download_done');
+  showToast(t('toast_rows_downloaded',rows.length),'download_done');
 }
 
 function handleFileUpload(e){
@@ -2679,6 +2825,17 @@ function restoreCachedState(){
     document.documentElement.dir=state.lang==='ar'?'rtl':'ltr';
   }
   if(state.batchInput){document.getElementById('batch-input').value=state.batchInput;updateBatchCount();}
+  if(state.batchIgnoreNulls){
+    batchIgnoreNulls=true;
+    const toggle=document.getElementById('batch-ignore-nulls');
+    if(toggle) toggle.checked=true;
+  }
+  if(state.batchFilter) batchFilter=state.batchFilter;
+  if(state.batchSearch) batchSearch=state.batchSearch;
+  if(Array.isArray(state.batchResultsCache)&&state.batchResultsCache.length){
+    batchResults=state.batchResultsCache;
+    renderBatchTable();
+  }
   if(state.formulaTableName) document.getElementById('cfg-table-name').value=state.formulaTableName;
   if(state.formulaColId) document.getElementById('cfg-col-id').value=state.formulaColId;
   if(state.formulaCellId) document.getElementById('cfg-cell-id').value=state.formulaCellId;
