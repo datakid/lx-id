@@ -1038,9 +1038,10 @@ en:{
   status_valid:'Valid', status_error:'Error', status_null:'Null',
   upload_drop_title:'Drop a file or tap to browse', upload_drop_types:'.xlsx, .xls, or .csv',
   upload_col_label:'National ID column', upload_file_default:'File: —', upload_rows:n=>`${n} rows`,
-  btn_extract:'Extract & Process', upload_results_title:'File results', upload_summary:(n,v,note)=>`${n} rows processed (${v} valid)${note}`,
+  btn_extract:'Extract & Process', upload_results_title:'File results', upload_summary:(n,v,e,nl,note)=>`${n} rows processed (${v} valid, ${e} errors${nl?`, ${nl} null`:''})${note}`,
   upload_file_label:name=>`File: ${name}`, upload_rows_detected:n=>`${n} rows detected`,
   toast_no_rows_file:'No rows found in file', toast_processing:'Processing…', toast_file_processed:'File processed', toast_file_downloaded:'File downloaded',
+  toast_file_too_large:'File is too large (max 25 MB)', toast_file_read_error:'Could not read the file', toast_file_parse_error:'Could not read this file — check it\'s a valid Excel or CSV file',
   upload_shown_note:(shown,total)=>` — showing first ${shown} of ${total}`,
   upload_col_birth:'Extracted Birth Date', upload_col_age:'Age', upload_col_totaldays:'Total Days',
   upload_col_retireage:'Retirement Age', upload_col_retiredate:'Retirement Date', upload_col_gov:'Governorate', upload_col_notes:'Notes', upload_col_status:'ID Status',
@@ -1127,9 +1128,10 @@ ar:{
   status_valid:'صحيح', status_error:'خطأ', status_null:'فارغ',
   upload_drop_title:'أفلت ملفًا هنا أو اضغط للاستعراض', upload_drop_types:'‎.xlsx أو ‎.xls أو ‎.csv',
   upload_col_label:'عمود الرقم القومي', upload_file_default:'الملف: —', upload_rows:n=>`${n} صفًا`,
-  btn_extract:'استخراج ومعالجة', upload_results_title:'نتائج الملف', upload_summary:(n,v,note)=>`تمت معالجة ${n} صفًا (${v} صحيح)${note}`,
+  btn_extract:'استخراج ومعالجة', upload_results_title:'نتائج الملف', upload_summary:(n,v,e,nl,note)=>`تمت معالجة ${n} صفًا (${v} صحيح، ${e} أخطاء${nl?`، ${nl} فارغ`:''})${note}`,
   upload_file_label:name=>`الملف: ${name}`, upload_rows_detected:n=>`تم رصد ${n} صفًا`,
   toast_no_rows_file:'لم يتم العثور على صفوف في الملف', toast_processing:'جارٍ المعالجة…', toast_file_processed:'تمت معالجة الملف', toast_file_downloaded:'تم تنزيل الملف',
+  toast_file_too_large:'الملف كبير جدًا (الحد الأقصى 25 ميجابايت)', toast_file_read_error:'تعذرت قراءة الملف', toast_file_parse_error:'تعذرت قراءة هذا الملف — تأكد أنه ملف إكسل أو CSV صالح',
   upload_shown_note:(shown,total)=>` — يُعرض أول ${shown} من ${total}`,
   upload_col_birth:'تاريخ الميلاد المستخرج', upload_col_age:'العمر', upload_col_totaldays:'إجمالي الأيام',
   upload_col_retireage:'سن المعاش', upload_col_retiredate:'تاريخ المعاش', upload_col_gov:'المحافظة', upload_col_notes:'ملاحظات', upload_col_status:'حالة الرقم',
@@ -1262,6 +1264,7 @@ const SAMPLE_IDS=['29805121401234','30101011509876','27510202100001','2650101010
 const STORAGE_KEY='lxid-state-v8';
 
 let uploadedSheetData=[];
+let uploadedSheetDisplayData=[];
 let processedUploadResults=[];
 let formulaMode='table';
 let saveTimer=null;
@@ -2328,28 +2331,55 @@ function confirmDownloadSelection(format){
   exportRows(rows,format,'id_batch_selection');
 }
 
+function resetUploadState(){
+  uploadedSheetData=[];
+  uploadedSheetDisplayData=[];
+  processedUploadResults=[];
+  document.getElementById('upload-mapping').classList.add('hide');
+  document.getElementById('upload-results').classList.add('hide');
+}
+
 function handleFileUpload(e){
   const file=e.target.files[0];
   if(!file) return;
+  resetUploadState();
+  const maxBytes=25*1024*1024;
+  if(file.size>maxBytes){
+    showToast(t('toast_file_too_large'),'error');
+    document.getElementById('file-input').value='';
+    return;
+  }
   document.getElementById('file-info-text').textContent=t('upload_file_label',file.name);
   const reader=new FileReader();
+  reader.onerror=function(){
+    showToast(t('toast_file_read_error'),'error');
+    document.getElementById('file-input').value='';
+  };
   reader.onload=function(evt){
-    const data=new Uint8Array(evt.target.result);
-    const wb=XLSX.read(data,{type:'array',codepage:65001});
-    const firstSheet=wb.SheetNames[0];
-    uploadedSheetData=XLSX.utils.sheet_to_json(wb.Sheets[firstSheet],{defval:''});
-    if(uploadedSheetData.length===0){showToast(t('toast_no_rows_file'),'error');return;}
-    document.getElementById('file-rows-text').textContent=t('upload_rows_detected',uploadedSheetData.length);
-    const headers=Object.keys(uploadedSheetData[0]);
-    const select=document.getElementById('column-select');
-    select.innerHTML='';
-    headers.forEach(h=>{
-      const opt=document.createElement('option');
-      opt.value=h;opt.textContent=h;
-      if(/id|national|رقم/i.test(h)) opt.selected=true;
-      select.appendChild(opt);
-    });
-    document.getElementById('upload-mapping').classList.remove('hide');
+    try{
+      const data=new Uint8Array(evt.target.result);
+      const wb=XLSX.read(data,{type:'array',codepage:65001});
+      const firstSheet=wb.SheetNames[0];
+      if(!firstSheet) throw new Error('no-sheet');
+      uploadedSheetData=XLSX.utils.sheet_to_json(wb.Sheets[firstSheet],{defval:''});
+      uploadedSheetDisplayData=XLSX.utils.sheet_to_json(wb.Sheets[firstSheet],{raw:false,defval:''});
+      if(uploadedSheetData.length===0){showToast(t('toast_no_rows_file'),'error');document.getElementById('file-input').value='';return;}
+      const headers=Object.keys(uploadedSheetData[0]);
+      if(headers.length===0){showToast(t('toast_no_rows_file'),'error');document.getElementById('file-input').value='';return;}
+      document.getElementById('file-rows-text').textContent=t('upload_rows_detected',uploadedSheetData.length);
+      const select=document.getElementById('column-select');
+      select.innerHTML='';
+      headers.forEach(h=>{
+        const opt=document.createElement('option');
+        opt.value=h;opt.textContent=h;
+        if(/id|national|رقم/i.test(h)) opt.selected=true;
+        select.appendChild(opt);
+      });
+      document.getElementById('upload-mapping').classList.remove('hide');
+    }catch(err){
+      showToast(t('toast_file_parse_error'),'error');
+      document.getElementById('file-input').value='';
+    }
   };
   reader.readAsArrayBuffer(file);
 }
@@ -2359,16 +2389,22 @@ function processUploadedFile(){
   if(!idCol) return;
   const btn=document.getElementById('btn-extract-process');
   setBusy(btn,true,t('toast_processing'));
-  chunkProcess(uploadedSheetData,row=>parseID(row[idCol]),{onDone:reses=>{
+  chunkProcess(uploadedSheetData,(row,i)=>{
+    const displayVal=(uploadedSheetDisplayData[i]||{})[idCol];
+    if(/[0-9]\.?[0-9]*e\+?\d+/i.test(String(displayVal??''))) return parseID(displayVal);
+    return parseID(row[idCol]);
+  },{onDone:reses=>{
     processedUploadResults=[];
-    let validCount=0;
+    let validCount=0,nullCount=0;
     const idCounts={};
     reses.forEach(res=>{if(res.valid) idCounts[res.id]=(idCounts[res.id]||0)+1;});
     uploadedSheetData.forEach((row,i)=>{
       const res=reses[i];
       if(res.valid) validCount++;
+      else if(res.isNull) nullCount++;
       const notesParts=res.valid?(res.flags||[]).map(f=>flagLabel(f)):[];
       if(res.valid&&idCounts[res.id]>1) notesParts.push(flagLabel('duplicate-id'));
+      const statusText=res.valid?'VALID':(res.isNull?'NULL':`ERROR: ${res.error}`);
       processedUploadResults.push(Object.assign({},row,{
         [t('upload_col_birth')]:res.valid?res.birthDateStr:'',
         [t('col_gender')]:res.valid?res.gender:'',
@@ -2378,21 +2414,28 @@ function processUploadedFile(){
         [t('upload_col_retiredate')]:res.valid?res.retireDateStr:'',
         [t('upload_col_gov')]:res.valid?govDisplay(res.govCode):'',
         [t('upload_col_notes')]:notesParts.join(', '),
-        [t('upload_col_status')]:res.valid?'VALID':`ERROR: ${res.error}`
+        [t('upload_col_status')]:statusText
       }));
     });
+    const errorCount=processedUploadResults.length-validCount-nullCount;
     const cols=Object.keys(processedUploadResults[0]);
     const genderKey=t('col_gender');
+    const statusKey=t('upload_col_status');
     document.getElementById('upload-thead').innerHTML=`<tr>${cols.map(c=>`<th>${escapeHtml(c)}</th>`).join('')}</tr>`;
     const tbody=document.getElementById('upload-tbody');
     tbody.innerHTML=processedUploadResults.slice(0,150).map(row=>{
       return `<tr>${cols.map(c=>{
         if(c===genderKey&&row[c]) return `<td>${genderBadge(row[c],'.9rem')}</td>`;
+        if(c===statusKey){
+          const val=row[c];
+          const color=val==='VALID'?'var(--mint)':val==='NULL'?'var(--sun)':'var(--scarlet)';
+          return `<td style="color:${color};font-weight:650;">${escapeHtml(val)}</td>`;
+        }
         return `<td>${escapeHtml(row[c])}</td>`;
       }).join('')}</tr>`;
     }).join('');
     const shownNote=processedUploadResults.length>150?t('upload_shown_note',150,processedUploadResults.length):'';
-    document.getElementById('upload-summary').textContent=t('upload_summary',processedUploadResults.length,validCount,shownNote);
+    document.getElementById('upload-summary').textContent=t('upload_summary',processedUploadResults.length,validCount,errorCount,nullCount,shownNote);
     document.getElementById('upload-results').classList.remove('hide');
     setBusy(btn,false);
     showToast(t('toast_file_processed'),'auto_fix_high');
