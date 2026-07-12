@@ -131,6 +131,8 @@ body{
 .btn-ghost:hover:not(:disabled){background:var(--milk-strong);color:var(--ink)}
 .btn-soft{background:var(--amber-soft);color:var(--amber-text)}
 .btn-soft:hover:not(:disabled){background:var(--amber);color:#FBF3E8}
+.btn-confirm{background:var(--mint);color:#fff;box-shadow:0 1px 2px rgba(20,14,8,.14),0 10px 22px -12px color-mix(in srgb, var(--mint) 55%, transparent);}
+.btn-confirm:hover:not(:disabled){transform:translateY(-1px);background:color-mix(in srgb, var(--mint) 90%, black);box-shadow:0 2px 4px rgba(20,14,8,.16),0 16px 28px -12px color-mix(in srgb, var(--mint) 60%, transparent);}
 .btn.copied{background:var(--mint) !important;color:#0B1B10 !important}
 .btn-sm{padding:.5rem .85rem;font-size:.75rem}
 .btn-block{width:100%}
@@ -310,24 +312,48 @@ body{
 .toggle-row .toggle-label{font-size:.78rem;font-weight:600;color:var(--ink-2);white-space:nowrap}
 .toggle-row:hover .toggle-label{color:var(--ink)}
 
+.splitbtn{display:inline-flex;align-items:stretch;border-radius:999px;background:var(--milk-strong);border:1px solid var(--edge);overflow:hidden;transition:border-color .15s}
+.splitbtn:hover{border-color:var(--edge-strong)}
+.splitbtn-main{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem .85rem;border:none;background:transparent;font-size:.78rem;font-weight:650;color:var(--ink);cursor:pointer;transition:background .15s}
+.splitbtn-main.iconOnly{padding-inline:.6rem}
+.splitbtn-main:hover{background:var(--milk)}
+.splitbtn-main .material-symbols-rounded{font-size:1.05rem;color:var(--ink-2)}
+.splitbtn-div{width:1px;align-self:center;height:1.15rem;background:var(--edge-strong)}
+.splitbtn-caret{display:inline-flex;align-items:center;justify-content:center;width:1.9rem;border:none;background:transparent;color:var(--ink-3);cursor:pointer;transition:background .15s,color .15s}
+.splitbtn-caret:hover{background:var(--milk);color:var(--ink)}
+.splitbtn-caret .material-symbols-rounded{font-size:1rem;transition:transform .25s cubic-bezier(.16,1,.3,1)}
+.splitbtn-caret.open .material-symbols-rounded{transform:rotate(180deg)}
+
 .batch-dropwrap{position:relative;display:inline-flex}
 .batch-dropmenu{
-  position:absolute;top:calc(100% + .5rem);inset-inline-end:0;z-index:60;min-width:13rem;
-  background:var(--bg);border:1px solid var(--edge-strong);border-radius:var(--r3);
-  box-shadow:var(--sh-3),inset 0 1px 1px var(--glass-hi);padding:.4rem;
-  opacity:0;transform:translateY(-6px) scale(.98);pointer-events:none;transition:opacity .16s ease,transform .16s cubic-bezier(.16,1,.3,1);
+  position:absolute;top:calc(100% + .6rem);inset-inline-end:0;z-index:60;width:16rem;
+  background:var(--bg);background:color-mix(in srgb, var(--bg) 95%, transparent);border:1px solid var(--edge-strong);border-radius:var(--r3);isolation:isolate;
+  backdrop-filter:blur(var(--blur-lg)) saturate(var(--glass-sat)) brightness(var(--glass-bright));
+  -webkit-backdrop-filter:blur(var(--blur-lg)) saturate(var(--glass-sat)) brightness(var(--glass-bright));
+  box-shadow:var(--sh-3),inset 0 1px 1px var(--glass-hi),inset 0 -1px 1px var(--glass-lo);padding:.5rem;
+  opacity:0;transform:translateY(-8px) scale(.96);pointer-events:none;transition:opacity .18s ease,transform .2s cubic-bezier(.16,1,.3,1);
 }
 .batch-dropmenu.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
-.batch-dropmenu-section{display:flex;align-items:center;justify-content:space-between;gap:.5rem;padding:.5rem .6rem;border-radius:10px;transition:background .15s}
-.batch-dropmenu-section:hover{background:var(--milk-strong)}
-.batch-dropmenu-label{display:flex;align-items:center;gap:.5rem;font-size:.78rem;font-weight:600;color:var(--ink);cursor:pointer;flex:1}
-.batch-dropmenu-label .material-symbols-rounded{font-size:1.05rem;color:var(--ink-3)}
-.batch-dropmenu-count{font-size:.66rem;font-weight:700;color:var(--ink-3);background:var(--milk-strong);border-radius:999px;padding:.1rem .45rem;flex-shrink:0}
-.batch-dropmenu-fmts{display:flex;gap:.2rem;flex-shrink:0}
-.batch-dropmenu-fmtbtn{width:1.7rem;height:1.7rem;border:none;background:transparent;color:var(--ink-3);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s,color .15s}
-.batch-dropmenu-fmtbtn:hover{background:var(--milk-strong);color:var(--amber-text)}
-.batch-dropmenu-fmtbtn .material-symbols-rounded{font-size:1.05rem}
-.batch-dropmenu-div{height:1px;background:var(--edge);margin:.3rem .2rem}
+.batch-dropmenu-head{margin-bottom:.35rem;padding-bottom:.6rem !important;border-bottom:1px solid var(--edge);border-radius:0 !important}
+.batch-dropmenu-headlabel{flex:1;font-size:.72rem;font-weight:700;letter-spacing:.02em;color:var(--ink-2);z-index:1}
+.batch-dropmenu-headcount{font-size:.68rem;font-weight:650;color:var(--ink-3);z-index:1}
+.chk-row{position:relative;display:flex;align-items:center;gap:.6rem;padding:.5rem .55rem;border-radius:11px;cursor:pointer;user-select:none;transition:background .15s;overflow:hidden}
+.chk-row::before{content:'';position:absolute;inset:0;background:var(--row-tint,transparent);opacity:0;transition:opacity .15s}
+.chk-row:hover::before{opacity:.5}
+.chk-row input{position:absolute;opacity:0;width:0;height:0}
+.chk-box{position:relative;width:1.15rem;height:1.15rem;border-radius:6px;border:1.6px solid var(--edge-strong);background:var(--bg);flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;transition:background .15s,border-color .15s;z-index:1}
+.chk-box .material-symbols-rounded{position:absolute;font-size:.8rem;color:#fff;opacity:0;transform:scale(.4);transition:opacity .15s,transform .15s cubic-bezier(.34,1.56,.64,1)}
+.chk-row input:checked+.chk-box{background:var(--row-solid,var(--mint));border-color:var(--row-solid,var(--mint))}
+.chk-row input:checked+.chk-box .icon-check{opacity:1;transform:scale(1)}
+.chk-row input:indeterminate+.chk-box{background:var(--ink-3);border-color:var(--ink-3)}
+.chk-row input:indeterminate+.chk-box .icon-dash{opacity:1;transform:scale(1)}
+.chk-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;z-index:1}
+.chk-label{font-size:.79rem;font-weight:650;color:var(--ink);flex:1;z-index:1}
+.chk-count{font-size:.66rem;font-weight:700;color:var(--ink-3);background:var(--milk-strong);border-radius:999px;padding:.1rem .45rem;flex-shrink:0;z-index:1}
+.batch-dropmenu-div{height:1px;background:var(--edge);margin:.4rem .1rem}
+.batch-dropmenu-summary{font-size:.68rem;color:var(--ink-3);text-align:center;padding:.15rem 0 .05rem}
+.batch-dropmenu-actions{display:flex;gap:.4rem}
+.batch-dropmenu-confirm{display:flex;align-items:center;justify-content:center;gap:.4rem;width:100%}
 .kpi .num{font-size:1.7rem;line-height:1}
 .kpi .lbl{font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.07em;font-weight:650;color:var(--ink-3);margin-bottom:.3rem}
 
@@ -942,6 +968,8 @@ const ICON_DEFS={
   download_done:'<path d="M11.5 3v8M7.5 7.6L11.5 11.6l4-4"/><path d="M4.5 19h15"/><path d="M16 15.5l1.8 1.8L21.5 13.3"/>',
   error:'<circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.3"/><circle cx="12" cy="16.3" r="1" fill="currentColor" stroke="none"/>',
   event_repeat:'<rect x="3.5" y="5" width="12.5" height="15" rx="3"/><path d="M3.5 10h12.5"/><path d="M7 3v4"/><path d="M16.5 14.5a3.3 3.3 0 015.5-2.3M22 12v-3.2M22 12h-3.2"/><path d="M20.7 17.5a3.3 3.3 0 01-5.5 2.3M15.5 20v-3.2M15.5 20h3.2"/>',
+  expand_more:'<path d="M6 9l6 6 6-6"/>',
+  remove:'<path d="M5 12h14"/>',
   fingerprint:'<circle cx="12" cy="12" r="8.4" stroke-dasharray="35 60" transform="rotate(-40 12 12)"/><circle cx="12" cy="12" r="5.6" stroke-dasharray="24 40" transform="rotate(25 12 12)"/><circle cx="12" cy="12" r="3" stroke-dasharray="12 30" transform="rotate(80 12 12)"/><circle cx="12" cy="12" r=".9" fill="currentColor" stroke="none"/>',
   functions:'<path d="M16.5 4.5H9.2a1 1 0 00-.9 1.5l3.2 5.8-3.4 6.2a1 1 0 00.9 1.5h7.5"/><path d="M8 12.2h4.4"/>',
   info:'<circle cx="12" cy="12" r="9"/><path d="M12 10.7v5.3"/><circle cx="12" cy="7.8" r="1" fill="currentColor" stroke="none"/>',
@@ -999,8 +1027,9 @@ en:{
   kpi_total:'Total', kpi_valid:'Valid', kpi_errors:'Errors', kpi_null:'Null',
   filter_all:'All', filter_valid:'Valid', filter_error:'Errors', filter_null:'Null', search_ph:'Search…',
   btn_excel:'Excel', btn_csv:'CSV', btn_copy:'Copy', btn_download:'Download', copy_visible_title:'Copy visible rows',
-  scope_all:'All rows', scope_valid:'Valid only', scope_error:'Errors only', scope_null:'Null only',
-  toggle_ignore_nulls:'Ignore blank rows',
+  scope_all:'All rows', scope_valid:'Valid', scope_error:'Errors', scope_null:'Null',
+  toggle_ignore_nulls:'Ignore blank rows', more_options_title:'More options', checklist_title:'Choose rows',
+  btn_select_all:'Select all', btn_copy_selected:'Copy selected', rows_selected_count:(n)=>`${n} row${n===1?'':'s'} selected`,
   no_matching_rows:'No matching rows',
   col_id:'National ID', col_status:'Status', col_century:'Century', col_birthdate:'Birth Date', col_weekday:'Weekday',
   col_age:'Age', col_totaldays:'Total Days', col_gender:'Gender', col_govcode:'Gov Code', col_gov:'Governorate', col_serial:'Serial',
@@ -1087,8 +1116,9 @@ ar:{
   kpi_total:'الإجمالي', kpi_valid:'صحيح', kpi_errors:'أخطاء', kpi_null:'فارغ',
   filter_all:'الكل', filter_valid:'صحيح', filter_error:'أخطاء', filter_null:'فارغ', search_ph:'بحث…',
   btn_excel:'إكسل', btn_csv:'CSV', btn_copy:'نسخ', btn_download:'تنزيل', copy_visible_title:'نسخ الصفوف الظاهرة',
-  scope_all:'كل الصفوف', scope_valid:'الصحيح فقط', scope_error:'الأخطاء فقط', scope_null:'الفارغ فقط',
-  toggle_ignore_nulls:'تجاهل الصفوف الفارغة',
+  scope_all:'كل الصفوف', scope_valid:'صحيح', scope_error:'أخطاء', scope_null:'فارغ',
+  toggle_ignore_nulls:'تجاهل الصفوف الفارغة', more_options_title:'خيارات إضافية', checklist_title:'اختر الصفوف',
+  btn_select_all:'تحديد الكل', btn_copy_selected:'نسخ المحدد', rows_selected_count:(n)=>`تم تحديد ${n} صفًا`,
   no_matching_rows:'لا توجد صفوف مطابقة',
   col_id:'الرقم القومي', col_status:'الحالة', col_century:'القرن', col_birthdate:'تاريخ الميلاد', col_weekday:'يوم الأسبوع',
   col_age:'العمر', col_totaldays:'إجمالي الأيام', col_gender:'النوع', col_govcode:'كود المحافظة', col_gov:'المحافظة', col_serial:'الرقم التسلسلي',
@@ -1238,7 +1268,6 @@ let saveTimer=null;
 let workDaySet=new Set([0,1,2,3,4]);
 let activeToast=null;
 let batchResults=[];
-let batchFilter='all';
 let batchSearch='';
 
 let storageWarned=false;
@@ -1985,10 +2014,9 @@ function batchClear(){
   document.getElementById('batch-input').value='';
   updateBatchCount();
   batchResults=[];
-  batchFilter='all';
   batchSearch='';
   renderBatchTable();
-  saveState({batchResultsCache:null,batchFilter:'all',batchSearch:''});
+  saveState({batchResultsCache:null,batchSearch:''});
   showToast(t('toast_cleared'),'delete');
 }
 
@@ -2008,7 +2036,7 @@ function processBatch(){
   chunkProcess(lines,parseID,{onDone:results=>{
     batchResults=batchIgnoreNulls?results.filter(r=>!r.isNull):results;
     markDuplicates(batchResults);
-    batchFilter='all';
+    batchTableCats=new Set(['valid','error','null']);
     batchSearch='';
     renderBatchTable();
     cacheBatchResults();
@@ -2022,10 +2050,17 @@ function cacheBatchResults(){
     const {trace,checks,birthDateObj,retireDateObj,...rest}=r;
     return rest;
   });
-  saveState({batchResultsCache:lightweight,batchFilter,batchSearch,batchIgnoreNulls});
+  saveState({batchResultsCache:lightweight,batchSearch,batchIgnoreNulls,batchTableCats:[...batchTableCats]});
 }
 
-function setBatchFilter(f){batchFilter=f;renderBatchTable();saveStateDebounced({batchFilter:f});}
+function catOf(r){return r.valid?'valid':(r.isNull?'null':'error');}
+
+let batchTableCats=new Set(['valid','error','null']);
+function toggleBatchTableCat(cat){
+  if(batchTableCats.has(cat)) batchTableCats.delete(cat); else batchTableCats.add(cat);
+  renderBatchTable();
+  saveStateDebounced({batchTableCats:[...batchTableCats]});
+}
 function onBatchSearch(val){batchSearch=val;renderBatchTable();saveStateDebounced({batchSearch:val});}
 function clearBatchSearch(){batchSearch='';renderBatchTable();saveStateDebounced({batchSearch:''});}
 
@@ -2047,10 +2082,7 @@ function renderBatchTable(){
   const errorCount=total-validCount-nullCount;
   const showNullBucket=nullCount>0;
   const searchTerm=batchSearch.toLowerCase();
-  let rows=batchResults;
-  if(batchFilter==='valid') rows=rows.filter(r=>r.valid);
-  if(batchFilter==='error') rows=rows.filter(r=>!r.valid&&!r.isNull);
-  if(batchFilter==='null') rows=rows.filter(r=>r.isNull);
+  let rows=batchResults.filter(r=>batchTableCats.has(catOf(r)));
   if(searchTerm) rows=rows.filter(r=>(r.raw+' '+(r.id||'')+' '+(r.error||'')+' '+(r.governorate||'')).toLowerCase().includes(searchTerm));
   lastBatchRows=rows;
   const cols=[t('col_id'),t('col_status'),t('col_century'),t('col_birthdate'),t('col_weekday'),t('col_age'),t('col_totaldays'),t('col_gender'),t('col_govcode'),t('col_gov'),t('col_serial'),t('col_check'),t('col_retireage'),t('col_retiredate'),t('col_yearstoretire'),t('col_career'),t('col_flags')];
@@ -2105,14 +2137,22 @@ function renderBatchTable(){
           <h3 class="cardtitle">${t('results_title')}</h3>
           <p style="font-size:.75rem;color:var(--ink-2);margin:.15rem 0 0;">${t('results_summary',total,validCount,errorCount,nullCount)}</p>
         </div>
-        <div class="row" style="gap:.4rem;">
+        <div class="row" style="gap:.5rem;">
           <div class="batch-dropwrap">
-            <button onclick="event.stopPropagation();toggleBatchMenu('copy')" class="iconbtn focusable" title="${t('copy_visible_title')}" aria-label="${t('copy_visible_title')}"><span class="material-symbols-rounded" style="font-size:1.15rem;">content_copy</span></button>
-            ${batchScopeMenuHtml('copy')}
+            <div class="splitbtn">
+              <button onclick="copyBatchView(event)" class="splitbtn-main iconOnly focusable" title="${t('copy_visible_title')}" aria-label="${t('copy_visible_title')}"><span class="material-symbols-rounded" style="font-size:1.05rem;">content_copy</span></button>
+              <div class="splitbtn-div"></div>
+              <button id="caret-copy" onclick="event.stopPropagation();toggleBatchMenu('copy')" class="splitbtn-caret focusable" title="${t('more_options_title')}" aria-label="${t('more_options_title')}"><span class="material-symbols-rounded">expand_more</span></button>
+            </div>
+            ${batchChecklistHtml('copy')}
           </div>
           <div class="batch-dropwrap">
-            <button onclick="event.stopPropagation();toggleBatchMenu('download')" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">download</span>${t('btn_download')}<span class="material-symbols-rounded" style="font-size:1rem;">expand_more</span></button>
-            ${batchScopeMenuHtml('download')}
+            <div class="splitbtn">
+              <button onclick="downloadBatchView('xlsx',event)" class="splitbtn-main focusable"><span class="material-symbols-rounded">download</span>${t('btn_download')}</button>
+              <div class="splitbtn-div"></div>
+              <button id="caret-download" onclick="event.stopPropagation();toggleBatchMenu('download')" class="splitbtn-caret focusable" title="${t('more_options_title')}" aria-label="${t('more_options_title')}"><span class="material-symbols-rounded">expand_more</span></button>
+            </div>
+            ${batchChecklistHtml('download')}
           </div>
         </div>
       </div>
@@ -2124,10 +2164,9 @@ function renderBatchTable(){
       </div>
       <div class="row" style="flex-wrap:wrap;gap:.5rem;">
         <div class="pillrow">
-          <button class="pill${batchFilter==='all'?' active':''} focusable" onclick="setBatchFilter('all')">${t('filter_all')}</button>
-          <button class="pill${batchFilter==='valid'?' active':''} focusable" onclick="setBatchFilter('valid')">${t('filter_valid')}</button>
-          <button class="pill${batchFilter==='error'?' active':''} focusable" onclick="setBatchFilter('error')">${t('filter_error')}</button>
-          ${showNullBucket?`<button class="pill${batchFilter==='null'?' active':''} focusable" onclick="setBatchFilter('null')">${t('filter_null')}</button>`:''}
+          <button class="pill${batchTableCats.has('valid')?' active':''} focusable" onclick="toggleBatchTableCat('valid')"><span class="statdot ok" style="margin-inline-end:.35rem;"></span>${t('filter_valid')}</button>
+          <button class="pill${batchTableCats.has('error')?' active':''} focusable" onclick="toggleBatchTableCat('error')"><span class="statdot bad" style="margin-inline-end:.35rem;"></span>${t('filter_error')}</button>
+          ${showNullBucket?`<button class="pill${batchTableCats.has('null')?' active':''} focusable" onclick="toggleBatchTableCat('null')"><span class="statdot warn" style="margin-inline-end:.35rem;"></span>${t('filter_null')}</button>`:''}
         </div>
         <div class="field-clearable" style="flex:1;min-width:130px;">
           <input type="text" id="batch-search" placeholder="${t('search_ph')}" class="field-input focusable" style="width:100%;padding-block:.5rem;padding-inline:.8rem 2.1rem;font-size:.78rem;" value="${escapeHtml(batchSearch)}" oninput="onBatchSearch(this.value)">
@@ -2143,50 +2182,88 @@ function renderBatchTable(){
     </div>`;
 }
 
-function batchScopeMenuHtml(kind){
-  const scopes=[
-    {key:'all',icon:'list_alt',label:t('scope_all'),count:batchResults.length},
-    {key:'valid',icon:'check_circle',label:t('scope_valid'),count:batchResults.filter(r=>r.valid).length},
-    {key:'error',icon:'error',label:t('scope_error'),count:batchResults.filter(r=>!r.valid&&!r.isNull).length},
-    {key:'null',icon:'remove_circle',label:t('scope_null'),count:batchResults.filter(r=>r.isNull).length}
-  ];
-  const rowsHtml=scopes.map(s=>{
-    if(kind==='copy'){
-      return `<div class="batch-dropmenu-section">
-        <span class="batch-dropmenu-label" onclick="copyBatchScope('${s.key}')"><span class="material-symbols-rounded">${s.icon}</span>${s.label}</span>
-        <span class="batch-dropmenu-count">${s.count}</span>
+let batchMenuSelection=new Set(['valid','error','null']);
+
+function chkRow(cat,solidVar,tintVar,label,count){
+  const checked=batchMenuSelection.has(cat);
+  return `<label class="chk-row" style="--row-solid:var(${solidVar});--row-tint:var(${tintVar});">
+    <input type="checkbox" class="chk-input-${cat}" ${checked?'checked':''} onchange="toggleBatchMenuSelection('${cat}')">
+    <span class="chk-box"><span class="material-symbols-rounded icon-check">check</span></span>
+    <span class="chk-dot" style="background:var(${solidVar});"></span>
+    <span class="chk-label">${label}</span>
+    <span class="chk-count">${count}</span>
+  </label>`;
+}
+
+function batchChecklistHtml(kind){
+  const validCount=batchResults.filter(r=>r.valid).length;
+  const errorCount=batchResults.filter(r=>!r.valid&&!r.isNull).length;
+  const nullCount=batchResults.filter(r=>r.isNull).length;
+  const selectedCount=batchMenuSelection.size;
+  const rowsHtml=chkRow('valid','--mint','--mint-soft',t('scope_valid'),validCount)+chkRow('error','--scarlet','--scarlet-soft',t('scope_error'),errorCount)+chkRow('null','--sun','--sun-soft',t('scope_null'),nullCount);
+  const actions=kind==='copy'
+    ?`<button class="btn btn-confirm btn-sm btn-block focusable" onclick="confirmCopySelection()">${t('btn_copy_selected')}</button>`
+    :`<div class="batch-dropmenu-actions">
+        <button class="btn btn-soft btn-sm focusable" style="flex:1;" onclick="confirmDownloadSelection('xlsx')"><span class="material-symbols-rounded" style="font-size:1rem;">download</span>${t('btn_excel')}</button>
+        <button class="btn btn-ghost btn-sm focusable" style="flex:1;" onclick="confirmDownloadSelection('csv')"><span class="material-symbols-rounded" style="font-size:1rem;">csv</span>${t('btn_csv')}</button>
       </div>`;
-    }
-    return `<div class="batch-dropmenu-section">
-      <span class="batch-dropmenu-label" onclick="downloadBatchScope('${s.key}','xlsx')"><span class="material-symbols-rounded">${s.icon}</span>${s.label}</span>
-      <span class="batch-dropmenu-count">${s.count}</span>
-      <div class="batch-dropmenu-fmts">
-        <button class="batch-dropmenu-fmtbtn focusable" title="Excel" onclick="downloadBatchScope('${s.key}','xlsx')"><span class="material-symbols-rounded">table_view</span></button>
-        <button class="batch-dropmenu-fmtbtn focusable" title="CSV" onclick="downloadBatchScope('${s.key}','csv')"><span class="material-symbols-rounded">csv</span></button>
-      </div>
-    </div>`;
-  }).join('');
-  return `<div class="batch-dropmenu" id="batch-menu-${kind}">${rowsHtml}</div>`;
+  return `<div class="batch-dropmenu" id="batch-menu-${kind}" onclick="event.stopPropagation()">
+    <label class="chk-row batch-dropmenu-head">
+      <input type="checkbox" id="head-chk-${kind}" ${selectedCount===3?'checked':''} onchange="batchMenuSelectAll()">
+      <span class="chk-box"><span class="material-symbols-rounded icon-check">check</span><span class="material-symbols-rounded icon-dash">remove</span></span>
+      <span class="batch-dropmenu-headlabel">${t('checklist_title')}</span>
+      <span class="batch-dropmenu-headcount" id="head-count-${kind}">${selectedCount}/3</span>
+    </label>
+    ${rowsHtml}
+    <div class="batch-dropmenu-summary" id="sel-summary-${kind}">${t('rows_selected_count',getSelectedBatchRows().length)}</div>
+    <div class="batch-dropmenu-div"></div>
+    ${actions}
+  </div>`;
+}
+
+function toggleBatchMenuSelection(cat){
+  if(batchMenuSelection.has(cat)) batchMenuSelection.delete(cat); else batchMenuSelection.add(cat);
+  syncBatchMenus();
+}
+function batchMenuSelectAll(){
+  const allSelected=['valid','error','null'].every(c=>batchMenuSelection.has(c));
+  batchMenuSelection=allSelected?new Set():new Set(['valid','error','null']);
+  syncBatchMenus();
+}
+function syncBatchMenus(){
+  ['valid','error','null'].forEach(cat=>{
+    const checked=batchMenuSelection.has(cat);
+    document.querySelectorAll('.chk-input-'+cat).forEach(el=>{el.checked=checked;});
+  });
+  const selectedCount=batchMenuSelection.size;
+  const rowCount=getSelectedBatchRows().length;
+  ['copy','download'].forEach(kind=>{
+    const headChk=document.getElementById('head-chk-'+kind);
+    if(headChk){headChk.checked=selectedCount===3;headChk.indeterminate=selectedCount>0&&selectedCount<3;}
+    const headCount=document.getElementById('head-count-'+kind);
+    if(headCount) headCount.textContent=`${selectedCount}/3`;
+    const summary=document.getElementById('sel-summary-'+kind);
+    if(summary) summary.textContent=t('rows_selected_count',rowCount);
+  });
 }
 
 function toggleBatchMenu(name){
   const el=document.getElementById('batch-menu-'+name);
+  const caret=document.getElementById('caret-'+name);
   if(!el) return;
   const wasOpen=el.classList.contains('open');
   closeBatchMenus();
-  if(!wasOpen) el.classList.add('open');
+  if(!wasOpen){el.classList.add('open');if(caret) caret.classList.add('open');}
 }
 function closeBatchMenus(){
   document.querySelectorAll('.batch-dropmenu.open').forEach(m=>m.classList.remove('open'));
+  document.querySelectorAll('.splitbtn-caret.open').forEach(c=>c.classList.remove('open'));
 }
 document.addEventListener('click',()=>closeBatchMenus());
 document.addEventListener('keydown',(e)=>{if(e.key==='Escape') closeBatchMenus();});
 
-function getScopedBatchRows(scope){
-  if(scope==='valid') return batchResults.filter(r=>r.valid);
-  if(scope==='error') return batchResults.filter(r=>!r.valid&&!r.isNull);
-  if(scope==='null') return batchResults.filter(r=>r.isNull);
-  return batchResults.slice();
+function getSelectedBatchRows(){
+  return batchResults.filter(r=>batchMenuSelection.has(catOf(r)));
 }
 
 function copyBatchRow(idx,elId){
@@ -2208,8 +2285,13 @@ function buildBatchTSV(rows){
   return tsv;
 }
 
-function copyBatchScope(scope){
-  const rows=getScopedBatchRows(scope);
+function copyBatchView(evt){
+  closeBatchMenus();
+  if(lastBatchRows.length===0){showToast(t('toast_no_rows_copy'),'info');return;}
+  copyText(buildBatchTSV(lastBatchRows),evt?evt.currentTarget:null,t('toast_rows_copied',lastBatchRows.length));
+}
+function confirmCopySelection(){
+  const rows=getSelectedBatchRows();
   closeBatchMenus();
   if(rows.length===0){showToast(t('toast_no_rows_copy'),'info');return;}
   copyText(buildBatchTSV(rows),null,t('toast_rows_copied',rows.length));
@@ -2225,12 +2307,9 @@ function buildBatchExportData(rows){
   }));
 }
 
-function downloadBatchScope(scope,format){
-  const rows=getScopedBatchRows(scope);
-  closeBatchMenus();
+function exportRows(rows,format,fname){
   if(rows.length===0){showToast(t('toast_no_rows_export'),'info');return;}
   const data=buildBatchExportData(rows);
-  const fname=`id_batch_${scope}`;
   if(format==='csv'){
     const headers=Object.keys(data[0]);
     downloadBlob(toCSV(headers,data.map(row=>headers.map(h=>row[h]))),`${fname}.csv`,'text/csv;charset=utf-8;');
@@ -2238,6 +2317,15 @@ function downloadBatchScope(scope,format){
     downloadXLSX(data,t('results_title'),`${fname}.xlsx`);
   }
   showToast(t('toast_rows_downloaded',rows.length),'download_done');
+}
+function downloadBatchView(format,evt){
+  closeBatchMenus();
+  exportRows(lastBatchRows,format,'id_batch_view');
+}
+function confirmDownloadSelection(format){
+  const rows=getSelectedBatchRows();
+  closeBatchMenus();
+  exportRows(rows,format,'id_batch_selection');
 }
 
 function handleFileUpload(e){
@@ -2830,7 +2918,7 @@ function restoreCachedState(){
     const toggle=document.getElementById('batch-ignore-nulls');
     if(toggle) toggle.checked=true;
   }
-  if(state.batchFilter) batchFilter=state.batchFilter;
+  if(Array.isArray(state.batchTableCats)) batchTableCats=new Set(state.batchTableCats);
   if(state.batchSearch) batchSearch=state.batchSearch;
   if(Array.isArray(state.batchResultsCache)&&state.batchResultsCache.length){
     batchResults=state.batchResultsCache;
