@@ -387,6 +387,19 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
 .filecard-meta{font-size:.71rem;color:var(--ink-2);margin:.2rem 0 0}
 .filecard-remove{flex-shrink:0;width:2.1rem;height:2.1rem}
 
+.previewstats{display:flex;flex-wrap:wrap;gap:.4rem}
+.previewstat{display:inline-flex;align-items:center;gap:.4rem;font-size:.7rem;font-weight:650;padding:.32rem .7rem;border-radius:999px;background:var(--milk-strong);border:1px solid var(--edge);color:var(--ink-2)}
+.previewstat .material-symbols-rounded{font-size:.9rem;color:var(--ink-3)}
+.previewstat b{font-weight:700;color:var(--ink)}
+.previewtable-wrap{border-radius:16px;border:1px solid var(--edge);max-height:15.5rem;overflow-y:auto}
+table.previewtable{width:100%;text-align:start;font-size:.76rem;border-collapse:collapse}
+table.previewtable thead th{padding:.6rem .8rem;border-bottom:1px solid var(--edge);white-space:nowrap;background:var(--bg);background:color-mix(in srgb, var(--bg) 92%, transparent);position:sticky;top:0;color:var(--ink-3);font-weight:700;font-size:.6rem;text-transform:uppercase;letter-spacing:.05em;transition:color .15s,background .15s}
+table.previewtable tbody td{padding:.55rem .8rem;border-bottom:1px solid var(--edge);white-space:nowrap;color:var(--ink-2);transition:background .15s,color .15s}
+table.previewtable tbody tr:last-child td{border-bottom:none}
+table.previewtable th.col-active{color:var(--amber-text);background:var(--amber-soft)}
+table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);font-weight:600}
+.previewnote{font-size:.68rem;color:var(--ink-3);margin:0;font-weight:600}
+
 #toasts{position:fixed;top:calc(1rem + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;align-items:center;pointer-events:none}
 .toast{background:var(--ink);color:var(--bg);padding-block:.55rem;padding-inline:.55rem 1.1rem;border-radius:999px;box-shadow:var(--sh-3);display:flex;align-items:center;gap:.55rem;font-size:.8rem;font-weight:640;
   animation:toastin .3s cubic-bezier(.16,1,.3,1)}
@@ -429,6 +442,43 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
 .idchip::before,.idchip::after{content:'';position:absolute;background:rgba(0,0,0,.18)}
 .idchip::before{left:34%;top:3px;bottom:3px;width:1px}
 .idchip::after{top:38%;left:3px;right:3px;height:1px}
+
+.idseg-group{gap:.4rem;padding:.3rem;border-radius:18px;background:var(--glass-lo)}
+.idseg-group .idseg{background:var(--milk);box-shadow:inset 0 1px 0 var(--glass-hi),inset 0 -1px 1px var(--glass-lo);border-color:transparent}
+.idseg-group.g-date .idseg{border-top:2px solid color-mix(in srgb, var(--amber) 55%, transparent)}
+.idseg-group.g-loc .idseg{border-top:2px solid color-mix(in srgb, var(--azure) 55%, transparent)}
+.idseg-group.g-meta .idseg{border-top:2px solid color-mix(in srgb, var(--rose) 55%, transparent)}
+.idseg-group.g-date .idseg:hover{background:var(--amber-soft);border-color:transparent}
+.idseg-group.g-loc .idseg:hover{background:var(--azure-soft);border-color:transparent}
+.idseg-group.g-meta .idseg:hover{background:var(--rose-soft);border-color:transparent}
+.idseg .tag{opacity:.5;transition:opacity .2s ease}
+.idseg:hover .tag{opacity:.85}
+
+.stattile{display:flex;gap:.6rem;align-items:flex-start;border-radius:16px;padding:.7rem .75rem;background:var(--glass-lo);transition:background .2s ease,transform .2s cubic-bezier(.16,1,.3,1)}
+.stattile:hover{transform:translateY(-1px)}
+.stattile-icon{width:2.1rem;height:2.1rem;border-radius:11px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:var(--amber-soft);color:var(--amber-text)}
+.stattile-icon .material-symbols-rounded{font-size:1.05rem}
+.stattile-icon.c-azure{background:var(--azure-soft);color:var(--azure-text)}
+.stattile-icon.c-mint{background:var(--mint-soft);color:var(--mint)}
+.stattile-icon.c-rose{background:var(--rose-soft);color:var(--rose-text)}
+.stattile-val{font-weight:700;font-size:.94rem;line-height:1.25;color:var(--ink)}
+.stattile-sub{display:flex;align-items:center;gap:.3rem;margin-top:.15rem}
+
+.ringcard{position:relative;overflow:hidden}
+.ringcard::before{content:'';position:absolute;inset-inline-end:-3.5rem;top:-3.5rem;width:9rem;height:9rem;border-radius:50%;background:radial-gradient(circle,var(--amber-soft),transparent 70%);pointer-events:none;opacity:.8}
+.ringwrap{position:relative;flex-shrink:0;filter:drop-shadow(0 6px 14px rgba(138,75,38,.22))}
+.dark .ringwrap{filter:drop-shadow(0 6px 16px rgba(0,0,0,.45))}
+.ringlabel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.ringlabel .sub{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin-top:.05rem}
+
+.checkrow{display:flex;align-items:center;gap:.65rem;padding:.6rem .15rem;border-bottom:1px solid var(--edge)}
+.checkrow:last-child{border-bottom:none}
+.checkicon{width:1.7rem;height:1.7rem;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.checkicon .material-symbols-rounded{font-size:1rem}
+.checkicon.pass{background:var(--mint-soft);color:var(--mint)}
+.checkicon.fail{background:var(--scarlet-soft);color:var(--scarlet)}
+.checkgrid{display:grid;grid-template-columns:1fr;gap:0 1.25rem}
+@media(min-width:640px){.checkgrid{grid-template-columns:1fr 1fr}.checkgrid .checkrow:nth-child(2n){border-inline-start:1px solid var(--edge);padding-inline-start:1.1rem}}
 
 .emptybox{width:4.4rem;height:4.4rem;border-radius:999px;background:radial-gradient(circle at 35% 30%,var(--milk-strong),var(--milk));display:inline-flex;align-items:center;justify-content:center;margin-bottom:.8rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.3), var(--sh-1)}
 .emptybox .material-symbols-rounded{font-size:1.9rem;color:var(--amber-text);opacity:.85}
@@ -614,9 +664,22 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
           </div>
           <button type="button" class="iconbtn filecard-remove focusable" onclick="clearUploadedFile()" data-i18n-title="upload_remove_title" title="Remove file" aria-label="Remove uploaded file"><span class="material-symbols-rounded" style="font-size:1.1rem;">close</span></button>
         </div>
+        <div id="upload-preview-wrap" class="stack hide">
+          <div class="row-between">
+            <label class="eyebrow" data-i18n="upload_preview_label">Data preview</label>
+            <div class="previewstats">
+              <span class="previewstat" id="upload-preview-cols"><span class="material-symbols-rounded">view_week</span><b>0</b></span>
+              <span class="previewstat" id="upload-preview-rows"><span class="material-symbols-rounded">table_rows</span><b>0</b></span>
+            </div>
+          </div>
+          <div class="previewtable-wrap scrollx">
+            <table class="previewtable"><thead id="upload-preview-thead"></thead><tbody id="upload-preview-tbody"></tbody></table>
+          </div>
+          <p class="previewnote" id="upload-preview-note">Highlighted column below follows your selection.</p>
+        </div>
         <div>
           <label class="eyebrow" data-i18n="upload_col_label">National ID column</label>
-          <select id="column-select" class="field-select focusable"></select>
+          <select id="column-select" class="field-select focusable" onchange="highlightPreviewColumn()"></select>
         </div>
         <button onclick="processUploadedFile()" id="btn-extract-process" class="btn btn-primary btn-block focusable"><span class="material-symbols-rounded" style="font-size:1.1rem;">auto_fix_high</span><span data-i18n="btn_extract">Extract &amp; Process</span></button>
       </div>
@@ -1055,6 +1118,7 @@ en:{
   status_valid:'Valid', status_error:'Error', status_null:'Null',
   upload_drop_title:'Drop a file or tap to browse', upload_drop_types:'.xlsx, .xls, or .csv',
   upload_col_label:'National ID column', upload_file_default:'File: —', upload_rows:n=>`${n} rows`,
+  upload_preview_label:'Data preview', upload_preview_note:(shown,total)=>`Showing ${shown} of ${total} rows — the highlighted column follows your selection below.`,
   upload_drop_hint:'Up to 25 MB · processed locally in your browser', upload_remove_title:'Remove file',
   btn_extract:'Extract & Process', upload_results_title:'File results', upload_summary:(n,v,e,nl,note)=>`${n} rows processed (${v} valid, ${e} errors${nl?`, ${nl} null`:''})${note}`,
   upload_file_label:name=>name, upload_rows_detected:n=>`${n} rows detected`,
@@ -1157,6 +1221,7 @@ ar:{
   status_valid:'صحيح', status_error:'خطأ', status_null:'فارغ',
   upload_drop_title:'أفلت ملفًا هنا أو اضغط للاستعراض', upload_drop_types:'‎.xlsx أو ‎.xls أو ‎.csv',
   upload_col_label:'عمود الرقم القومي', upload_file_default:'الملف: —', upload_rows:n=>`${n} صفًا`,
+  upload_preview_label:'معاينة البيانات', upload_preview_note:(shown,total)=>`عرض ${shown} من ${total} صفًا — يتبع العمود المُظلَّل اختيارك أدناه.`,
   upload_drop_hint:'حتى 25 ميجابايت · تتم المعالجة محليًا داخل متصفحك', upload_remove_title:'إزالة الملف',
   btn_extract:'استخراج ومعالجة', upload_results_title:'نتائج الملف', upload_summary:(n,v,e,nl,note)=>`تمت معالجة ${n} صفًا (${v} صحيح، ${e} أخطاء${nl?`، ${nl} فارغ`:''})${note}`,
   upload_file_label:name=>name, upload_rows_detected:n=>`تم رصد ${n} صفًا`,
@@ -1272,6 +1337,7 @@ function refreshDynamicContent(){
   if(typeof computeWeekday==='function') computeWeekday();
   if(typeof computeLeapSingle==='function') computeLeapSingle();
   if(typeof computeLeapRange==='function') computeLeapRange();
+  if(uploadedSheetData.length) renderUploadPreview(Object.keys(uploadedSheetData[0]));
 }
 function applyLangFont(){
   if(currentLang==='ar'){
@@ -2390,6 +2456,31 @@ function resetUploadState(){
   processedUploadResults=[];
   document.getElementById('upload-mapping').classList.add('hide');
   document.getElementById('upload-results').classList.add('hide');
+  document.getElementById('upload-preview-wrap').classList.add('hide');
+  document.getElementById('upload-preview-thead').innerHTML='';
+  document.getElementById('upload-preview-tbody').innerHTML='';
+}
+
+function renderUploadPreview(headers){
+  const sampleSize=Math.min(8,uploadedSheetDisplayData.length);
+  document.getElementById('upload-preview-thead').innerHTML=`<tr>${headers.map((h,i)=>`<th data-col="${i}">${escapeHtml(h)}</th>`).join('')}</tr>`;
+  document.getElementById('upload-preview-tbody').innerHTML=uploadedSheetDisplayData.slice(0,sampleSize).map(row=>
+    `<tr>${headers.map((h,i)=>`<td data-col="${i}">${escapeHtml(row[h])||'—'}</td>`).join('')}</tr>`
+  ).join('');
+  document.getElementById('upload-preview-cols').querySelector('b').textContent=headers.length;
+  document.getElementById('upload-preview-rows').querySelector('b').textContent=uploadedSheetData.length;
+  document.getElementById('upload-preview-note').textContent=t('upload_preview_note',sampleSize,uploadedSheetData.length);
+  document.getElementById('upload-preview-wrap').classList.remove('hide');
+  highlightPreviewColumn();
+}
+
+function highlightPreviewColumn(){
+  const select=document.getElementById('column-select');
+  if(!select) return;
+  const idx=select.selectedIndex;
+  document.querySelectorAll('#upload-preview-thead th, #upload-preview-tbody td').forEach(el=>{
+    el.classList.toggle('col-active',Number(el.dataset.col)===idx);
+  });
 }
 
 function clearUploadedFile(){
@@ -2433,6 +2524,7 @@ function handleFileUpload(e){
         if(/id|national|رقم/i.test(h)) opt.selected=true;
         select.appendChild(opt);
       });
+      renderUploadPreview(headers);
       document.getElementById('upload-mapping').classList.remove('hide');
     }catch(err){
       showToast(t('toast_file_parse_error'),'error');
@@ -2545,8 +2637,11 @@ function progressRing(percent,size,stroke){
   const c=2*Math.PI*r;
   const offset=c-(clamped/100)*c;
   return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="progress-ring">
-    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--edge-strong)" stroke-width="${stroke}"/>
-    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--amber)" stroke-width="${stroke}" stroke-linecap="round"
+    <defs><linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="var(--amber)"/><stop offset="100%" stop-color="var(--amber-hi)"/>
+    </linearGradient></defs>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--edge)" stroke-width="${stroke}"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="url(#ringGrad)" stroke-width="${stroke}" stroke-linecap="round"
       stroke-dasharray="${c}" stroke-dashoffset="${offset}" transform="rotate(-90 ${size/2} ${size/2})"/>
   </svg>`;
 }
@@ -2569,18 +2664,18 @@ function renderInspectorResult(res){
     </div>`;
   }
   const segGroups=[
-    {items:[{val:res.centuryDigit,label:t('seg_cent')},{val:String(res.birthYear).slice(-2),label:t('seg_year')},{val:pad2(res.birthMonth),label:t('seg_month')},{val:pad2(res.birthDay),label:t('seg_day')}]},
-    {items:[{val:res.govCode,label:t('seg_gov')},{val:res.serial,label:t('seg_serial')}]},
-    {items:[{val:String(res.genderDigit),label:t('seg_gender')},{val:res.checkDigit,label:t('seg_check')}]}
+    {cls:'g-date',items:[{val:res.centuryDigit,label:t('seg_cent')},{val:String(res.birthYear).slice(-2),label:t('seg_year')},{val:pad2(res.birthMonth),label:t('seg_month')},{val:pad2(res.birthDay),label:t('seg_day')}]},
+    {cls:'g-loc',items:[{val:res.govCode,label:t('seg_gov')},{val:res.serial,label:t('seg_serial')}]},
+    {cls:'g-meta',items:[{val:String(res.genderDigit),label:t('seg_gender')},{val:res.checkDigit,label:t('seg_check')}]}
   ];
   const segHtml=segGroups.map((g,gi)=>{
     const items=g.items.map(s=>`<div class="idseg"><span>${s.val}</span><span class="tag">${s.label}</span></div>`).join('');
-    return `<div class="idseg-group">${items}</div>${gi<segGroups.length-1?'<div class="idseg-divider"></div>':''}`;
+    return `<div class="idseg-group ${g.cls}">${items}</div>${gi<segGroups.length-1?'<div class="idseg-divider"></div>':''}`;
   }).join('');
   const flagsHtml=res.flags.length?res.flags.map(f=>`<span class="chip">${flagLabel(f)}</span>`).join(''):'';
-  const checksHtml=res.checks.map(c=>`<div class="row" style="gap:.55rem;padding:.5rem 0;border-bottom:1px solid var(--edge);">
-      <span class="material-symbols-rounded" style="font-size:1.1rem;color:${c.pass?'var(--mint)':'var(--scarlet)'};">${c.pass?'check_circle':'cancel'}</span>
-      <span style="font-size:.8rem;">${checkLabel(c.key)}</span>
+  const checksHtml=res.checks.map(c=>`<div class="checkrow">
+      <div class="checkicon ${c.pass?'pass':'fail'}"><span class="material-symbols-rounded">${c.pass?'check_circle':'cancel'}</span></div>
+      <span style="font-size:.8rem;font-weight:600;">${checkLabel(c.key)}</span>
     </div>`).join('');
 
   return `
@@ -2606,21 +2701,38 @@ function renderInspectorResult(res){
     <div class="grid2">
       <div class="card pad stack">
         <h4 class="cardtitle" data-i18n="identity_title">${t('identity_title')}</h4>
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;">
-          <div class="row" style="gap:.55rem;align-items:flex-start;"><span class="material-symbols-rounded" style="font-size:1.05rem;color:var(--amber-text);margin-top:.15rem;">cake</span><div><div class="eyebrow">${t('lbl_birth_date')}</div><div style="font-weight:650;font-size:.95rem;">${res.birthDateStr}</div></div></div>
-          <div class="row" style="gap:.55rem;align-items:flex-start;"><span class="material-symbols-rounded" style="font-size:1.05rem;color:var(--amber-text);margin-top:.15rem;">calendar_month</span><div><div class="eyebrow">${t('weekday_label')}</div><div style="font-weight:650;font-size:.95rem;">${dayName(res.birthDayIndex)}</div></div></div>
-          <div class="row" style="gap:.55rem;align-items:flex-start;"><span class="material-symbols-rounded" style="font-size:1.05rem;color:var(--amber-text);margin-top:.15rem;">functions</span><div><div class="eyebrow">${t('age_label')}</div><div style="font-weight:650;font-size:.95rem;">${res.currentAgeYears}y ${res.currentAgeMonths}m ${res.currentAgeDays}d</div><div class="row" style="gap:.3rem;align-items:center;margin-top:.2rem;"><span class="num" style="font-size:.72rem;color:var(--ink-2);">${t('total_days_lived',res.totalDaysLived)}</span><span class="material-symbols-rounded rowcopy focusable" id="days-copy-icon" role="button" tabindex="0" title="${t('copy_visible_title')}" style="font-size:.95rem;" onclick="copyPlainNumber(this,${res.totalDaysLived})" onkeydown="if(event.key==='Enter'){copyPlainNumber(this,${res.totalDaysLived})}">content_copy</span></div></div></div>
-          <div class="row" style="gap:.55rem;align-items:flex-start;"><span class="material-symbols-rounded" style="font-size:1.05rem;color:var(--amber-text);margin-top:.15rem;">fingerprint</span><div><div class="eyebrow">${t('gov_field_label')}</div><div style="font-weight:650;font-size:.95rem;${res.governorateKnown?'':'font-style:italic;color:var(--ink-2);'}">${govDisplay(res.govCode)}</div></div></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:.6rem;">
+          <div class="stattile">
+            <div class="stattile-icon"><span class="material-symbols-rounded">cake</span></div>
+            <div><div class="eyebrow">${t('lbl_birth_date')}</div><div class="stattile-val">${res.birthDateStr}</div></div>
+          </div>
+          <div class="stattile">
+            <div class="stattile-icon c-azure"><span class="material-symbols-rounded">calendar_month</span></div>
+            <div><div class="eyebrow">${t('weekday_label')}</div><div class="stattile-val">${dayName(res.birthDayIndex)}</div></div>
+          </div>
+          <div class="stattile">
+            <div class="stattile-icon c-mint"><span class="material-symbols-rounded">functions</span></div>
+            <div>
+              <div class="eyebrow">${t('age_label')}</div>
+              <div class="stattile-val">${res.currentAgeYears}y ${res.currentAgeMonths}m ${res.currentAgeDays}d</div>
+              <div class="stattile-sub"><span class="num" style="font-size:.72rem;color:var(--ink-2);">${t('total_days_lived',res.totalDaysLived)}</span><span class="material-symbols-rounded rowcopy focusable" id="days-copy-icon" role="button" tabindex="0" title="${t('copy_visible_title')}" style="font-size:.95rem;" onclick="copyPlainNumber(this,${res.totalDaysLived})" onkeydown="if(event.key==='Enter'){copyPlainNumber(this,${res.totalDaysLived})}">content_copy</span></div>
+            </div>
+          </div>
+          <div class="stattile">
+            <div class="stattile-icon c-rose"><span class="material-symbols-rounded">fingerprint</span></div>
+            <div><div class="eyebrow">${t('gov_field_label')}</div><div class="stattile-val" style="${res.governorateKnown?'':'font-style:italic;color:var(--ink-2);font-weight:600;'}">${govDisplay(res.govCode)}</div></div>
+          </div>
         </div>
         ${res.flags.length?`<div class="row" style="flex-wrap:wrap;gap:.35rem;">${flagsHtml}</div>`:''}
       </div>
 
-      <div class="card pad">
+      <div class="card pad ringcard">
         <div class="row" style="gap:1.25rem;align-items:center;">
-          <div style="position:relative;flex-shrink:0;">
+          <div class="ringwrap">
             ${progressRing(res.careerPercent,104,10)}
-            <div style="position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;">
+            <div class="ringlabel">
               <div class="disp num" style="font-size:1.5rem;font-weight:700;line-height:1;">${res.careerPercent}%</div>
+              <div class="sub">${t('col_career')}</div>
             </div>
           </div>
           <div class="stack" style="gap:.4rem;">
@@ -2638,7 +2750,7 @@ function renderInspectorResult(res){
         <h4 class="cardtitle">${t('checks_title',{p:res.checksPassed,t:res.checksTotal})}</h4>
         <button onclick="copyInspectorSummary()" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>${t('btn_copy')}</button>
       </div>
-      <div>${checksHtml}</div>
+      <div class="checkgrid">${checksHtml}</div>
     </div>
   </div>`;
 }
