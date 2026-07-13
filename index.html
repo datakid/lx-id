@@ -557,7 +557,7 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
       <div class="row" style="gap:.6rem;">
         <div class="field-clearable" style="flex:1;">
           <input type="text" id="inspector-input" data-i18n-ph="single_placeholder" placeholder="Enter a 14-digit national ID…" class="field-input mono focusable" style="width:100%;padding-inline-end:2.3rem;font-size:.95rem;letter-spacing:.02em;" oninput="inspectID()">
-          <button type="button" class="field-clear-btn" tabindex="-1" onclick="clearFieldAndRefresh('inspector-input')" aria-label="Clear ID"><span class="material-symbols-rounded">cancel</span></button>
+          <button type="button" class="field-clear-btn" tabindex="-1" onclick="clearFieldAndRefresh('inspector-input')" data-i18n-title="clear_id_title" title="Clear ID" aria-label="Clear ID"><span class="material-symbols-rounded">cancel</span></button>
         </div>
         <button onclick="pasteIntoInspector()" class="iconbtn focusable" data-i18n-title="paste_title" title="Paste" aria-label="Paste from clipboard"><span class="material-symbols-rounded">content_paste_go</span></button>
         <button onclick="loadSampleIntoInspector()" class="iconbtn focusable" data-i18n-title="sample_title" title="Sample ID" aria-label="Load a sample ID"><span class="material-symbols-rounded">auto_awesome</span></button>
@@ -865,7 +865,7 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
       </div>
       <div class="field-clearable">
         <input type="text" id="gov-search" data-i18n-ph="gov_search_ph" placeholder="Search by code or name…" class="field-input focusable" style="width:100%;padding-inline-end:2.3rem;font-size:.82rem;" oninput="renderGovTable()">
-        <button type="button" class="field-clear-btn" tabindex="-1" onclick="clearFieldAndRefresh('gov-search')" aria-label="Clear search"><span class="material-symbols-rounded">cancel</span></button>
+        <button type="button" class="field-clear-btn" tabindex="-1" onclick="clearFieldAndRefresh('gov-search')" data-i18n-title="clear_search_title" title="Clear search" aria-label="Clear search"><span class="material-symbols-rounded">cancel</span></button>
       </div>
     </div>
     <div class="scrollx" style="border-radius:16px;border:1px solid var(--edge);">
@@ -902,7 +902,7 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
   <button class="navitem" data-tab="formula" onclick="switchTab('formula')"><span class="material-symbols-rounded">functions</span><span class="lbl" data-i18n="nav_formula">Formulas</span></button>
   <button class="navitem" data-tab="datetools" onclick="switchTab('datetools')"><span class="material-symbols-rounded">calendar_month</span><span class="lbl" data-i18n="nav_dates">Dates</span></button>
   <button class="navitem" data-tab="reference" onclick="switchTab('reference')"><span class="material-symbols-rounded">public</span><span class="lbl" data-i18n="nav_reference">Reference</span></button>
-  <button class="navitem" onclick="openCmdk()"><span class="material-symbols-rounded">search</span><span class="lbl">Search</span></button>
+  <button class="navitem" onclick="openCmdk()"><span class="material-symbols-rounded">search</span><span class="lbl" data-i18n="nav_search">Search</span></button>
 </nav>
 
 <div class="cmdk-overlay" id="cmdk-overlay" onclick="if(event.target===this)closeCmdk()">
@@ -928,7 +928,7 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
   <div class="cmdk-box pad" style="max-width:30rem;max-height:82vh;overflow-y:auto;">
     <div class="row-between" style="margin-bottom:.3rem;">
       <h3 class="cardtitle" data-i18n="settings_title">Settings</h3>
-      <button class="iconbtn focusable" onclick="closeSettings()" aria-label="Close settings">
+      <button class="iconbtn focusable" onclick="closeSettings()" data-i18n-title="close_settings_title" title="Close settings" aria-label="Close settings">
         <span class="material-symbols-rounded" style="font-size:1.05rem;">close</span>
       </button>
     </div>
@@ -1033,17 +1033,17 @@ let currentLang='en';
 const I18N={
 en:{
   brand_subtitle:'National ID & Retirement Toolkit',
-  nav_idtools:'ID Tools', nav_formula:'Formulas', nav_dates:'Dates', nav_reference:'Reference',
+  nav_idtools:'ID Tools', nav_formula:'Formulas', nav_dates:'Dates', nav_reference:'Reference', nav_search:'Search',
   cmdk_title:'Command palette', settings_title:'Settings', theme_title:'Toggle light or dark theme', lang_title:'Switch to Arabic',
   idtools_title:'ID Tools', sub_single:'Single', sub_batch:'Batch', sub_upload:'Upload',
-  single_placeholder:'Enter a 14-digit national ID…', paste_title:'Paste', sample_title:'Sample ID',
+  single_placeholder:'Enter a 14-digit national ID…', paste_title:'Paste', sample_title:'Sample ID', clear_id_title:'Clear ID', clear_search_title:'Clear search', close_settings_title:'Close settings',
   batch_label:'Paste ID list for deep analytics', batch_count:n=>`${n} detected`,
   btn_paste:'Paste', btn_sample:'Sample', btn_clear:'Clear', btn_run_analytics:'Run Analytics',
   batch_empty:'Paste a list of IDs above and run analytics to see the full breakdown here.',
   results_title:'Results', results_summary:(t,v,e,n)=>`${t} total rows processed (${v} valid, ${e} errors${n?`, ${n} null`:''})`,
   kpi_total:'Total', kpi_valid:'Valid', kpi_errors:'Errors', kpi_null:'Null',
   filter_all:'All', filter_valid:'Valid', filter_error:'Errors', filter_null:'Null', search_ph:'Search…',
-  btn_excel:'Excel', btn_csv:'CSV', btn_copy:'Copy', btn_download:'Download', copy_visible_title:'Copy visible rows',
+  btn_excel:'Excel', btn_csv:'CSV', btn_copy:'Copy', btn_download:'Download', copy_visible_title:'Copy visible rows', copy_row_title:'Copy row',
   scope_all:'All rows', scope_valid:'Valid', scope_error:'Errors', scope_null:'Null',
   toggle_ignore_nulls:'Ignore blank rows', more_options_title:'More options', checklist_title:'Choose rows',
   btn_select_all:'Select all', btn_copy_selected:'Copy selected', rows_selected_count:(n)=>`${n} row${n===1?'':'s'} selected`,
@@ -1069,6 +1069,9 @@ en:{
   ph_table1:'Table1', ph_national_id:'National ID', ph_a2:'A2',
   card_birth:'Birth date', card_gender:'Gender', card_retirement:'Retirement age & date', lbl_paste_in:'Paste in',
   auto_assign_title:'Auto-assign location',
+  date_no_selection:'No date selected yet', date_invalid:'That date doesn\u2019t exist — check day & month', date_today:'Today', date_clear:'Clear',
+  date_open_calendar:'Open calendar', date_prev_month:'Previous month', date_next_month:'Next month',
+  date_seg_day:'Day', date_seg_month:'Month', date_seg_year:'Year',
   dates_title:'Date Tools', sub_between:'Between Dates', sub_age:'Age', sub_weekday:'Weekday', sub_leap:'Leap Years',
   lbl_start_date:'Start date', lbl_end_date:'End date', lbl_working_days:'Working days',
   lbl_birth_date:'Birth date', lbl_asof:'As of (optional)', lbl_any_date:'Any date',
@@ -1097,6 +1100,13 @@ en:{
   settings_theme:'Theme', theme_system:'System', theme_light:'Light', theme_dark:'Dark',
   settings_surface:'Surface style', settings_typeface:'Typeface', settings_footer:'Saved to this browser only — nothing is sent anywhere.',
   cmdk_ph:'Type a command…', cmdk_nav:'Navigate', cmdk_select:'Select', cmdk_close:'Close',
+  cmdk_group_nav:'Navigate', cmdk_group_actions:'Actions', cmdk_no_results:'No matching actions',
+  cmd_go_idtools_single:'ID Tools — Single ID', cmd_go_idtools_batch:'ID Tools — Batch Analytics', cmd_go_idtools_upload:'ID Tools — Upload File',
+  cmd_go_formula:'Excel / Sheets Formulas',
+  cmd_go_dates_between:'Date Tools — Between Dates', cmd_go_dates_age:'Date Tools — Age Calculator', cmd_go_dates_weekday:'Date Tools — Weekday Finder', cmd_go_dates_leap:'Date Tools — Leap Years',
+  cmd_go_reference_structure:'Reference — ID Structure', cmd_go_reference_gov:'Reference — Governorates', cmd_go_reference_law:'Reference — Retirement Law',
+  cmd_act_paste_clipboard:'Paste ID List From Clipboard', cmd_act_sample_batch:'Load Sample Data (Batch Analytics)', cmd_act_sample_single:'Load Sample ID (Single)',
+  cmd_act_theme:'Toggle Light / Dark Theme', cmd_act_theme_system:'Use System Theme', cmd_act_clear_cache:'Clear Cached Local Data',
   confirm_title:'Are you sure?', confirm_message:'This action cannot be undone.', btn_cancel:'Cancel', btn_confirm:'Confirm',
   clear_cache_title:'Clear cached local data?', clear_cache_msg:'This clears saved inputs and preferences from this browser. This cannot be undone.',
   toast_clipboard_empty:'Clipboard is empty', toast_pasted:'Pasted from clipboard', toast_clipboard_denied:'Clipboard access denied — try Ctrl/Cmd+V',
@@ -1125,17 +1135,17 @@ en:{
 },
 ar:{
   brand_subtitle:'أداة الرقم القومي والمعاش',
-  nav_idtools:'أدوات الهوية', nav_formula:'الصيغ', nav_dates:'التواريخ', nav_reference:'المرجع',
+  nav_idtools:'أدوات الهوية', nav_formula:'الصيغ', nav_dates:'التواريخ', nav_reference:'المرجع', nav_search:'بحث',
   cmdk_title:'لوحة الأوامر', settings_title:'الإعدادات', theme_title:'تبديل المظهر الفاتح والداكن', lang_title:'التبديل إلى الإنجليزية',
   idtools_title:'أدوات الهوية', sub_single:'فردي', sub_batch:'دفعة', sub_upload:'رفع ملف',
-  single_placeholder:'أدخل الرقم القومي المكوَّن من 14 رقمًا…', paste_title:'لصق', sample_title:'رقم تجريبي',
+  single_placeholder:'أدخل الرقم القومي المكوَّن من 14 رقمًا…', paste_title:'لصق', sample_title:'رقم تجريبي', clear_id_title:'مسح الرقم', clear_search_title:'مسح البحث', close_settings_title:'إغلاق الإعدادات',
   batch_label:'الصق قائمة الأرقام القومية لإجراء تحليل معمّق', batch_count:n=>`تم اكتشاف ${n}`,
   btn_paste:'لصق', btn_sample:'رقم تجريبي', btn_clear:'مسح', btn_run_analytics:'تشغيل التحليل',
   batch_empty:'الصق قائمة الأرقام أعلاه وشغّل التحليل لعرض التفاصيل الكاملة هنا.',
   results_title:'النتائج', results_summary:(t,v,e,n)=>`تمت معالجة ${t} صفًا إجماليًا (${v} صحيح، ${e} بها أخطاء${n?`، ${n} فارغ`:''})`,
   kpi_total:'الإجمالي', kpi_valid:'صحيح', kpi_errors:'أخطاء', kpi_null:'فارغ',
   filter_all:'الكل', filter_valid:'صحيح', filter_error:'أخطاء', filter_null:'فارغ', search_ph:'بحث…',
-  btn_excel:'إكسل', btn_csv:'CSV', btn_copy:'نسخ', btn_download:'تنزيل', copy_visible_title:'نسخ الصفوف الظاهرة',
+  btn_excel:'إكسل', btn_csv:'CSV', btn_copy:'نسخ', btn_download:'تنزيل', copy_visible_title:'نسخ الصفوف الظاهرة', copy_row_title:'نسخ الصف',
   scope_all:'كل الصفوف', scope_valid:'صحيح', scope_error:'أخطاء', scope_null:'فارغ',
   toggle_ignore_nulls:'تجاهل الصفوف الفارغة', more_options_title:'خيارات إضافية', checklist_title:'اختر الصفوف',
   btn_select_all:'تحديد الكل', btn_copy_selected:'نسخ المحدد', rows_selected_count:(n)=>`تم تحديد ${n} صفًا`,
@@ -1143,7 +1153,7 @@ ar:{
   col_id:'الرقم القومي', col_status:'الحالة', col_century:'القرن', col_birthdate:'تاريخ الميلاد', col_weekday:'يوم الأسبوع',
   col_age:'العمر', col_totaldays:'إجمالي الأيام', col_gender:'النوع', col_govcode:'كود المحافظة', col_gov:'المحافظة', col_serial:'الرقم التسلسلي',
   col_check:'رقم التحقق', col_retireage:'سن المعاش', col_retiredate:'تاريخ المعاش', col_yearstoretire:'سنوات حتى المعاش',
-  col_career:'نسبة العمر الوظيفي', col_flags:'ملاحظات', col_error:'الخطأ',
+  col_career:'نسبة التقدم للمعاش', col_flags:'ملاحظات', col_error:'الخطأ',
   status_valid:'صحيح', status_error:'خطأ', status_null:'فارغ',
   upload_drop_title:'أفلت ملفًا هنا أو اضغط للاستعراض', upload_drop_types:'‎.xlsx أو ‎.xls أو ‎.csv',
   upload_col_label:'عمود الرقم القومي', upload_file_default:'الملف: —', upload_rows:n=>`${n} صفًا`,
@@ -1161,6 +1171,9 @@ ar:{
   ph_table1:'Table1', ph_national_id:'الرقم القومي', ph_a2:'A2',
   card_birth:'تاريخ الميلاد', card_gender:'النوع', card_retirement:'سن وتاريخ المعاش', lbl_paste_in:'الصق في',
   auto_assign_title:'تعيين الموقع تلقائيًا',
+  date_no_selection:'لم يتم اختيار تاريخ بعد', date_invalid:'هذا التاريخ غير موجود — تحقق من اليوم والشهر', date_today:'اليوم', date_clear:'مسح',
+  date_open_calendar:'فتح التقويم', date_prev_month:'الشهر السابق', date_next_month:'الشهر التالي',
+  date_seg_day:'اليوم', date_seg_month:'الشهر', date_seg_year:'السنة',
   dates_title:'أدوات التاريخ', sub_between:'بين تاريخين', sub_age:'العمر', sub_weekday:'يوم الأسبوع', sub_leap:'السنوات الكبيسة',
   lbl_start_date:'تاريخ البداية', lbl_end_date:'تاريخ النهاية', lbl_working_days:'أيام العمل',
   lbl_birth_date:'تاريخ الميلاد', lbl_asof:'حتى تاريخ (اختياري)', lbl_any_date:'أي تاريخ',
@@ -1189,6 +1202,13 @@ ar:{
   settings_theme:'المظهر', theme_system:'النظام', theme_light:'فاتح', theme_dark:'داكن',
   settings_surface:'نمط السطح', settings_typeface:'الخط', settings_footer:'يُحفظ في هذا المتصفح فقط — لا يُرسَل شيء إلى أي جهة.',
   cmdk_ph:'اكتب أمرًا…', cmdk_nav:'تنقّل', cmdk_select:'اختيار', cmdk_close:'إغلاق',
+  cmdk_group_nav:'التنقّل', cmdk_group_actions:'إجراءات', cmdk_no_results:'لا توجد إجراءات مطابقة',
+  cmd_go_idtools_single:'أدوات الهوية — رقم فردي', cmd_go_idtools_batch:'أدوات الهوية — تحليل دفعة', cmd_go_idtools_upload:'أدوات الهوية — رفع ملف',
+  cmd_go_formula:'صيغ Excel / Sheets',
+  cmd_go_dates_between:'أدوات التاريخ — بين تاريخين', cmd_go_dates_age:'أدوات التاريخ — حاسبة العمر', cmd_go_dates_weekday:'أدوات التاريخ — يوم الأسبوع', cmd_go_dates_leap:'أدوات التاريخ — السنوات الكبيسة',
+  cmd_go_reference_structure:'المرجع — بنية الرقم القومي', cmd_go_reference_gov:'المرجع — المحافظات', cmd_go_reference_law:'المرجع — قانون المعاشات',
+  cmd_act_paste_clipboard:'لصق قائمة الأرقام من الحافظة', cmd_act_sample_batch:'تحميل بيانات تجريبية (تحليل الدفعة)', cmd_act_sample_single:'تحميل رقم تجريبي (فردي)',
+  cmd_act_theme:'تبديل المظهر الفاتح / الداكن', cmd_act_theme_system:'استخدام مظهر النظام', cmd_act_clear_cache:'مسح البيانات المحلية المخزّنة',
   confirm_title:'هل أنت متأكد؟', confirm_message:'لا يمكن التراجع عن هذا الإجراء.', btn_cancel:'إلغاء', btn_confirm:'تأكيد',
   clear_cache_title:'مسح البيانات المحفوظة محليًا؟', clear_cache_msg:'سيؤدي هذا إلى مسح المدخلات والتفضيلات المحفوظة في هذا المتصفح. لا يمكن التراجع عن هذا الإجراء.',
   toast_clipboard_empty:'الحافظة فارغة', toast_pasted:'تم اللصق من الحافظة', toast_clipboard_denied:'تم رفض الوصول إلى الحافظة — جرّب Ctrl/Cmd+V',
@@ -1223,6 +1243,7 @@ function t(key,...args){
 function flagLabel(f){const d=I18N[currentLang].flags||{};return d[f]||f.replace(/-/g,' ');}
 function checkLabel(key){const d=I18N[currentLang].checks||{};return d[key]||key;}
 const DAY_NAMES_AR=['الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
+const DOW_SHORT_AR=['ح','ن','ث','ر','خ','ج','س'];
 const MONTH_NAMES_AR=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
 function dayName(idx){return (currentLang==='ar'?DAY_NAMES_AR:DAY_NAMES)[idx];}
 function monthName(idx){return (currentLang==='ar'?MONTH_NAMES_AR:MONTH_NAMES)[idx];}
@@ -1243,6 +1264,9 @@ function refreshDynamicContent(){
   if(typeof renderLawTable==='function') renderLawTable();
   if(typeof updateFormulas==='function') updateFormulas();
   if(typeof renderWorkdayPicker==='function') renderWorkdayPicker();
+  if(typeof refreshAllDateFields==='function') refreshAllDateFields();
+  if(typeof closeAllDateCalendars==='function') closeAllDateCalendars();
+  if(document.getElementById('cmdk-overlay')&&document.getElementById('cmdk-overlay').classList.contains('open')) renderCmdkResults(document.getElementById('cmdk-input').value);
   if(typeof computeBetweenDates==='function') computeBetweenDates();
   if(typeof computeAge==='function') computeAge();
   if(typeof computeWeekday==='function') computeWeekday();
@@ -1492,7 +1516,10 @@ function isoToLocalDate(iso){
 }
 function pad2(n){return String(n).padStart(2,'0');}
 function clampInt(n,min,max){return Math.min(max,Math.max(min,n));}
-function formatCaption(d){return `${DAY_NAMES[d.getDay()].slice(0,3)}, ${MONTH_NAMES[d.getMonth()].slice(0,3)} ${d.getDate()}, ${d.getFullYear()}`;}
+function formatCaption(d){
+  if(currentLang==='ar') return `${dayName(d.getDay())}، ${d.getDate()} ${monthName(d.getMonth())} ${d.getFullYear()}`;
+  return `${DAY_NAMES[d.getDay()].slice(0,3)}, ${MONTH_NAMES[d.getMonth()].slice(0,3)} ${d.getDate()}, ${d.getFullYear()}`;
+}
 
 function closeAllDateCalendars(except){
   document.querySelectorAll('.datecal-popover.open').forEach(p=>{if(p!==except) p.classList.remove('open');});
@@ -1516,7 +1543,7 @@ function buildDateField(nativeInput){
     const el=document.createElement('input');
     el.type='text';el.inputMode='numeric';el.autocomplete='off';el.spellcheck=false;
     el.className='dateseg';el.dataset.kind=kind;el.maxLength=maxLen;el.placeholder=ph;
-    el.setAttribute('aria-label',kind==='d'?'Day':kind==='m'?'Month':'Year');
+    el.setAttribute('aria-label',kind==='d'?t('date_seg_day'):kind==='m'?t('date_seg_month'):t('date_seg_year'));
     el.addEventListener('focus',()=>el.select());
     return el;
   }
@@ -1528,14 +1555,14 @@ function buildDateField(nativeInput){
   const sep1=document.createElement('span');sep1.className='datesep';sep1.textContent='/';
   const sep2=document.createElement('span');sep2.className='datesep';sep2.textContent='/';
   const calBtn=document.createElement('button');
-  calBtn.type='button';calBtn.className='datecal-btn';calBtn.setAttribute('aria-label','Open calendar');
+  calBtn.type='button';calBtn.className='datecal-btn';calBtn.setAttribute('aria-label',t('date_open_calendar'));
   calBtn.innerHTML='<span class="material-symbols-rounded">calendar_month</span>';
   box.append(segD,sep1,segM,sep2,segY,calBtn);
   wrap.appendChild(box);
 
   const foot=document.createElement('div');
   foot.className='date-field-foot';
-  foot.innerHTML='<span class="date-live" data-empty="1">No date selected yet</span><button type="button" class="date-today-btn" tabindex="-1">Today</button>';
+  foot.innerHTML=`<span class="date-live" data-empty="1">${t('date_no_selection')}</span><button type="button" class="date-today-btn" tabindex="-1">${t('date_today')}</button>`;
   wrap.appendChild(foot);
   const liveEl=foot.querySelector('.date-live');
 
@@ -1549,7 +1576,7 @@ function buildDateField(nativeInput){
     if(!d||!m||y.length<4){
       box.classList.remove('invalid');
       liveEl.dataset.empty='1';liveEl.dataset.invalid='0';
-      liveEl.textContent='No date selected yet';
+      liveEl.textContent=t('date_no_selection');
       if(nativeInput.value!==''){nativeInput.value='';nativeInput.dispatchEvent(new Event('input',{bubbles:true}));}
       return;
     }
@@ -1559,7 +1586,7 @@ function buildDateField(nativeInput){
     if(!valid){
       box.classList.add('invalid');
       liveEl.dataset.empty='0';liveEl.dataset.invalid='1';
-      liveEl.textContent="That date doesn't exist — check day & month";
+      liveEl.textContent=t('date_invalid');
       if(nativeInput.value!==''){nativeInput.value='';nativeInput.dispatchEvent(new Event('input',{bubbles:true}));}
       return;
     }
@@ -1658,15 +1685,15 @@ function buildDateField(nativeInput){
     }
     const trailing=(7-((startOffset+totalDays)%7))%7;
     for(let i=1;i<=trailing;i++) cells+=`<button type="button" class="datecal-day muted" tabindex="-1" disabled>${i}</button>`;
-    const dow=['Su','Mo','Tu','We','Th','Fr','Sa'];
+    const dow=currentLang==='ar'?DOW_SHORT_AR:['Su','Mo','Tu','We','Th','Fr','Sa'];
     popover.innerHTML=`
       <div class="datecal-head">
-        <button type="button" class="datecal-navbtn" data-nav="-1" aria-label="Previous month"><span class="material-symbols-rounded" style="transform:rotate(180deg);">arrow_forward</span></button>
-        <span class="datecal-title">${MONTH_NAMES[calMonth]} ${calYear}</span>
-        <button type="button" class="datecal-navbtn" data-nav="1" aria-label="Next month"><span class="material-symbols-rounded">arrow_forward</span></button>
+        <button type="button" class="datecal-navbtn" data-nav="-1" aria-label="${t('date_prev_month')}"><span class="material-symbols-rounded" style="transform:rotate(180deg);">arrow_forward</span></button>
+        <span class="datecal-title">${monthName(calMonth)} ${calYear}</span>
+        <button type="button" class="datecal-navbtn" data-nav="1" aria-label="${t('date_next_month')}"><span class="material-symbols-rounded">arrow_forward</span></button>
       </div>
       <div class="datecal-grid">${dow.map(x=>`<div class="datecal-dow">${x}</div>`).join('')}${cells}</div>
-      <div class="datecal-foot"><button type="button" data-act="today">Today</button><button type="button" data-act="clear">Clear</button></div>`;
+      <div class="datecal-foot"><button type="button" data-act="today">${t('date_today')}</button><button type="button" data-act="clear">${t('date_clear')}</button></div>`;
   }
   popover.addEventListener('click',(e)=>{
     e.stopPropagation();
@@ -1715,14 +1742,20 @@ function buildDateField(nativeInput){
     }else{
       segD.value='';segM.value='';segY.value='';
       liveEl.dataset.empty='1';liveEl.dataset.invalid='0';
-      liveEl.textContent='No date selected yet';
+      liveEl.textContent=t('date_no_selection');
     }
   }
   nativeInput.syncDateDisplay=syncFromNative;
+  nativeInput.syncDateLabels=()=>{
+    segD.setAttribute('aria-label',t('date_seg_day'));segM.setAttribute('aria-label',t('date_seg_month'));segY.setAttribute('aria-label',t('date_seg_year'));
+    calBtn.setAttribute('aria-label',t('date_open_calendar'));
+    foot.querySelector('.date-today-btn').textContent=t('date_today');
+    syncFromNative();
+  };
   syncFromNative();
 }
 function buildAllDateFields(){document.querySelectorAll('input[type="date"].field-input').forEach(buildDateField);}
-function refreshAllDateFields(){document.querySelectorAll('input[data-date-enhanced="1"]').forEach(inp=>{if(typeof inp.syncDateDisplay==='function') inp.syncDateDisplay();});}
+function refreshAllDateFields(){document.querySelectorAll('input[data-date-enhanced="1"]').forEach(inp=>{if(typeof inp.syncDateLabels==='function') inp.syncDateLabels();else if(typeof inp.syncDateDisplay==='function') inp.syncDateDisplay();});}
 
 async function copyText(text,btnEl,label){
   let ok=true;
@@ -2090,7 +2123,7 @@ function clearBatchSearch(){batchSearch='';renderBatchTable();saveStateDebounced
 let lastBatchRows=[];
 
 function rowCopyBtn(rowId,idx,fnName){
-  return `<span class="material-symbols-rounded rowcopy focusable" id="${rowId}" role="button" tabindex="0" title="Copy row" onclick="${fnName}(${idx},'${rowId}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${fnName}(${idx},'${rowId}')}">content_copy</span>`;
+  return `<span class="material-symbols-rounded rowcopy focusable" id="${rowId}" role="button" tabindex="0" title="${t('copy_row_title')}" onclick="${fnName}(${idx},'${rowId}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${fnName}(${idx},'${rowId}')}">content_copy</span>`;
 }
 
 function renderBatchTable(){
@@ -2193,7 +2226,7 @@ function renderBatchTable(){
         </div>
         <div class="field-clearable" style="flex:1;min-width:130px;">
           <input type="text" id="batch-search" placeholder="${t('search_ph')}" class="field-input focusable" style="width:100%;padding-block:.5rem;padding-inline:.8rem 2.1rem;font-size:.78rem;" value="${escapeHtml(batchSearch)}" oninput="onBatchSearch(this.value)">
-          <button type="button" class="field-clear-btn" tabindex="-1" onclick="clearBatchSearch()" aria-label="Clear search"><span class="material-symbols-rounded">cancel</span></button>
+          <button type="button" class="field-clear-btn" tabindex="-1" onclick="clearBatchSearch()" data-i18n-title="clear_search_title" title="Clear search" aria-label="Clear search"><span class="material-symbols-rounded">cancel</span></button>
         </div>
       </div>
       <div class="scrollx" style="border-radius:16px;border:1px solid var(--edge);">
@@ -2897,23 +2930,23 @@ function computeLeapRange(){
 }
 
 const COMMANDS=[
-  {id:'go-idtools-single',label:'ID Tools — Single ID',group:'Navigate',icon:'fingerprint',run:()=>{switchTab('idtools');switchSubTab('single');}},
-  {id:'go-idtools-batch',label:'ID Tools — Batch Analytics',group:'Navigate',icon:'table_rows',run:()=>{switchTab('idtools');switchSubTab('batch');}},
-  {id:'go-idtools-upload',label:'ID Tools — Upload File',group:'Navigate',icon:'upload_file',run:()=>{switchTab('idtools');switchSubTab('upload');}},
-  {id:'go-formula',label:'Excel / Sheets Formulas',group:'Navigate',icon:'functions',run:()=>switchTab('formula')},
-  {id:'go-dates-between',label:'Date Tools — Between Dates',group:'Navigate',icon:'date_range',run:()=>{switchTab('datetools');switchDateSub('between');}},
-  {id:'go-dates-age',label:'Date Tools — Age Calculator',group:'Navigate',icon:'cake',run:()=>{switchTab('datetools');switchDateSub('age');}},
-  {id:'go-dates-weekday',label:'Date Tools — Weekday Finder',group:'Navigate',icon:'view_week',run:()=>{switchTab('datetools');switchDateSub('weekday');}},
-  {id:'go-dates-leap',label:'Date Tools — Leap Years',group:'Navigate',icon:'event_repeat',run:()=>{switchTab('datetools');switchDateSub('leapyears');}},
-  {id:'go-reference-structure',label:'Reference — ID Structure',group:'Navigate',icon:'fingerprint',run:()=>{switchTab('reference');switchRefSub('structure');}},
-  {id:'go-reference-gov',label:'Reference — Governorates',group:'Navigate',icon:'public',run:()=>{switchTab('reference');switchRefSub('governorates');}},
-  {id:'go-reference-law',label:'Reference — Retirement Law',group:'Navigate',icon:'gavel',run:()=>{switchTab('reference');switchRefSub('law');}},
-  {id:'act-paste-clipboard',label:'Paste ID List From Clipboard',group:'Actions',icon:'content_paste_go',run:()=>{switchTab('idtools');switchSubTab('batch');batchPasteFromClipboard();}},
-  {id:'act-sample-batch',label:'Load Sample Data (Batch Analytics)',group:'Actions',icon:'science',run:()=>{switchTab('idtools');switchSubTab('batch');batchLoadSample();}},
-  {id:'act-sample-single',label:'Load Sample ID (Single)',group:'Actions',icon:'science',run:()=>{switchTab('idtools');switchSubTab('single');loadSampleIntoInspector();}},
-  {id:'act-theme',label:'Toggle Light / Dark Theme',group:'Actions',icon:'contrast',run:()=>toggleTheme()},
-  {id:'act-theme-system',label:'Use System Theme',group:'Actions',icon:'contrast',run:()=>useSystemTheme()},
-  {id:'act-clear-cache',label:'Clear Cached Local Data',group:'Actions',icon:'layers_clear',run:()=>confirmClearCache()}
+  {id:'go-idtools-single',labelKey:'cmd_go_idtools_single',groupKey:'cmdk_group_nav',icon:'fingerprint',run:()=>{switchTab('idtools');switchSubTab('single');}},
+  {id:'go-idtools-batch',labelKey:'cmd_go_idtools_batch',groupKey:'cmdk_group_nav',icon:'table_rows',run:()=>{switchTab('idtools');switchSubTab('batch');}},
+  {id:'go-idtools-upload',labelKey:'cmd_go_idtools_upload',groupKey:'cmdk_group_nav',icon:'upload_file',run:()=>{switchTab('idtools');switchSubTab('upload');}},
+  {id:'go-formula',labelKey:'cmd_go_formula',groupKey:'cmdk_group_nav',icon:'functions',run:()=>switchTab('formula')},
+  {id:'go-dates-between',labelKey:'cmd_go_dates_between',groupKey:'cmdk_group_nav',icon:'date_range',run:()=>{switchTab('datetools');switchDateSub('between');}},
+  {id:'go-dates-age',labelKey:'cmd_go_dates_age',groupKey:'cmdk_group_nav',icon:'cake',run:()=>{switchTab('datetools');switchDateSub('age');}},
+  {id:'go-dates-weekday',labelKey:'cmd_go_dates_weekday',groupKey:'cmdk_group_nav',icon:'view_week',run:()=>{switchTab('datetools');switchDateSub('weekday');}},
+  {id:'go-dates-leap',labelKey:'cmd_go_dates_leap',groupKey:'cmdk_group_nav',icon:'event_repeat',run:()=>{switchTab('datetools');switchDateSub('leapyears');}},
+  {id:'go-reference-structure',labelKey:'cmd_go_reference_structure',groupKey:'cmdk_group_nav',icon:'fingerprint',run:()=>{switchTab('reference');switchRefSub('structure');}},
+  {id:'go-reference-gov',labelKey:'cmd_go_reference_gov',groupKey:'cmdk_group_nav',icon:'public',run:()=>{switchTab('reference');switchRefSub('governorates');}},
+  {id:'go-reference-law',labelKey:'cmd_go_reference_law',groupKey:'cmdk_group_nav',icon:'gavel',run:()=>{switchTab('reference');switchRefSub('law');}},
+  {id:'act-paste-clipboard',labelKey:'cmd_act_paste_clipboard',groupKey:'cmdk_group_actions',icon:'content_paste_go',run:()=>{switchTab('idtools');switchSubTab('batch');batchPasteFromClipboard();}},
+  {id:'act-sample-batch',labelKey:'cmd_act_sample_batch',groupKey:'cmdk_group_actions',icon:'science',run:()=>{switchTab('idtools');switchSubTab('batch');batchLoadSample();}},
+  {id:'act-sample-single',labelKey:'cmd_act_sample_single',groupKey:'cmdk_group_actions',icon:'science',run:()=>{switchTab('idtools');switchSubTab('single');loadSampleIntoInspector();}},
+  {id:'act-theme',labelKey:'cmd_act_theme',groupKey:'cmdk_group_actions',icon:'contrast',run:()=>toggleTheme()},
+  {id:'act-theme-system',labelKey:'cmd_act_theme_system',groupKey:'cmdk_group_actions',icon:'contrast',run:()=>useSystemTheme()},
+  {id:'act-clear-cache',labelKey:'cmd_act_clear_cache',groupKey:'cmdk_group_actions',icon:'layers_clear',run:()=>confirmClearCache()}
 ];
 let cmdkActiveIndex=0;
 let cmdkFiltered=COMMANDS;
@@ -2930,15 +2963,15 @@ function closeCmdk(){document.getElementById('cmdk-overlay').classList.remove('o
 
 function renderCmdkResults(query){
   const q=query.trim().toLowerCase();
-  cmdkFiltered=q?COMMANDS.filter(c=>c.label.toLowerCase().includes(q)):COMMANDS;
+  cmdkFiltered=q?COMMANDS.filter(c=>t(c.labelKey).toLowerCase().includes(q)):COMMANDS;
   cmdkActiveIndex=0;
   const list=document.getElementById('cmdk-list');
-  if(cmdkFiltered.length===0){list.innerHTML=`<div class="cmdk-empty">No matching actions</div>`;return;}
+  if(cmdkFiltered.length===0){list.innerHTML=`<div class="cmdk-empty">${t('cmdk_no_results')}</div>`;return;}
   let html='',lastGroup='';
   cmdkFiltered.forEach((c,i)=>{
-    if(c.group!==lastGroup){html+=`<div class="cmdk-group">${c.group}</div>`;lastGroup=c.group;}
+    if(c.groupKey!==lastGroup){html+=`<div class="cmdk-group">${t(c.groupKey)}</div>`;lastGroup=c.groupKey;}
     html+=`<div class="cmdk-item${i===cmdkActiveIndex?' active':''}" data-idx="${i}" onclick="runCmdByIndex(${i})">
-      <span class="material-symbols-rounded" style="font-size:1.1rem;">${c.icon}</span><span>${escapeHtml(c.label)}</span></div>`;
+      <span class="material-symbols-rounded" style="font-size:1.1rem;">${c.icon}</span><span>${escapeHtml(t(c.labelKey))}</span></div>`;
   });
   list.innerHTML=html;
 }
