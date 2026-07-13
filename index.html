@@ -654,6 +654,11 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
         </div>
       </div>
     </div>
+    <label class="toggle-row focusable" for="upload-auto-rename" style="margin-top:.9rem;">
+      <input type="checkbox" id="upload-auto-rename" checked onchange="toggleUploadAutoRename(this.checked)">
+      <span class="toggle-track"></span>
+      <span class="toggle-label" data-i18n="toggle_auto_rename_dupes">Auto-rename duplicate columns</span>
+    </label>
     <div id="upload-mapping" class="card pad hide" style="margin-top:1.1rem;">
       <div style="display:grid;grid-template-columns:1fr;gap:.9rem;">
         <div class="filecard">
@@ -1119,6 +1124,9 @@ en:{
   upload_drop_title:'Drop a file or tap to browse', upload_drop_types:'.xlsx, .xls, or .csv',
   upload_col_label:'National ID column', upload_file_default:'File: —', upload_rows:n=>`${n} rows`,
   upload_preview_label:'Data preview', upload_preview_note:(shown,total)=>`Showing ${shown} of ${total} rows — the highlighted column follows your selection below.`,
+  toggle_auto_rename_dupes:'Auto-rename duplicate columns', upload_col_unnamed:n=>`Column ${n}`,
+  toast_dupes_renamed:n=>`${n} duplicate column name${n===1?'':'s'} renamed automatically`,
+  toast_dupes_overwritten:n=>`${n} duplicate column name${n===1?'':'s'} detected — later columns overwrote earlier ones`,
   upload_drop_hint:'Up to 25 MB · processed locally in your browser', upload_remove_title:'Remove file',
   btn_extract:'Extract & Process', upload_results_title:'File results', upload_summary:(n,v,e,nl,note)=>`${n} rows processed (${v} valid, ${e} errors${nl?`, ${nl} null`:''})${note}`,
   upload_file_label:name=>name, upload_rows_detected:n=>`${n} rows detected`,
@@ -1222,6 +1230,9 @@ ar:{
   upload_drop_title:'أفلت ملفًا هنا أو اضغط للاستعراض', upload_drop_types:'‎.xlsx أو ‎.xls أو ‎.csv',
   upload_col_label:'عمود الرقم القومي', upload_file_default:'الملف: —', upload_rows:n=>`${n} صفًا`,
   upload_preview_label:'معاينة البيانات', upload_preview_note:(shown,total)=>`عرض ${shown} من ${total} صفًا — يتبع العمود المُظلَّل اختيارك أدناه.`,
+  toggle_auto_rename_dupes:'إعادة تسمية الأعمدة المكررة تلقائيًا', upload_col_unnamed:n=>`عمود ${n}`,
+  toast_dupes_renamed:n=>`تمت إعادة تسمية ${n} من أسماء الأعمدة المكررة تلقائيًا`,
+  toast_dupes_overwritten:n=>`تم رصد ${n} من أسماء الأعمدة المكررة — استبدلت الأعمدة اللاحقة السابقة لها`,
   upload_drop_hint:'حتى 25 ميجابايت · تتم المعالجة محليًا داخل متصفحك', upload_remove_title:'إزالة الملف',
   btn_extract:'استخراج ومعالجة', upload_results_title:'نتائج الملف', upload_summary:(n,v,e,nl,note)=>`تمت معالجة ${n} صفًا (${v} صحيح، ${e} أخطاء${nl?`، ${nl} فارغ`:''})${note}`,
   upload_file_label:name=>name, upload_rows_detected:n=>`تم رصد ${n} صفًا`,
@@ -1377,6 +1388,7 @@ const STORAGE_KEY='lxid-state-v8';
 let uploadedSheetData=[];
 let uploadedSheetDisplayData=[];
 let processedUploadResults=[];
+let uploadAutoRenameDupes=true;
 let formulaMode='table';
 let saveTimer=null;
 let workDaySet=new Set([0,1,2,3,4]);
@@ -2483,6 +2495,31 @@ function highlightPreviewColumn(){
   });
 }
 
+function toggleUploadAutoRename(checked){
+  uploadAutoRenameDupes=checked;
+  saveState({uploadAutoRenameDupes:checked});
+}
+
+function resolveDuplicateHeaders(headers,autoRename){
+  const counts={};
+  headers.forEach(h=>{counts[h]=(counts[h]||0)+1;});
+  let dupCount=0;
+  Object.keys(counts).forEach(h=>{if(counts[h]>1) dupCount+=counts[h]-1;});
+  if(dupCount===0||!autoRename) return {headers,dupCount};
+  const seen={};
+  const resolved=headers.map(h=>{
+    seen[h]=(seen[h]||0)+1;
+    return seen[h]>1?`${h} (${seen[h]})`:h;
+  });
+  return {headers:resolved,dupCount};
+}
+
+function rowFromArray(headers,rowArr){
+  const obj={};
+  headers.forEach((h,i)=>{obj[h]=rowArr[i]!==undefined?rowArr[i]:'';});
+  return obj;
+}
+
 function clearUploadedFile(){
   resetUploadState();
   document.getElementById('file-input').value='';
@@ -2510,10 +2547,15 @@ function handleFileUpload(e){
       const wb=XLSX.read(data,{type:'array',codepage:65001});
       const firstSheet=wb.SheetNames[0];
       if(!firstSheet) throw new Error('no-sheet');
-      uploadedSheetData=XLSX.utils.sheet_to_json(wb.Sheets[firstSheet],{defval:''});
-      uploadedSheetDisplayData=XLSX.utils.sheet_to_json(wb.Sheets[firstSheet],{raw:false,defval:''});
+      const ws=wb.Sheets[firstSheet];
+      const aoaRaw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+      const aoaDisplay=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:''});
+      if(aoaRaw.length<2){showToast(t('toast_no_rows_file'),'error');document.getElementById('file-input').value='';return;}
+      const rawHeaders=aoaRaw[0].map((h,i)=>{const s=String(h??'').trim();return s||t('upload_col_unnamed',i+1);});
+      const {headers,dupCount}=resolveDuplicateHeaders(rawHeaders,uploadAutoRenameDupes);
+      uploadedSheetData=aoaRaw.slice(1).map(rowArr=>rowFromArray(headers,rowArr));
+      uploadedSheetDisplayData=aoaDisplay.slice(1).map(rowArr=>rowFromArray(headers,rowArr));
       if(uploadedSheetData.length===0){showToast(t('toast_no_rows_file'),'error');document.getElementById('file-input').value='';return;}
-      const headers=Object.keys(uploadedSheetData[0]);
       if(headers.length===0){showToast(t('toast_no_rows_file'),'error');document.getElementById('file-input').value='';return;}
       document.getElementById('file-rows-text').textContent=t('upload_rows_detected',uploadedSheetData.length);
       const select=document.getElementById('column-select');
@@ -2526,6 +2568,7 @@ function handleFileUpload(e){
       });
       renderUploadPreview(headers);
       document.getElementById('upload-mapping').classList.remove('hide');
+      if(dupCount>0) showToast(uploadAutoRenameDupes?t('toast_dupes_renamed',dupCount):t('toast_dupes_overwritten',dupCount),'info');
     }catch(err){
       showToast(t('toast_file_parse_error'),'error');
       document.getElementById('file-input').value='';
@@ -3145,6 +3188,11 @@ function restoreCachedState(){
     if(toggle) toggle.checked=true;
   }
   if(Array.isArray(state.batchTableCats)) batchTableCats=new Set(state.batchTableCats);
+  if(state.uploadAutoRenameDupes===false){
+    uploadAutoRenameDupes=false;
+    const toggle=document.getElementById('upload-auto-rename');
+    if(toggle) toggle.checked=false;
+  }
   if(state.batchSearch) batchSearch=state.batchSearch;
   if(Array.isArray(state.batchResultsCache)&&state.batchResultsCache.length){
     batchResults=state.batchResultsCache;
