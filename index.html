@@ -695,9 +695,15 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
           <h3 class="cardtitle" data-i18n="upload_results_title">File results</h3>
           <p style="font-size:.75rem;color:var(--ink-2);margin:.15rem 0 0;" id="upload-summary">0 rows</p>
         </div>
-        <div class="row" style="gap:.4rem;">
+        <div class="row" style="gap:.4rem;flex-wrap:wrap;justify-content:flex-end;">
           <button onclick="downloadUpload('xlsx')" class="btn btn-soft btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">download</span><span data-i18n="btn_excel">Excel</span></button>
           <button onclick="downloadUpload('csv')" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:1rem;">csv</span><span data-i18n="btn_csv">CSV</span></button>
+          <label class="toggle-row focusable" for="chk-inject-formulas-upload" data-i18n-title="inject_formulas_hint">
+            <input type="checkbox" id="chk-inject-formulas-upload" onchange="toggleUploadInjectFormulas(this.checked)">
+            <span class="toggle-track"></span>
+            <span class="toggle-label" data-i18n="inject_formulas_title">Inject live formulas (Excel only)</span>
+          </label>
+          <div id="upload-columns-wrap" class="batch-dropwrap"></div>
         </div>
       </div>
       <div class="scrollx" style="border-radius:16px;border:1px solid var(--edge);">
@@ -1070,7 +1076,8 @@ const ICON_DEFS={
   table_rows:'<rect x="3.5" y="4.5" width="17" height="15" rx="2.2"/><path d="M3.5 9.7h17M3.5 14.8h17"/>',
   task_alt:'<rect x="3.5" y="3.5" width="17" height="17" rx="6"/><path d="M8 12.3l2.6 2.6L16.3 9"/>',
   upload_file:'<path d="M6.5 3h7l4 4v13a1.2 1.2 0 01-1.2 1.2H6.5A1.2 1.2 0 015.3 20V4.2A1.2 1.2 0 016.5 3z"/><path d="M13.5 3v4h4"/><path d="M12 18v-5.3M9.6 15.1l2.4-2.4 2.4 2.4"/>',
-  view_week:'<rect x="3.5" y="4.5" width="4.3" height="15" rx="1.2"/><rect x="9.8" y="4.5" width="4.3" height="15" rx="1.2"/><rect x="16.1" y="4.5" width="4.3" height="15" rx="1.2"/>'
+  view_week:'<rect x="3.5" y="4.5" width="4.3" height="15" rx="1.2"/><rect x="9.8" y="4.5" width="4.3" height="15" rx="1.2"/><rect x="16.1" y="4.5" width="4.3" height="15" rx="1.2"/>',
+  view_column:'<rect x="3.5" y="4.5" width="17" height="15" rx="2.2"/><path d="M9.5 4.5v15M14.5 4.5v15"/>'
 };
 function iconSvgWrap(inner){
   return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">'+inner+'</svg>';
@@ -1172,7 +1179,8 @@ en:{
   settings_theme:'Theme', theme_system:'System', theme_light:'Light', theme_dark:'Dark',
   settings_surface:'Surface style', settings_typeface:'Typeface', settings_footer:'Saved to this browser only — nothing is sent anywhere.',
   cmdk_ph:'Type a command…', cmdk_nav:'Navigate', cmdk_select:'Select', cmdk_close:'Close',
-  cmdk_group_nav:'Navigate', cmdk_group_actions:'Actions', cmdk_no_results:'No matching actions',
+  cmdk_group_nav:'Navigate', cmdk_group_actions:'Actions', cmdk_group_smart:'Smart', cmdk_no_results:'No matching actions',
+  cmdk_smart_single:id=>`Process "${id}" as a single ID`, cmdk_smart_batch:n=>`Process ${n} IDs as a batch`,
   cmd_go_idtools_single:'ID Tools — Single ID', cmd_go_idtools_batch:'ID Tools — Batch Analytics', cmd_go_idtools_upload:'ID Tools — Upload File',
   cmd_go_formula:'Excel / Sheets Formulas',
   cmd_go_dates_between:'Date Tools — Between Dates', cmd_go_dates_age:'Date Tools — Age Calculator', cmd_go_dates_weekday:'Date Tools — Weekday Finder', cmd_go_dates_leap:'Date Tools — Leap Years',
@@ -1188,6 +1196,9 @@ en:{
   toast_rows_copied:n=>`${n} rows copied`, toast_rows_downloaded:n=>`${n} rows downloaded`, toast_summary_copied:'Summary copied',
   toast_copied_generic:'Copied to clipboard', toast_clipboard_fail:'Could not access clipboard', toast_formula_copied:'Formula copied',
   toast_lang_switched:'Language switched to English',
+  columns_title:'Columns', inject_formulas_title:'Inject live formulas (Excel only)',
+  inject_formulas_hint:'Date-based values recompute from the ID when the sheet is opened later, instead of staying frozen at export time. CSV has no formulas, so this only applies to Excel.',
+  toast_formulas_need_id:'Include the ID column to inject formulas',
   toast_save_failed:'Local save failed — your changes may not persist', toast_cache_cleared:'Cached data cleared', toast_system_theme:'Following system theme',
   gender_male:'Male', gender_female:'Female',
   flags:{'fake-pattern':'Fake pattern','unknown-governorate':'Unknown governorate','duplicate-id':'Duplicate ID','future-birth':'Future birth date','very-early-birth-year':'Unusually early birth year','jan-1-of-century':'Jan 1 placeholder date'},
@@ -1278,7 +1289,8 @@ ar:{
   settings_theme:'المظهر', theme_system:'النظام', theme_light:'فاتح', theme_dark:'داكن',
   settings_surface:'نمط السطح', settings_typeface:'الخط', settings_footer:'يُحفظ في هذا المتصفح فقط — لا يُرسَل شيء إلى أي جهة.',
   cmdk_ph:'اكتب أمرًا…', cmdk_nav:'تنقّل', cmdk_select:'اختيار', cmdk_close:'إغلاق',
-  cmdk_group_nav:'التنقّل', cmdk_group_actions:'إجراءات', cmdk_no_results:'لا توجد إجراءات مطابقة',
+  cmdk_group_nav:'التنقّل', cmdk_group_actions:'إجراءات', cmdk_group_smart:'ذكي', cmdk_no_results:'لا توجد إجراءات مطابقة',
+  cmdk_smart_single:id=>`معالجة "${id}" كرقم فردي`, cmdk_smart_batch:n=>`معالجة ${n} أرقام كدفعة`,
   cmd_go_idtools_single:'أدوات الهوية — رقم فردي', cmd_go_idtools_batch:'أدوات الهوية — تحليل دفعة', cmd_go_idtools_upload:'أدوات الهوية — رفع ملف',
   cmd_go_formula:'صيغ Excel / Sheets',
   cmd_go_dates_between:'أدوات التاريخ — بين تاريخين', cmd_go_dates_age:'أدوات التاريخ — حاسبة العمر', cmd_go_dates_weekday:'أدوات التاريخ — يوم الأسبوع', cmd_go_dates_leap:'أدوات التاريخ — السنوات الكبيسة',
@@ -1294,6 +1306,9 @@ ar:{
   toast_rows_copied:n=>`تم نسخ ${n} صفًا`, toast_rows_downloaded:n=>`تم تنزيل ${n} صفًا`, toast_summary_copied:'تم نسخ الملخص',
   toast_copied_generic:'تم النسخ إلى الحافظة', toast_clipboard_fail:'تعذّر الوصول إلى الحافظة', toast_formula_copied:'تم نسخ الصيغة',
   toast_lang_switched:'تم تبديل اللغة إلى العربية',
+  columns_title:'الأعمدة', inject_formulas_title:'حقن صيغ حيّة (إكسل فقط)',
+  inject_formulas_hint:'القيم المرتبطة بالتاريخ تُعاد حسابها من الرقم عند فتح الملف لاحقًا، بدلًا من أن تبقى مجمّدة وقت التصدير. ملفات CSV لا تدعم الصيغ، لذا يسري هذا على إكسل فقط.',
+  toast_formulas_need_id:'أضف عمود الرقم القومي لتفعيل الصيغ',
   toast_save_failed:'فشل الحفظ المحلي — قد لا تُحفظ تغييراتك', toast_cache_cleared:'تم مسح البيانات المخزّنة', toast_system_theme:'اتباع مظهر النظام',
   gender_male:'ذكر', gender_female:'أنثى',
   flags:{'fake-pattern':'نمط غير واقعي','unknown-governorate':'محافظة غير معروفة','duplicate-id':'رقم مكرر','future-birth':'تاريخ ميلاد مستقبلي','very-early-birth-year':'سنة ميلاد مبكرة بشكل غير معتاد','jan-1-of-century':'تاريخ افتراضي (1 يناير)'},
@@ -2071,9 +2086,11 @@ function downloadBlob(content,filename,mime){
   a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
-function downloadXLSX(data,sheetName,filename){
+function downloadXLSX(data,sheetName,filename,postProcess){
   const ws=XLSX.utils.json_to_sheet(data);
+  if(typeof postProcess==='function') postProcess(ws);
   const wb=XLSX.utils.book_new();
+  wb.Workbook={CalcPr:{fullCalcOnLoad:true}};
   XLSX.utils.book_append_sheet(wb,ws,sheetName);
   XLSX.writeFile(wb,filename);
 }
@@ -2271,7 +2288,7 @@ function renderBatchTable(){
           <h3 class="cardtitle">${t('results_title')}</h3>
           <p style="font-size:.75rem;color:var(--ink-2);margin:.15rem 0 0;">${t('results_summary',total,validCount,errorCount,nullCount)}</p>
         </div>
-        <div class="row" style="gap:.5rem;">
+        <div class="row" style="gap:.5rem;flex-wrap:wrap;justify-content:flex-end;">
           <div class="batch-dropwrap">
             <div class="splitbtn">
               <button onclick="copyBatchView(event)" class="splitbtn-main iconOnly focusable" title="${t('copy_visible_title')}" aria-label="${t('copy_visible_title')}"><span class="material-symbols-rounded" style="font-size:1.05rem;">content_copy</span></button>
@@ -2287,6 +2304,15 @@ function renderBatchTable(){
               <button id="caret-download" onclick="event.stopPropagation();toggleBatchMenu('download')" class="splitbtn-caret focusable" title="${t('more_options_title')}" aria-label="${t('more_options_title')}"><span class="material-symbols-rounded">expand_more</span></button>
             </div>
             ${batchChecklistHtml('download')}
+          </div>
+          <label class="toggle-row focusable" for="chk-inject-formulas" title="${escapeHtml(t('inject_formulas_hint'))}">
+            <input type="checkbox" id="chk-inject-formulas" ${batchInjectFormulas?'checked':''} onchange="toggleBatchInjectFormulas(this.checked)">
+            <span class="toggle-track"></span>
+            <span class="toggle-label">${t('inject_formulas_title')}</span>
+          </label>
+          <div class="batch-dropwrap">
+            <button id="caret-columns" onclick="event.stopPropagation();toggleBatchMenu('columns')" class="iconbtn focusable" title="${t('columns_title')}" aria-label="${t('columns_title')}"><span class="material-symbols-rounded" style="font-size:1.05rem;">view_column</span></button>
+            ${columnsMenuHtml()}
           </div>
         </div>
       </div>
@@ -2316,7 +2342,77 @@ function renderBatchTable(){
     </div>`;
 }
 
+const BATCH_COLUMN_DEFS=[
+  {key:'id',labelKey:'col_id'},
+  {key:'status',labelKey:'col_status'},
+  {key:'century',labelKey:'col_century'},
+  {key:'birthdate',labelKey:'col_birthdate',formula:feBirthDateExpr,fmt:'yyyy-mm-dd'},
+  {key:'weekday',labelKey:'col_weekday',formula:feWeekdayExpr},
+  {key:'age',labelKey:'col_age',formula:feAgeExpr},
+  {key:'totaldays',labelKey:'col_totaldays',formula:feTotalDaysExpr},
+  {key:'gender',labelKey:'col_gender'},
+  {key:'govcode',labelKey:'col_govcode'},
+  {key:'gov',labelKey:'col_gov'},
+  {key:'serial',labelKey:'col_serial'},
+  {key:'check',labelKey:'col_check'},
+  {key:'retireage',labelKey:'col_retireage',formula:feRetireAgeExpr},
+  {key:'retiredate',labelKey:'col_retiredate',formula:feRetireDateExpr,fmt:'yyyy-mm-dd'},
+  {key:'yearstoretire',labelKey:'col_yearstoretire',formula:feYearsToRetireExpr},
+  {key:'career',labelKey:'col_career',formula:feCareerPercentExpr},
+  {key:'flags',labelKey:'col_flags'},
+  {key:'error',labelKey:'col_error'}
+];
+const BATCH_COLUMN_MAP=Object.fromEntries(BATCH_COLUMN_DEFS.map(c=>[c.key,c]));
+
 let batchMenuSelection=new Set(['valid','error','null']);
+let batchColumnsSelected=new Set(BATCH_COLUMN_DEFS.map(c=>c.key));
+let batchInjectFormulas=false;
+
+function columnsMenuHtml(){
+  const all=BATCH_COLUMN_DEFS.map(c=>c.key);
+  const total=all.length;
+  const selectedCount=all.filter(k=>batchColumnsSelected.has(k)).length;
+  const rowsHtml=BATCH_COLUMN_DEFS.map(c=>`<label class="chk-row">
+      <input type="checkbox" class="chk-input-col-${c.key}" ${batchColumnsSelected.has(c.key)?'checked':''} onchange="toggleBatchColumn('${c.key}')">
+      <span class="chk-box"><span class="material-symbols-rounded icon-check">check</span></span>
+      <span class="chk-label">${escapeHtml(t(c.labelKey))}</span>
+    </label>`).join('');
+  return `<div class="batch-dropmenu" id="batch-menu-columns" onclick="event.stopPropagation()">
+    <label class="chk-row batch-dropmenu-head">
+      <input type="checkbox" id="head-chk-columns" ${selectedCount===total?'checked':''} onchange="batchColumnsSelectAll()">
+      <span class="chk-box"><span class="material-symbols-rounded icon-check">check</span><span class="material-symbols-rounded icon-dash">remove</span></span>
+      <span class="batch-dropmenu-headlabel">${t('columns_title')}</span>
+      <span class="batch-dropmenu-headcount" id="head-count-columns">${selectedCount}/${total}</span>
+    </label>
+    <div style="max-height:220px;overflow-y:auto;">${rowsHtml}</div>
+  </div>`;
+}
+function toggleBatchColumn(key){
+  if(batchColumnsSelected.has(key)) batchColumnsSelected.delete(key); else batchColumnsSelected.add(key);
+  syncColumnsMenu();
+  saveState({batchColumnsSelected:[...batchColumnsSelected]});
+}
+function batchColumnsSelectAll(){
+  const all=BATCH_COLUMN_DEFS.map(c=>c.key);
+  const allSelected=all.every(k=>batchColumnsSelected.has(k));
+  batchColumnsSelected=allSelected?new Set():new Set(all);
+  syncColumnsMenu();
+  saveState({batchColumnsSelected:[...batchColumnsSelected]});
+}
+function syncColumnsMenu(){
+  BATCH_COLUMN_DEFS.forEach(c=>{
+    document.querySelectorAll('.chk-input-col-'+c.key).forEach(el=>{el.checked=batchColumnsSelected.has(c.key);});
+  });
+  const total=BATCH_COLUMN_DEFS.length,selectedCount=BATCH_COLUMN_DEFS.filter(c=>batchColumnsSelected.has(c.key)).length;
+  const headChk=document.getElementById('head-chk-columns');
+  if(headChk){headChk.checked=selectedCount===total;headChk.indeterminate=selectedCount>0&&selectedCount<total;}
+  const headCount=document.getElementById('head-count-columns');
+  if(headCount) headCount.textContent=`${selectedCount}/${total}`;
+}
+function toggleBatchInjectFormulas(checked){
+  batchInjectFormulas=checked;
+  saveState({batchInjectFormulas:checked});
+}
 
 function chkRow(cat,solidVar,tintVar,label,count){
   const checked=batchMenuSelection.has(cat);
@@ -2410,11 +2506,15 @@ function copyBatchRow(idx,elId){
   if(el){el.textContent='check';el.style.color='var(--mint)';setTimeout(()=>{el.textContent='content_copy';el.style.color='';},1200);}
 }
 
-function buildBatchTSV(rows){
-  let tsv=[t('col_id'),t('col_status'),t('col_century'),t('col_birthdate'),t('col_weekday'),t('col_age'),t('col_totaldays'),t('col_gender'),t('col_govcode'),t('col_gov'),t('col_serial'),t('col_check'),t('col_retireage'),t('col_retiredate'),t('col_yearstoretire'),t('col_career'),t('col_flags'),t('col_error')].join('\t')+'\n';
+function selectedBatchColumnKeys(){
+  return BATCH_COLUMN_DEFS.map(c=>c.key).filter(k=>batchColumnsSelected.has(k));
+}
+
+function buildBatchTSV(rows,colKeys){
+  const keys=(colKeys&&colKeys.length)?colKeys:BATCH_COLUMN_DEFS.map(c=>c.key);
+  let tsv=keys.map(k=>t(BATCH_COLUMN_MAP[k].labelKey)).join('\t')+'\n';
   rows.forEach(r=>{
-    const status=r.valid?t('status_valid'):(r.isNull?t('status_null'):t('status_error'));
-    tsv+=r.valid?`${r.id}\t${status.toUpperCase()}\t${r.centuryLabel}\t${r.birthDateStr}\t${dayName(r.birthDayIndex)}\t${r.currentAgeYears}\t${r.totalDaysLived}\t${r.gender}\t${r.govCode}\t${govDisplay(r.govCode)}\t${r.serial}\t${r.checkDigit}\t${r.retireAge}\t${r.retireDateStr}\t${r.yearsUntilRetire}\t${r.careerPercent}%\t${r.flags.map(f=>flagLabel(f)).join(', ')}\t\n`:`${r.raw}\t${status.toUpperCase()}\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t\t${r.error}\n`;
+    tsv+=keys.map(k=>batchColumnValue(r,k)).join('\t')+'\n';
   });
   return tsv;
 }
@@ -2422,55 +2522,61 @@ function buildBatchTSV(rows){
 function copyBatchView(evt){
   closeBatchMenus();
   if(lastBatchRows.length===0){showToast(t('toast_no_rows_copy'),'info');return;}
-  copyText(buildBatchTSV(lastBatchRows),evt?evt.currentTarget:null,t('toast_rows_copied',lastBatchRows.length));
+  copyText(buildBatchTSV(lastBatchRows,selectedBatchColumnKeys()),evt?evt.currentTarget:null,t('toast_rows_copied',lastBatchRows.length));
 }
 function confirmCopySelection(){
   const rows=getSelectedBatchRows();
   closeBatchMenus();
   if(rows.length===0){showToast(t('toast_no_rows_copy'),'info');return;}
-  copyText(buildBatchTSV(rows),null,t('toast_rows_copied',rows.length));
+  copyText(buildBatchTSV(rows,selectedBatchColumnKeys()),null,t('toast_rows_copied',rows.length));
 }
 
-function buildBatchExportData(rows){
-  return rows.map(r=>({
-    [t('col_id')]:r.valid?r.id:r.raw,[t('col_status')]:r.valid?'VALID':(r.isNull?'NULL':'ERROR'),[t('col_century')]:r.valid?r.centuryLabel:'',[t('col_birthdate')]:r.valid?r.birthDateStr:'',
-    [t('col_weekday')]:r.valid?dayName(r.birthDayIndex):'',[t('col_age')]:r.valid?r.currentAgeYears:'',[t('col_totaldays')]:r.valid?r.totalDaysLived:'',[t('col_gender')]:r.valid?r.gender:'',[t('col_govcode')]:r.valid?r.govCode:'',
-    [t('col_gov')]:r.valid?govDisplay(r.govCode):'',[t('col_serial')]:r.valid?r.serial:'',[t('col_check')]:r.valid?r.checkDigit:'',[t('col_retireage')]:r.valid?r.retireAge:'',
-    [t('col_retiredate')]:r.valid?r.retireDateStr:'',[t('col_yearstoretire')]:r.valid?r.yearsUntilRetire:'',[t('col_career')]:r.valid?r.careerPercent:'',
-    [t('col_flags')]:r.valid?r.flags.map(f=>flagLabel(f)).join(', '):'',[t('col_error')]:r.error||''
-  }));
+function buildBatchExportData(rows,colKeys){
+  const keys=(colKeys&&colKeys.length)?colKeys:BATCH_COLUMN_DEFS.map(c=>c.key);
+  return rows.map(r=>{
+    const o={};
+    keys.forEach(k=>{o[t(BATCH_COLUMN_MAP[k].labelKey)]=batchColumnValue(r,k);});
+    return o;
+  });
 }
 
-function exportRows(rows,format,fname){
+function exportRows(rows,format,fname,colKeys,injectFormulas){
   if(rows.length===0){showToast(t('toast_no_rows_export'),'info');return;}
-  const data=buildBatchExportData(rows);
+  const keys=(colKeys&&colKeys.length)?colKeys:BATCH_COLUMN_DEFS.map(c=>c.key);
+  const data=buildBatchExportData(rows,keys);
   if(format==='csv'){
     const headers=Object.keys(data[0]);
     downloadBlob(toCSV(headers,data.map(row=>headers.map(h=>row[h]))),`${fname}.csv`,'text/csv;charset=utf-8;');
   }else{
-    downloadXLSX(data,t('results_title'),`${fname}.xlsx`);
+    const canInject=injectFormulas&&keys.includes('id');
+    downloadXLSX(data,t('results_title'),`${fname}.xlsx`,canInject?(ws=>injectXLSXFormulas(ws,rows,keys,'id')):null);
+    if(injectFormulas&&!keys.includes('id')) showToast(t('toast_formulas_need_id'),'info');
   }
   showToast(t('toast_rows_downloaded',rows.length),'download_done');
 }
 function downloadBatchView(format,evt){
   closeBatchMenus();
-  exportRows(lastBatchRows,format,'id_batch_view');
+  exportRows(lastBatchRows,format,'id_batch_view',selectedBatchColumnKeys(),batchInjectFormulas);
 }
 function confirmDownloadSelection(format){
   const rows=getSelectedBatchRows();
   closeBatchMenus();
-  exportRows(rows,format,'id_batch_selection');
+  exportRows(rows,format,'id_batch_selection',selectedBatchColumnKeys(),batchInjectFormulas);
 }
 
 function resetUploadState(){
   uploadedSheetData=[];
   uploadedSheetDisplayData=[];
   processedUploadResults=[];
+  uploadColumnsSelected=new Set();
+  uploadColumnsMenuKeys=[];
+  uploadIdColName='';
   document.getElementById('upload-mapping').classList.add('hide');
   document.getElementById('upload-results').classList.add('hide');
   document.getElementById('upload-preview-wrap').classList.add('hide');
   document.getElementById('upload-preview-thead').innerHTML='';
   document.getElementById('upload-preview-tbody').innerHTML='';
+  document.getElementById('upload-columns-wrap').innerHTML='';
 }
 
 function renderUploadPreview(headers){
@@ -2577,6 +2683,84 @@ function handleFileUpload(e){
   reader.readAsArrayBuffer(file);
 }
 
+let uploadColumnsSelected=new Set();
+let uploadInjectFormulas=false;
+let uploadIdColName='';
+let uploadColumnsMenuKeys=[];
+
+function uploadColumnsButtonHtml(){
+  return `<button id="caret-uploadcols" onclick="event.stopPropagation();toggleBatchMenu('uploadcols')" class="iconbtn focusable" title="${t('columns_title')}" aria-label="${t('columns_title')}"><span class="material-symbols-rounded" style="font-size:1.05rem;">view_column</span></button>
+    ${uploadColumnsMenuHtml()}`;
+}
+function uploadColumnsMenuHtml(){
+  if(processedUploadResults.length===0) return '';
+  uploadColumnsMenuKeys=Object.keys(processedUploadResults[0]);
+  const total=uploadColumnsMenuKeys.length;
+  const selectedCount=uploadColumnsMenuKeys.filter(k=>uploadColumnsSelected.has(k)).length;
+  const rowsHtml=uploadColumnsMenuKeys.map((k,i)=>`<label class="chk-row">
+      <input type="checkbox" class="chk-input-ucol" data-idx="${i}" ${uploadColumnsSelected.has(k)?'checked':''} onchange="toggleUploadColumnByIndex(${i})">
+      <span class="chk-box"><span class="material-symbols-rounded icon-check">check</span></span>
+      <span class="chk-label">${escapeHtml(k)}</span>
+    </label>`).join('');
+  return `<div class="batch-dropmenu" id="batch-menu-uploadcols" onclick="event.stopPropagation()">
+    <label class="chk-row batch-dropmenu-head">
+      <input type="checkbox" id="head-chk-uploadcols" ${selectedCount===total?'checked':''} onchange="uploadColumnsSelectAll()">
+      <span class="chk-box"><span class="material-symbols-rounded icon-check">check</span><span class="material-symbols-rounded icon-dash">remove</span></span>
+      <span class="batch-dropmenu-headlabel">${t('columns_title')}</span>
+      <span class="batch-dropmenu-headcount" id="head-count-uploadcols">${selectedCount}/${total}</span>
+    </label>
+    <div style="max-height:220px;overflow-y:auto;">${rowsHtml}</div>
+  </div>`;
+}
+function toggleUploadColumnByIndex(i){
+  const k=uploadColumnsMenuKeys[i];
+  if(!k) return;
+  if(uploadColumnsSelected.has(k)) uploadColumnsSelected.delete(k); else uploadColumnsSelected.add(k);
+  syncUploadColumnsMenu();
+}
+function uploadColumnsSelectAll(){
+  const allSelected=uploadColumnsMenuKeys.every(k=>uploadColumnsSelected.has(k));
+  uploadColumnsSelected=allSelected?new Set():new Set(uploadColumnsMenuKeys);
+  syncUploadColumnsMenu();
+}
+function syncUploadColumnsMenu(){
+  document.querySelectorAll('.chk-input-ucol').forEach(el=>{
+    const i=parseInt(el.dataset.idx,10);
+    el.checked=uploadColumnsSelected.has(uploadColumnsMenuKeys[i]);
+  });
+  const total=uploadColumnsMenuKeys.length,selectedCount=uploadColumnsMenuKeys.filter(k=>uploadColumnsSelected.has(k)).length;
+  const headChk=document.getElementById('head-chk-uploadcols');
+  if(headChk){headChk.checked=selectedCount===total;headChk.indeterminate=selectedCount>0&&selectedCount<total;}
+  const headCount=document.getElementById('head-count-uploadcols');
+  if(headCount) headCount.textContent=`${selectedCount}/${total}`;
+}
+function toggleUploadInjectFormulas(checked){uploadInjectFormulas=checked;}
+
+function injectUploadXLSXFormulas(ws,keys){
+  const idColIdx=keys.indexOf(uploadIdColName);
+  if(idColIdx===-1) return;
+  const statusKey=t('upload_col_status');
+  const map={
+    [t('upload_col_birth')]:{formula:feBirthDateExpr,fmt:'yyyy-mm-dd'},
+    [t('upload_col_age')]:{formula:feAgeExpr},
+    [t('upload_col_totaldays')]:{formula:feTotalDaysExpr},
+    [t('upload_col_retireage')]:{formula:feRetireAgeExpr},
+    [t('upload_col_retiredate')]:{formula:feRetireDateExpr,fmt:'yyyy-mm-dd'}
+  };
+  processedUploadResults.forEach((row,i)=>{
+    if(row[statusKey]!=='VALID') return;
+    const idCellRef=XLSX.utils.encode_cell({r:i+1,c:idColIdx});
+    keys.forEach((key,colIdx)=>{
+      const def=map[key];
+      if(!def) return;
+      const targetRef=XLSX.utils.encode_cell({r:i+1,c:colIdx});
+      const cell={t:'n',f:def.formula(idCellRef)};
+      if(def.fmt) cell.z=def.fmt;
+      ws[targetRef]=cell;
+    });
+  });
+}
+
 function processUploadedFile(){
   const idCol=document.getElementById('column-select').value;
   if(!idCol) return;
@@ -2622,6 +2806,9 @@ function processUploadedFile(){
         [t('upload_col_status')]:statusText
       }));
     });
+    uploadIdColName=idCol;
+    uploadColumnsSelected=new Set(Object.keys(processedUploadResults[0]));
+    document.getElementById('upload-columns-wrap').innerHTML=uploadColumnsButtonHtml();
     const errorCount=processedUploadResults.length-validCount-nullCount;
     const cols=Object.keys(processedUploadResults[0]);
     const genderKey=t('col_gender');
@@ -2650,11 +2837,20 @@ function processUploadedFile(){
 
 function downloadUpload(format){
   if(processedUploadResults.length===0) return;
+  const allKeys=Object.keys(processedUploadResults[0]);
+  const keys=uploadColumnsSelected.size?allKeys.filter(k=>uploadColumnsSelected.has(k)):allKeys;
+  if(keys.length===0){showToast(t('toast_no_rows_export'),'info');return;}
+  const data=processedUploadResults.map(row=>{
+    const o={};
+    keys.forEach(k=>{o[k]=row[k];});
+    return o;
+  });
   if(format==='csv'){
-    const headers=Object.keys(processedUploadResults[0]);
-    downloadBlob(toCSV(headers,processedUploadResults.map(row=>headers.map(h=>row[h]))),'processed_national_ids.csv','text/csv;charset=utf-8;');
+    downloadBlob(toCSV(keys,data.map(row=>keys.map(h=>row[h]))),'processed_national_ids.csv','text/csv;charset=utf-8;');
   }else{
-    downloadXLSX(processedUploadResults,'Processed','processed_national_ids.xlsx');
+    const canInject=uploadInjectFormulas&&keys.includes(uploadIdColName);
+    downloadXLSX(data,'Processed','processed_national_ids.xlsx',canInject?(ws=>injectUploadXLSXFormulas(ws,keys)):null);
+    if(uploadInjectFormulas&&!keys.includes(uploadIdColName)) showToast(t('toast_formulas_need_id'),'info');
   }
   showToast(t('toast_file_downloaded'),'download_done');
 }
@@ -2893,16 +3089,84 @@ function setFormulaMode(mode){
   saveState({formulaMode:mode});
 }
 
-function retireAgeFormula(indent){
-  return `IF(turn60_date>=DATE(2040,7,1),65,
-${indent}IF(turn60_date>=DATE(2038,7,1),64,
-${indent}IF(turn60_date>=DATE(2036,7,1),63,
-${indent}IF(turn60_date>=DATE(2034,7,1),62,
-${indent}IF(turn60_date>=DATE(2032,7,1),61,60)))))`;
+function fePaddedExpr(ref){
+  return `TEXT(${ref},"00000000000000")`;
+}
+function feBirthDateExpr(ref){
+  const p=fePaddedExpr(ref);
+  return `DATE((VALUE(LEFT(${p},1))-2)*100+1900+VALUE(MID(${p},2,2)),VALUE(MID(${p},4,2)),VALUE(MID(${p},6,2)))`;
+}
+function feGenderExpr(ref){
+  return `IF(MOD(VALUE(MID(${fePaddedExpr(ref)},13,1)),2)=1,"Male","Female")`;
+}
+function feWeekdayExpr(ref){return `TEXT(${feBirthDateExpr(ref)},"dddd")`;}
+function feAgeExpr(ref){return `DATEDIF(${feBirthDateExpr(ref)},TODAY(),"y")`;}
+function feTotalDaysExpr(ref){return `TODAY()-${feBirthDateExpr(ref)}`;}
+function feTurn60Expr(ref){return `EDATE(${feBirthDateExpr(ref)},720)`;}
+function feRetireAgeStepsExpr(turn60Expr){
+  return `IF(${turn60Expr}>=DATE(2040,7,1),65,IF(${turn60Expr}>=DATE(2038,7,1),64,IF(${turn60Expr}>=DATE(2036,7,1),63,IF(${turn60Expr}>=DATE(2034,7,1),62,IF(${turn60Expr}>=DATE(2032,7,1),61,60)))))`;
+}
+function feRetireAgeExpr(ref){
+  return feRetireAgeStepsExpr(feTurn60Expr(ref));
+}
+function feRetireDateExpr(ref){
+  const birth=feBirthDateExpr(ref);
+  const retireAge=feRetireAgeStepsExpr(feTurn60Expr(ref));
+  return `EDATE(${birth},(${retireAge})*12)`;
+}
+function feYearsToRetireExpr(ref){
+  const retireDate=feRetireDateExpr(ref);
+  return `IF(${retireDate}<=TODAY(),0,FLOOR((${retireDate}-TODAY())/365.25,1))`;
+}
+function feCareerPercentExpr(ref){
+  const years=`DATEDIF(${feBirthDateExpr(ref)},TODAY(),"y")`;
+  const retireAge=feRetireAgeStepsExpr(feTurn60Expr(ref));
+  return `MAX(0,MIN(100,ROUND(${years}/(${retireAge})*100,0)))`;
+}
+
+function batchColumnValue(r,key){
+  switch(key){
+    case 'id':return r.valid?r.id:r.raw;
+    case 'status':return r.valid?'VALID':(r.isNull?'NULL':'ERROR');
+    case 'century':return r.valid?r.centuryLabel:'';
+    case 'birthdate':return r.valid?r.birthDateStr:'';
+    case 'weekday':return r.valid?dayName(r.birthDayIndex):'';
+    case 'age':return r.valid?r.currentAgeYears:'';
+    case 'totaldays':return r.valid?r.totalDaysLived:'';
+    case 'gender':return r.valid?r.gender:'';
+    case 'govcode':return r.valid?r.govCode:'';
+    case 'gov':return r.valid?govDisplay(r.govCode):'';
+    case 'serial':return r.valid?r.serial:'';
+    case 'check':return r.valid?r.checkDigit:'';
+    case 'retireage':return r.valid?r.retireAge:'';
+    case 'retiredate':return r.valid?r.retireDateStr:'';
+    case 'yearstoretire':return r.valid?r.yearsUntilRetire:'';
+    case 'career':return r.valid?r.careerPercent:'';
+    case 'flags':return r.valid?(r.flags||[]).map(f=>flagLabel(f)).join(', '):'';
+    case 'error':return r.error||'';
+    default:return '';
+  }
+}
+
+function injectXLSXFormulas(ws,rows,colKeys,idKey){
+  const idColIdx=colKeys.indexOf(idKey);
+  if(idColIdx===-1) return;
+  rows.forEach((r,i)=>{
+    if(!r.valid) return;
+    const idCellRef=XLSX.utils.encode_cell({r:i+1,c:idColIdx});
+    colKeys.forEach((key,colIdx)=>{
+      const def=BATCH_COLUMN_MAP[key];
+      if(!def||!def.formula) return;
+      const targetRef=XLSX.utils.encode_cell({r:i+1,c:colIdx});
+      const cell={t:'n',f:def.formula(idCellRef)};
+      if(def.fmt) cell.z=def.fmt;
+      ws[targetRef]=cell;
+    });
+  });
 }
 
 function updateFormulas(){
-  let idRef,idPaddedExpr;
+  let idRef;
   if(formulaMode==='table'){
     const colId=document.getElementById('cfg-col-id').value||'National ID';
     idRef=`[@[${colId}]]`;
@@ -2911,39 +3175,10 @@ function updateFormulas(){
     idRef=document.getElementById('cfg-cell-id').value||'A2';
     saveState({formulaCellId:idRef});
   }
-  idPaddedExpr=`TEXT(${idRef},"00000000000000")`;
 
-  const birthFormula=
-`=LET(
-    id_padded,  ${idPaddedExpr},
-    century,    VALUE(LEFT(id_padded, 1)),
-    base_year,  (century - 2) * 100 + 1900,
-    yy,         VALUE(MID(id_padded, 2, 2)),
-    mm,         VALUE(MID(id_padded, 4, 2)),
-    dd,         VALUE(MID(id_padded, 6, 2)),
-    DATE(base_year + yy, mm, dd)
-)`;
-
-  const genderFormula=
-`=LET(
-    id_padded,     ${idPaddedExpr},
-    gender_digit,  VALUE(MID(id_padded, 13, 1)),
-    IF(MOD(gender_digit, 2) = 1, "Male", "Female")
-)`;
-
-  const retireFormula=
-`=LET(
-    id_padded,    ${idPaddedExpr},
-    century,      VALUE(LEFT(id_padded, 1)),
-    base_year,    (century - 2) * 100 + 1900,
-    yy,           VALUE(MID(id_padded, 2, 2)),
-    mm,           VALUE(MID(id_padded, 4, 2)),
-    dd,           VALUE(MID(id_padded, 6, 2)),
-    birth_date,   DATE(base_year + yy, mm, dd),
-    turn60_date,  EDATE(birth_date, 60 * 12),
-    retire_age,   ${retireAgeFormula('                  ')},
-    EDATE(birth_date, retire_age * 12)
-)`;
+  const birthFormula=`=${feBirthDateExpr(idRef)}`;
+  const genderFormula=`=${feGenderExpr(idRef)}`;
+  const retireFormula=`=${feRetireDateExpr(idRef)}`;
 
   document.getElementById('code-birth').textContent=birthFormula;
   document.getElementById('code-gender').textContent=genderFormula;
@@ -3106,6 +3341,46 @@ const COMMANDS=[
 let cmdkActiveIndex=0;
 let cmdkFiltered=COMMANDS;
 
+function idLikeTokens(raw){
+  const segments=raw.split(/[\n,;]+/).map(s=>s.trim()).filter(Boolean);
+  const tokens=[];
+  segments.forEach(seg=>{
+    const parts=seg.split(/\s+/).filter(Boolean);
+    const eachPartIsWholeId=parts.length>1&&parts.every(p=>{
+      const digits=normalizeIDInput(p);
+      return digits.length>=8&&(digits.length/p.length)>=0.6;
+    });
+    if(eachPartIsWholeId){
+      tokens.push(...parts);
+      return;
+    }
+    const collapsed=parts.join('');
+    const digits=normalizeIDInput(collapsed);
+    if(digits.length>=8&&(digits.length/collapsed.length)>=0.6) tokens.push(collapsed);
+  });
+  return tokens;
+}
+function detectSmartIdCommand(query){
+  const raw=query.trim();
+  if(!raw) return null;
+  const tokens=idLikeTokens(raw);
+  if(tokens.length===0) return null;
+  if(tokens.length===1){
+    const id=tokens[0];
+    return {icon:'fingerprint',groupKey:'cmdk_group_smart',label:t('cmdk_smart_single')(id),run:()=>{
+      switchTab('idtools');switchSubTab('single');
+      document.getElementById('inspector-input').value=id;
+      inspectID();
+    }};
+  }
+  return {icon:'table_rows',groupKey:'cmdk_group_smart',label:t('cmdk_smart_batch')(tokens.length),run:()=>{
+    switchTab('idtools');switchSubTab('batch');
+    document.getElementById('batch-input').value=tokens.join('\n');
+    updateBatchCount();
+    processBatch();
+  }};
+}
+
 function openCmdk(){
   const overlay=document.getElementById('cmdk-overlay');
   const input=document.getElementById('cmdk-input');
@@ -3118,15 +3393,18 @@ function closeCmdk(){document.getElementById('cmdk-overlay').classList.remove('o
 
 function renderCmdkResults(query){
   const q=query.trim().toLowerCase();
-  cmdkFiltered=q?COMMANDS.filter(c=>t(c.labelKey).toLowerCase().includes(q)):COMMANDS;
+  const smart=detectSmartIdCommand(query);
+  const base=q?COMMANDS.filter(c=>t(c.labelKey).toLowerCase().includes(q)):COMMANDS;
+  cmdkFiltered=smart?[smart,...base]:base;
   cmdkActiveIndex=0;
   const list=document.getElementById('cmdk-list');
   if(cmdkFiltered.length===0){list.innerHTML=`<div class="cmdk-empty">${t('cmdk_no_results')}</div>`;return;}
   let html='',lastGroup='';
   cmdkFiltered.forEach((c,i)=>{
-    if(c.groupKey!==lastGroup){html+=`<div class="cmdk-group">${t(c.groupKey)}</div>`;lastGroup=c.groupKey;}
+    if(c.groupKey!==lastGroup){html+=`<div class="cmdk-group">${escapeHtml(t(c.groupKey))}</div>`;lastGroup=c.groupKey;}
+    const label=c.label!==undefined?c.label:t(c.labelKey);
     html+=`<div class="cmdk-item${i===cmdkActiveIndex?' active':''}" data-idx="${i}" onclick="runCmdByIndex(${i})">
-      <span class="material-symbols-rounded" style="font-size:1.1rem;">${c.icon}</span><span>${escapeHtml(t(c.labelKey))}</span></div>`;
+      <span class="material-symbols-rounded" style="font-size:1.1rem;">${c.icon}</span><span>${escapeHtml(label)}</span></div>`;
   });
   list.innerHTML=html;
 }
@@ -3188,6 +3466,8 @@ function restoreCachedState(){
     if(toggle) toggle.checked=true;
   }
   if(Array.isArray(state.batchTableCats)) batchTableCats=new Set(state.batchTableCats);
+  if(Array.isArray(state.batchColumnsSelected)) batchColumnsSelected=new Set(state.batchColumnsSelected);
+  if(state.batchInjectFormulas) batchInjectFormulas=true;
   if(state.uploadAutoRenameDupes===false){
     uploadAutoRenameDupes=false;
     const toggle=document.getElementById('upload-auto-rename');
