@@ -981,7 +981,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
 
 <div class="cmdk-overlay" id="cmdk-overlay" onclick="if(event.target===this)closeCmdk()">
   <div class="cmdk-box">
-    <input class="cmdk-input" id="cmdk-input" data-i18n-ph="cmdk_ph" placeholder="Type a command…" oninput="renderCmdkResults(this.value)">
+    <input class="cmdk-input" id="cmdk-input" data-i18n-ph="cmdk_ph" placeholder="Type a command…" oninput="renderCmdkResults(this.value)" onpaste="handleCmdkPaste(event)">
     <div class="cmdk-list" id="cmdk-list"></div>
     <div class="cmdk-hint-bar"><span><kbd>&uarr;</kbd><kbd>&darr;</kbd><span data-i18n="cmdk_nav">Navigate</span></span><span><kbd>&crarr;</kbd><span data-i18n="cmdk_select">Select</span></span><span><kbd>Esc</kbd><span data-i18n="cmdk_close">Close</span></span></div>
   </div>
@@ -2146,14 +2146,28 @@ function updateBatchCount(){
   saveStateDebounced({batchInput:raw});
 }
 
+async function smartPasteRoute(text){
+  const tokens=idLikeTokens(text);
+  if(tokens.length>=2){
+    switchTab('idtools');switchSubTab('batch');
+    const joined=tokens.join('\n');
+    document.getElementById('batch-input').value=joined;
+    updateBatchCount();
+    saveState({batchInput:joined});
+    processBatch();
+  }else{
+    switchTab('idtools');switchSubTab('single');
+    const id=tokens.length===1?tokens[0]:text.trim();
+    document.getElementById('inspector-input').value=id;
+    inspectID();
+  }
+  showToast(t('toast_pasted'),'content_paste_go');
+}
 async function batchPasteFromClipboard(){
   try{
     const text=await navigator.clipboard.readText();
-    if(!text){showToast(t('toast_clipboard_empty'),'info');return;}
-    document.getElementById('batch-input').value=text;
-    updateBatchCount();
-    saveState({batchInput:text});
-    showToast(t('toast_pasted'),'content_paste_go');
+    if(!text||!text.trim()){showToast(t('toast_clipboard_empty'),'info');return;}
+    await smartPasteRoute(text);
   }catch(e){showToast(t('toast_clipboard_denied'),'block');}
 }
 function batchLoadSample(){
@@ -2858,10 +2872,8 @@ function downloadUpload(format){
 async function pasteIntoInspector(){
   try{
     const text=await navigator.clipboard.readText();
-    if(!text){showToast(t('toast_clipboard_empty'),'info');return;}
-    document.getElementById('inspector-input').value=text.trim();
-    inspectID();
-    showToast(t('toast_pasted'),'content_paste_go');
+    if(!text||!text.trim()){showToast(t('toast_clipboard_empty'),'info');return;}
+    await smartPasteRoute(text);
   }catch(e){showToast(t('toast_clipboard_denied'),'block');}
 }
 function loadSampleIntoInspector(){
@@ -3341,6 +3353,20 @@ const COMMANDS=[
 let cmdkActiveIndex=0;
 let cmdkFiltered=COMMANDS;
 
+function handleCmdkPaste(e){
+  const text=(e.clipboardData||window.clipboardData).getData('text');
+  if(!text||!/[\r\n]/.test(text)) return;
+  e.preventDefault();
+  const joined=text.split(/\r\n|\r|\n/).map(s=>s.trim()).filter(Boolean).join(', ');
+  const input=e.target;
+  const start=input.selectionStart??input.value.length;
+  const end=input.selectionEnd??input.value.length;
+  const newVal=input.value.slice(0,start)+joined+input.value.slice(end);
+  input.value=newVal;
+  const caret=start+joined.length;
+  input.setSelectionRange(caret,caret);
+  renderCmdkResults(newVal);
+}
 function idLikeTokens(raw){
   const segments=raw.split(/[\n,;]+/).map(s=>s.trim()).filter(Boolean);
   const tokens=[];
@@ -3367,13 +3393,13 @@ function detectSmartIdCommand(query){
   if(tokens.length===0) return null;
   if(tokens.length===1){
     const id=tokens[0];
-    return {icon:'fingerprint',groupKey:'cmdk_group_smart',label:t('cmdk_smart_single')(id),run:()=>{
+    return {icon:'fingerprint',groupKey:'cmdk_group_smart',label:t('cmdk_smart_single',id),run:()=>{
       switchTab('idtools');switchSubTab('single');
       document.getElementById('inspector-input').value=id;
       inspectID();
     }};
   }
-  return {icon:'table_rows',groupKey:'cmdk_group_smart',label:t('cmdk_smart_batch')(tokens.length),run:()=>{
+  return {icon:'table_rows',groupKey:'cmdk_group_smart',label:t('cmdk_smart_batch',tokens.length),run:()=>{
     switchTab('idtools');switchSubTab('batch');
     document.getElementById('batch-input').value=tokens.join('\n');
     updateBatchCount();
