@@ -504,6 +504,46 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
 .tabpanel:not(.hide) .idcard{animation:cardRevealIn .5s cubic-bezier(.16,1,.3,1) both}
 .subtabpanel:not(.hide),.refsubpanel:not(.hide),.datesubpanel:not(.hide){animation:panelIn .3s cubic-bezier(.16,1,.3,1) both}
 
+@keyframes segPopIn{from{opacity:0;transform:translateY(5px) scale(.94)}to{opacity:1;transform:translateY(0) scale(1)}}
+.idseg{animation:segPopIn .42s cubic-bezier(.16,1,.3,1) both}
+.idseg-group:nth-child(1) .idseg:nth-child(1){animation-delay:.03s}
+.idseg-group:nth-child(1) .idseg:nth-child(2){animation-delay:.07s}
+.idseg-group:nth-child(1) .idseg:nth-child(3){animation-delay:.11s}
+.idseg-group:nth-child(1) .idseg:nth-child(4){animation-delay:.15s}
+.idseg-group:nth-child(3) .idseg:nth-child(1){animation-delay:.19s}
+.idseg-group:nth-child(3) .idseg:nth-child(2){animation-delay:.23s}
+.idseg-group:nth-child(5) .idseg:nth-child(1){animation-delay:.27s}
+.idseg-group:nth-child(5) .idseg:nth-child(2){animation-delay:.31s}
+.idseg:hover{transform:translateY(-1px)}
+.idseg{transition:transform .2s cubic-bezier(.16,1,.3,1),background .15s ease}
+
+@keyframes rowSlideIn{from{opacity:0;transform:translateX(-6px)}to{opacity:1;transform:translateX(0)}}
+@keyframes rowSlideInRtl{from{opacity:0;transform:translateX(6px)}to{opacity:1;transform:translateX(0)}}
+.checkrow{animation:rowSlideIn .35s cubic-bezier(.16,1,.3,1) both}
+[dir="rtl"] .checkrow{animation-name:rowSlideInRtl}
+.checkrow:nth-child(1){animation-delay:.02s} .checkrow:nth-child(2){animation-delay:.06s}
+.checkrow:nth-child(3){animation-delay:.10s} .checkrow:nth-child(4){animation-delay:.14s}
+.checkrow:nth-child(5){animation-delay:.18s} .checkrow:nth-child(6){animation-delay:.22s}
+.checkrow:nth-child(n+7){animation-delay:.26s}
+
+@keyframes ringBlobDrift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-4%,3%) scale(1.06)}}
+.ringcard::before{animation:ringBlobDrift 7s ease-in-out infinite}
+@keyframes chipShine{0%{background-position:-60% 0}100%{background-position:160% 0}}
+.idchip{background-size:220% 100%;animation:chipShine 3.2s ease-in-out .4s 1}
+.pill:active{transform:scale(.96)}
+.stattile-icon{transition:transform .3s cubic-bezier(.34,1.56,.64,1),background .2s ease}
+.stattile:hover .stattile-icon{transform:scale(1.08) rotate(-4deg)}
+.num.count-target{font-variant-numeric:tabular-nums}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important;animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;scroll-behavior:auto !important;
+  }
+  .ringcard::before{animation:none !important}
+  .idchip{animation:none !important}
+}
+
 .progress-ring circle{transition:stroke-dashoffset 1.1s cubic-bezier(.4,0,.2,1)}
 
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -1219,7 +1259,7 @@ en:{
   err_month:mm=>`Invalid month (${mm})`, err_day:(dd,mn,yr)=>`Invalid day (${dd}) for ${mn} ${yr}`,
   identity_title:'Identity', country_name:'Arab Republic of Egypt',
   seg_cent:'Cent.', seg_year:'Year', seg_month:'Month', seg_day:'Day', seg_gov:'Gov', seg_serial:'Serial', seg_gender:'Gender', seg_check:'Check',
-  age_label:'Age', weekday_label:'Weekday', gov_field_label:'Governorate', retire_age_years:n=>`${n}-year retirement age`,
+  age_label:'Age', weekday_label:'Weekday', gov_field_label:'Birth governorate', retire_age_years:n=>`${n}-year retirement age`,
   total_days_lived:n=>`${n.toLocaleString('en-US')} days lived (total)`,
   retires_label:'Retires', already_eligible:'Already eligible', years_remaining:n=>`${n} years remaining`,
   checks_title:n=>`Checks — ${n.p}/${n.t} passed`,
@@ -1331,7 +1371,7 @@ ar:{
   err_month:mm=>`شهر غير صالح (${mm})`, err_day:(dd,mn,yr)=>`يوم غير صالح (${dd}) في ${mn} ${yr}`,
   identity_title:'الهوية', country_name:'جمهورية مصر العربية',
   seg_cent:'القرن', seg_year:'السنة', seg_month:'الشهر', seg_day:'اليوم', seg_gov:'المحافظة', seg_serial:'تسلسلي', seg_gender:'النوع', seg_check:'تحقق',
-  age_label:'العمر', weekday_label:'يوم الأسبوع', gov_field_label:'المحافظة', retire_age_years:n=>`سن معاش ${n} عامًا`,
+  age_label:'العمر', weekday_label:'يوم الأسبوع', gov_field_label:'محافظة الميلاد', retire_age_years:n=>`سن معاش ${n} عامًا`,
   total_days_lived:n=>`${n.toLocaleString('en-US')} يومًا (الإجمالي منذ الميلاد)`,
   retires_label:'يبلغ سن المعاش في', already_eligible:'مستحق بالفعل', years_remaining:n=>`${n} عامًا متبقيًا`,
   checks_title:n=>`الفحوصات — اجتاز ${n.p} من ${n.t}`,
@@ -2953,8 +2993,29 @@ function progressRing(percent,size,stroke){
     </linearGradient></defs>
     <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--edge)" stroke-width="${stroke}"/>
     <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="url(#ringGrad)" stroke-width="${stroke}" stroke-linecap="round"
-      stroke-dasharray="${c}" stroke-dashoffset="${offset}" transform="rotate(-90 ${size/2} ${size/2})"/>
+      stroke-dasharray="${c}" stroke-dashoffset="${c}" data-target-offset="${offset}" transform="rotate(-90 ${size/2} ${size/2})"/>
   </svg>`;
+}
+function playRingDrawIn(container){
+  const circle=container.querySelector('.progress-ring circle[data-target-offset]');
+  if(!circle)return;
+  const target=circle.getAttribute('data-target-offset');
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{circle.style.strokeDashoffset=target;}));
+}
+function animateCountUp(el,endValue,duration,formatter){
+  if(!el)return;
+  const prefersReduced=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  formatter=formatter||(v=>String(Math.round(v)));
+  if(prefersReduced||!Number.isFinite(endValue)){el.textContent=formatter(endValue);return;}
+  duration=duration||900;
+  const start=performance.now();
+  const ease=x=>1-Math.pow(1-x,3);
+  function tick(now){
+    const p=Math.min(1,(now-start)/duration);
+    el.textContent=formatter(endValue*ease(p));
+    if(p<1)requestAnimationFrame(tick);else el.textContent=formatter(endValue);
+  }
+  requestAnimationFrame(tick);
 }
 
 function inspectID(){
@@ -2964,6 +3025,11 @@ function inspectID(){
   if(!raw.trim()){box.innerHTML='';return;}
   const res=parseID(raw);
   box.innerHTML=renderInspectorResult(res);
+  if(res.valid){
+    playRingDrawIn(box);
+    animateCountUp(document.getElementById('career-pct-val'),res.careerPercent,900,v=>`${Math.round(v)}%`);
+    animateCountUp(document.getElementById('days-lived-val'),res.totalDaysLived,1100,v=>t('total_days_lived',Math.round(v)));
+  }
 }
 
 function renderInspectorResult(res){
@@ -3026,7 +3092,7 @@ function renderInspectorResult(res){
             <div>
               <div class="eyebrow">${t('age_label')}</div>
               <div class="stattile-val">${res.currentAgeYears}y ${res.currentAgeMonths}m ${res.currentAgeDays}d</div>
-              <div class="stattile-sub"><span class="num" style="font-size:.72rem;color:var(--ink-2);">${t('total_days_lived',res.totalDaysLived)}</span><span class="material-symbols-rounded rowcopy focusable" id="days-copy-icon" role="button" tabindex="0" title="${t('copy_visible_title')}" style="font-size:.95rem;" onclick="copyPlainNumber(this,${res.totalDaysLived})" onkeydown="if(event.key==='Enter'){copyPlainNumber(this,${res.totalDaysLived})}">content_copy</span></div>
+              <div class="stattile-sub"><span class="num" id="days-lived-val" style="font-size:.72rem;color:var(--ink-2);">${t('total_days_lived',res.totalDaysLived)}</span><span class="material-symbols-rounded rowcopy focusable" id="days-copy-icon" role="button" tabindex="0" title="${t('copy_visible_title')}" style="font-size:.95rem;" onclick="copyPlainNumber(this,${res.totalDaysLived})" onkeydown="if(event.key==='Enter'){copyPlainNumber(this,${res.totalDaysLived})}">content_copy</span></div>
             </div>
           </div>
           <div class="stattile">
@@ -3042,7 +3108,7 @@ function renderInspectorResult(res){
           <div class="ringwrap">
             ${progressRing(res.careerPercent,104,10)}
             <div class="ringlabel">
-              <div class="disp num" style="font-size:1.5rem;font-weight:700;line-height:1;">${res.careerPercent}%</div>
+              <div class="disp num" id="career-pct-val" style="font-size:1.5rem;font-weight:700;line-height:1;">${res.careerPercent}%</div>
               <div class="sub">${t('col_career')}</div>
             </div>
           </div>
