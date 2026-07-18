@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650;9..144,760&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js" defer></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" defer></script>
 <style>
 :root{
   --bg:#F7F3EC; --bg-deep:#EFE9DD;
@@ -897,7 +897,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
           <span class="chip chip-accent" style="flex-shrink:0;">3</span>
           <div>
             <div style="font-weight:650;font-size:.9rem;" data-i18n="struct3_t">Governorate code</div>
-            <p style="font-size:.78rem;color:var(--ink-2);margin:.25rem 0 0;" data-i18n="struct3_d">Digits 8–9. Identifies where the ID was first registered — see the Governorates tab for the full list.</p>
+            <p style="font-size:.78rem;color:var(--ink-2);margin:.25rem 0 0;" data-i18n="struct3_d">Digits 8–9. Governorate/province-of-birth code assigned by the civil registry — see the Governorates tab for the full list.</p>
           </div>
         </div>
       </div>
@@ -1026,7 +1026,15 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
       <div id="font-picker"></div>
     </div>
 
-    <p style="font-size:.7rem;color:var(--ink-3);margin:1rem 0 0;" data-i18n="settings_footer">Saved to this browser only — nothing is sent anywhere.</p>
+    <div class="settings-section">
+      <span class="eyebrow" data-i18n="settings_privacy">Privacy</span>
+      <label class="row" style="gap:.5rem;align-items:flex-start;cursor:pointer;">
+        <input type="checkbox" id="remember-sensitive-toggle" onchange="setRememberSensitiveInput(this.checked)" style="margin-top:.2rem;">
+        <span style="font-size:.8rem;" data-i18n="settings_remember_sensitive">Remember ID numbers I enter, for this browser tab only (off by default — turn on only if you're on a private device)</span>
+      </label>
+    </div>
+
+    <p style="font-size:.7rem;color:var(--ink-3);margin:1rem 0 0;" data-i18n="settings_footer">Saved to this browser only — nothing is sent anywhere. ID numbers you enter are never saved unless you turn that on above, and even then only for this browser tab.</p>
   </div>
 </div>
 
@@ -1167,7 +1175,7 @@ en:{
   struct_desc:'Every Egyptian national ID packs birth date, sex, and place of registration into a single number. Here\u2019s how the positions break down.',
   struct1_t:'Century digit', struct1_d:'Digit 1. 2 means born in the 1900s, 3 means born in the 2000s.',
   struct2_t:'Birth date', struct2_d:'Digits 2\u20137, as YY MM DD. Combined with the century digit this gives the full birth date.',
-  struct3_t:'Governorate code', struct3_d:'Digits 8\u20139. Identifies where the ID was first registered \u2014 see the Governorates tab for the full list.',
+  struct3_t:'Governorate code', struct3_d:'Digits 8\u20139. Governorate/province-of-birth code assigned by the civil registry \u2014 see the Governorates tab for the full list.',
   struct4_t:'Serial number', struct4_d:'Digits 10\u201313. A four-digit sequential registration number for that birth date and governorate; its last digit (digit 13) also encodes gender.',
   struct5_t:'Gender digit', struct5_d:'Digit 13. Odd means Male, even means Female.',
   struct6_t:'Check digit', struct6_d:'Digit 14. A verification digit issued with the card; this tool records it but doesn\u2019t independently validate it.',
@@ -1177,7 +1185,9 @@ en:{
   law_desc:'The standard pension age of 60 steps up gradually until it reaches 65. The age that applies to a given person depends on their birth date.',
   law_col_from:'Applies from', law_col_age:'Retirement age', law_years:n=>`${n} years`, law_baseline:'Before 1 Jul 2032',
   settings_theme:'Theme', theme_system:'System', theme_light:'Light', theme_dark:'Dark',
-  settings_surface:'Surface style', settings_typeface:'Typeface', settings_footer:'Saved to this browser only — nothing is sent anywhere.',
+  settings_surface:'Surface style', settings_typeface:'Typeface',
+  settings_privacy:'Privacy', settings_remember_sensitive:'Remember ID numbers I enter, for this browser tab only (off by default — turn on only if you\'re on a private device)',
+  settings_footer:'Saved to this browser only — nothing is sent anywhere. ID numbers you enter are never saved unless you turn that on above, and even then only for this browser tab.',
   cmdk_ph:'Type a command…', cmdk_nav:'Navigate', cmdk_select:'Select', cmdk_close:'Close',
   cmdk_group_nav:'Navigate', cmdk_group_actions:'Actions', cmdk_group_smart:'Smart', cmdk_no_results:'No matching actions',
   cmdk_smart_single:id=>`Process "${id}" as a single ID`, cmdk_smart_batch:n=>`Process ${n} IDs as a batch`,
@@ -1277,7 +1287,7 @@ ar:{
   struct_desc:'يحمل كل رقم قومي مصري تاريخ الميلاد والنوع ومكان القيد في رقم واحد. إليك كيفية توزيع الخانات.',
   struct1_t:'رقم القرن', struct1_d:'الخانة الأولى. الرقم 2 يعني الميلاد في القرن العشرين، والرقم 3 يعني الميلاد بعد عام 2000.',
   struct2_t:'تاريخ الميلاد', struct2_d:'الخانات من 2 إلى 7، بصيغة سنة‑شهر‑يوم. مع رقم القرن يُستنتج تاريخ الميلاد كاملًا.',
-  struct3_t:'كود المحافظة', struct3_d:'الخانتان 8 و9. تحدد مكان القيد الأول للرقم القومي — راجع تبويب المحافظات للقائمة الكاملة.',
+  struct3_t:'كود المحافظة', struct3_d:'الخانتان 8 و9. كود محافظة الميلاد الذي تحدده مصلحة الأحوال المدنية — راجع تبويب المحافظات للقائمة الكاملة.',
   struct4_t:'الرقم التسلسلي', struct4_d:'الخانات من 10 إلى 13. رقم تسلسلي من أربع خانات للقيد ضمن نفس تاريخ الميلاد والمحافظة، والخانة الأخيرة (13) تحدّد النوع أيضًا.',
   struct5_t:'رقم النوع', struct5_d:'الخانة 13. الرقم الفردي يعني ذكر، والزوجي يعني أنثى.',
   struct6_t:'رقم التحقق', struct6_d:'الخانة 14. رقم تحقق يُصدر مع البطاقة؛ تسجّله هذه الأداة دون التحقق منه بشكل مستقل.',
@@ -1287,7 +1297,9 @@ ar:{
   law_desc:'يرتفع سن المعاش القياسي البالغ 60 عامًا تدريجيًا حتى يصل إلى 65 عامًا. السن المطبَّق على كل شخص يعتمد على تاريخ ميلاده.',
   law_col_from:'يُطبَّق اعتبارًا من', law_col_age:'سن المعاش', law_years:n=>`${n} عامًا`, law_baseline:'قبل 1 يوليو 2032',
   settings_theme:'المظهر', theme_system:'النظام', theme_light:'فاتح', theme_dark:'داكن',
-  settings_surface:'نمط السطح', settings_typeface:'الخط', settings_footer:'يُحفظ في هذا المتصفح فقط — لا يُرسَل شيء إلى أي جهة.',
+  settings_surface:'نمط السطح', settings_typeface:'الخط',
+  settings_privacy:'الخصوصية', settings_remember_sensitive:'تذكّر الأرقام القومية التي أدخلها، لهذا التبويب فقط (معطّل افتراضيًا — فعّله فقط إذا كنت على جهاز خاص)',
+  settings_footer:'يُحفظ في هذا المتصفح فقط — لا يُرسَل شيء إلى أي جهة. الأرقام القومية التي تدخلها لا تُحفظ أبدًا ما لم تفعّل ذلك أعلاه، وحتى في هذه الحالة تُحفظ لهذا التبويب فقط.',
   cmdk_ph:'اكتب أمرًا…', cmdk_nav:'تنقّل', cmdk_select:'اختيار', cmdk_close:'إغلاق',
   cmdk_group_nav:'التنقّل', cmdk_group_actions:'إجراءات', cmdk_group_smart:'ذكي', cmdk_no_results:'لا توجد إجراءات مطابقة',
   cmdk_smart_single:id=>`معالجة "${id}" كرقم فردي`, cmdk_smart_batch:n=>`معالجة ${n} أرقام كدفعة`,
@@ -1399,6 +1411,8 @@ const RETIREMENT_LAW=[
 ];
 const SAMPLE_IDS=['29805121401234','30101011509876','27510202100001','26501010100001','29202290001234','30501010100001'];
 const STORAGE_KEY='lxid-state-v8';
+const SESSION_STORAGE_KEY='lxid-session-v1';
+const SENSITIVE_KEYS=['inspectorValue','batchInput','batchResultsCache'];
 
 let uploadedSheetData=[];
 let uploadedSheetDisplayData=[];
@@ -1412,11 +1426,27 @@ let batchResults=[];
 let batchSearch='';
 
 let storageWarned=false;
-function loadState(){try{const raw=localStorage.getItem(STORAGE_KEY);return raw?JSON.parse(raw):{};}catch(e){return{};}}
+function isRememberSensitiveEnabled(){try{const raw=localStorage.getItem(STORAGE_KEY);return raw?!!JSON.parse(raw).rememberSensitiveInput:false;}catch(e){return false;}}
+function loadLocalBlob(){try{const raw=localStorage.getItem(STORAGE_KEY);return raw?JSON.parse(raw):{};}catch(e){return{};}}
+function loadSessionBlob(){try{const raw=sessionStorage.getItem(SESSION_STORAGE_KEY);return raw?JSON.parse(raw):{};}catch(e){return{};}}
+function loadState(){
+  const local=loadLocalBlob();
+  const merged=Object.assign({},local);
+  if(isRememberSensitiveEnabled())Object.assign(merged,loadSessionBlob());
+  return merged;
+}
 function saveState(patch){
+  const sensitivePatch={},normalPatch={};
+  for(const k in patch){if(SENSITIVE_KEYS.includes(k))sensitivePatch[k]=patch[k];else normalPatch[k]=patch[k];}
   try{
-    const cur=loadState();
-    localStorage.setItem(STORAGE_KEY,JSON.stringify(Object.assign({},cur,patch)));
+    if(Object.keys(normalPatch).length){
+      const cur=loadLocalBlob();
+      localStorage.setItem(STORAGE_KEY,JSON.stringify(Object.assign({},cur,normalPatch)));
+    }
+    if(Object.keys(sensitivePatch).length&&isRememberSensitiveEnabled()){
+      const curSession=loadSessionBlob();
+      sessionStorage.setItem(SESSION_STORAGE_KEY,JSON.stringify(Object.assign({},curSession,sensitivePatch)));
+    }
     return true;
   }catch(e){
     if(!storageWarned){
@@ -1427,7 +1457,20 @@ function saveState(patch){
   }
 }
 function saveStateDebounced(patch){clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveState(patch),350);}
-function clearAllCache(){localStorage.removeItem(STORAGE_KEY);showToast(t('toast_cache_cleared'),'delete_sweep');}
+function clearAllCache(){
+  localStorage.removeItem(STORAGE_KEY);
+  sessionStorage.removeItem(SESSION_STORAGE_KEY);
+  showToast(t('toast_cache_cleared'),'delete_sweep');
+}
+function setRememberSensitiveInput(enabled){
+  saveState({rememberSensitiveInput:!!enabled});
+  if(!enabled){try{sessionStorage.removeItem(SESSION_STORAGE_KEY);}catch(e){}}
+  updateRememberSensitiveUI();
+}
+function updateRememberSensitiveUI(){
+  const el=document.getElementById('remember-sensitive-toggle');
+  if(el)el.checked=isRememberSensitiveEnabled();
+}
 
 let pendingConfirmAction=null;
 function openConfirm(title,message,onConfirm){
@@ -1481,7 +1524,7 @@ function toggleTheme(){
   saveState({theme:dark?'dark':'light'});
 }
 function useSystemTheme(){
-  const patch=Object.assign({},loadState());
+  const patch=loadLocalBlob();
   delete patch.theme;
   try{localStorage.setItem(STORAGE_KEY,JSON.stringify(patch));}catch(e){}
   applyTheme(systemPrefersDark());
@@ -1568,6 +1611,7 @@ function openSettings(){
   renderStylePicker();
   renderFontPicker();
   updateThemePickerUI();
+  updateRememberSensitiveUI();
   const state=loadState();
   applyStylePreset(state.stylePreset||'buttery',false);
   applyFontPairing(state.fontPairing||'fraunces',false);
