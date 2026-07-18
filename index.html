@@ -906,7 +906,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
           <span class="chip chip-accent" style="flex-shrink:0;">4</span>
           <div>
             <div style="font-weight:650;font-size:.9rem;" data-i18n="struct4_t">Serial number</div>
-            <p style="font-size:.78rem;color:var(--ink-2);margin:.25rem 0 0;" data-i18n="struct4_d">Digits 10–12. A sequential registration number for that birth date and governorate.</p>
+            <p style="font-size:.78rem;color:var(--ink-2);margin:.25rem 0 0;" data-i18n="struct4_d">Digits 10–13. A four-digit sequential registration number for that birth date and governorate; its last digit (digit 13) also encodes gender.</p>
           </div>
         </div>
       </div>
@@ -1168,7 +1168,7 @@ en:{
   struct1_t:'Century digit', struct1_d:'Digit 1. 2 means born in the 1900s, 3 means born in the 2000s.',
   struct2_t:'Birth date', struct2_d:'Digits 2\u20137, as YY MM DD. Combined with the century digit this gives the full birth date.',
   struct3_t:'Governorate code', struct3_d:'Digits 8\u20139. Identifies where the ID was first registered \u2014 see the Governorates tab for the full list.',
-  struct4_t:'Serial number', struct4_d:'Digits 10\u201312. A sequential registration number for that birth date and governorate.',
+  struct4_t:'Serial number', struct4_d:'Digits 10\u201313. A four-digit sequential registration number for that birth date and governorate; its last digit (digit 13) also encodes gender.',
   struct5_t:'Gender digit', struct5_d:'Digit 13. Odd means Male, even means Female.',
   struct6_t:'Check digit', struct6_d:'Digit 14. A verification digit issued with the card; this tool records it but doesn\u2019t independently validate it.',
   gov_label:'Governorate codes', gov_count:(a,b)=>`${a} of ${b}`, gov_search_ph:'Search by code or name…',
@@ -1278,7 +1278,7 @@ ar:{
   struct1_t:'رقم القرن', struct1_d:'الخانة الأولى. الرقم 2 يعني الميلاد في القرن العشرين، والرقم 3 يعني الميلاد بعد عام 2000.',
   struct2_t:'تاريخ الميلاد', struct2_d:'الخانات من 2 إلى 7، بصيغة سنة‑شهر‑يوم. مع رقم القرن يُستنتج تاريخ الميلاد كاملًا.',
   struct3_t:'كود المحافظة', struct3_d:'الخانتان 8 و9. تحدد مكان القيد الأول للرقم القومي — راجع تبويب المحافظات للقائمة الكاملة.',
-  struct4_t:'الرقم التسلسلي', struct4_d:'الخانات من 10 إلى 12. رقم تسلسلي للقيد ضمن نفس تاريخ الميلاد والمحافظة.',
+  struct4_t:'الرقم التسلسلي', struct4_d:'الخانات من 10 إلى 13. رقم تسلسلي من أربع خانات للقيد ضمن نفس تاريخ الميلاد والمحافظة، والخانة الأخيرة (13) تحدّد النوع أيضًا.',
   struct5_t:'رقم النوع', struct5_d:'الخانة 13. الرقم الفردي يعني ذكر، والزوجي يعني أنثى.',
   struct6_t:'رقم التحقق', struct6_d:'الخانة 14. رقم تحقق يُصدر مع البطاقة؛ تسجّله هذه الأداة دون التحقق منه بشكل مستقل.',
   gov_label:'أكواد المحافظات', gov_count:(a,b)=>`${a} من ${b}`, gov_search_ph:'ابحث بالكود أو الاسم…',
@@ -1957,9 +1957,13 @@ function calcAge(birthDate,asOf){
   const now=asOf||new Date();
   let years=now.getFullYear()-birthDate.getFullYear();
   let months=now.getMonth()-birthDate.getMonth();
-  let days=now.getDate()-birthDate.getDate();
-  if(days<0){months--;days+=daysInMonth(now.getMonth()===0?now.getFullYear()-1:now.getFullYear(),(now.getMonth()+11)%12);}
+  if(now.getDate()<birthDate.getDate())months--;
   if(months<0){years--;months+=12;}
+  const anchorMonthIndex=birthDate.getMonth()+(years*12+months);
+  const intendedMonth=((anchorMonthIndex%12)+12)%12;
+  const anchor=new Date(birthDate.getFullYear()+Math.floor(anchorMonthIndex/12),intendedMonth,birthDate.getDate());
+  if(anchor.getMonth()!==intendedMonth)anchor.setDate(0);
+  const days=Math.floor((stripTime(now)-stripTime(anchor))/86400000);
   const totalDays=Math.floor((stripTime(now)-stripTime(birthDate))/86400000);
   return {years,months,days,totalDays};
 }
@@ -1969,9 +1973,20 @@ function parseID(rawInput){
   const out={valid:false,isNull:false,error:'',trace,raw:String(rawInput??''),normalized:'',id:'',centuryDigit:'',centuryLabel:'',birthYear:null,birthMonth:null,birthDay:null,birthDateObj:null,birthDateStr:'',birthDayOfWeek:'',birthDayIndex:0,govCode:'',governorate:'',governorateKnown:false,serial:'',checkDigit:'',genderDigit:null,gender:'',retireAge:null,retireDateObj:null,retireDateStr:'',currentAgeYears:0,currentAgeMonths:0,currentAgeDays:0,totalDaysLived:0,yearsUntilRetire:0,daysUntilRetire:0,isEligible:false,careerPercent:0,fakePattern:false,retireRule:'',flags:[],checks:[]};
 
   if(rawInput===null||rawInput===undefined){out.isNull=true;out.error=t('err_empty');trace.push('Input is null or undefined');return out;}
-  const originalStr=String(rawInput).trim();
+  let originalStr=String(rawInput).trim();
   if(originalStr===''){out.isNull=true;out.error=t('err_empty');trace.push('Input is empty after trim — likely a blank cell copied from a spreadsheet');return out;}
-  if(/[0-9]\.?[0-9]*e\+?\d+/i.test(originalStr)){out.error=t('err_scientific');trace.push('Input matches scientific notation pattern');return out;}
+  if(/^-?[0-9]*\.?[0-9]+e[+\-]?\d+$/i.test(originalStr)){
+    const asNum=Number(originalStr);
+    if(Number.isFinite(asNum)&&Number.isInteger(asNum)&&Math.abs(asNum)<Number.MAX_SAFE_INTEGER){
+      const reconstructed=asNum.toFixed(0);
+      trace.push(`Scientific notation "${originalStr}" reconstructed as exact integer ${reconstructed} (safe because 14-digit values fit inside a double's integer precision)`);
+      originalStr=reconstructed;
+    } else {
+      out.error=t('err_scientific');
+      trace.push('Scientific notation could not be reconstructed as an exact integer (value out of safe integer range)');
+      return out;
+    }
+  }
 
   const cleaned=normalizeIDInput(originalStr);
   out.normalized=cleaned;
@@ -2072,7 +2087,8 @@ function genderBadge(gender,size){
 
 function toCSV(headers,rows){
   const esc=v=>{
-    const s=String(v??'');
+    let s=String(v??'');
+    if(/^[=+\-@\t\r]/.test(s))s="'"+s;
     return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
   };
   let out='\uFEFF'+headers.map(esc).join(',')+'\r\n';
