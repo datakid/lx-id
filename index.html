@@ -1115,11 +1115,11 @@ en:{
   batch_label:'Paste ID list for deep analytics', batch_count:n=>`${n} detected`,
   btn_paste:'Paste', btn_sample:'Sample', btn_clear:'Clear', btn_run_analytics:'Run Analytics',
   batch_empty:'Paste a list of IDs above and run analytics to see the full breakdown here.',
-  results_title:'Results', results_summary:(t,v,e,n)=>`${t} total rows processed (${v} valid, ${e} errors${n?`, ${n} null`:''})`,
-  kpi_total:'Total', kpi_valid:'Valid', kpi_errors:'Errors', kpi_null:'Null',
-  filter_all:'All', filter_valid:'Valid', filter_error:'Errors', filter_null:'Null', search_ph:'Search…',
+  results_title:'Results', results_summary:(t,v,e,n)=>`${t} total rows processed (${v} plausible, ${e} errors${n?`, ${n} null`:''})`,
+  kpi_total:'Total', kpi_valid:'Plausible', kpi_errors:'Errors', kpi_null:'Null',
+  filter_all:'All', filter_valid:'Plausible', filter_error:'Errors', filter_null:'Null', search_ph:'Search…',
   btn_excel:'Excel', btn_csv:'CSV', btn_copy:'Copy', btn_download:'Download', copy_visible_title:'Copy visible rows', copy_row_title:'Copy row',
-  scope_all:'All rows', scope_valid:'Valid', scope_error:'Errors', scope_null:'Null',
+  scope_all:'All rows', scope_valid:'Plausible', scope_error:'Errors', scope_null:'Null',
   toggle_ignore_nulls:'Ignore blank rows', more_options_title:'More options', checklist_title:'Choose rows',
   btn_select_all:'Select all', btn_copy_selected:'Copy selected', rows_selected_count:(n)=>`${n} row${n===1?'':'s'} selected`,
   no_matching_rows:'No matching rows',
@@ -1127,7 +1127,7 @@ en:{
   col_age:'Age', col_totaldays:'Total Days', col_gender:'Gender', col_govcode:'Gov Code', col_gov:'Governorate', col_serial:'Serial',
   col_check:'Check', col_retireage:'Retire Age', col_retiredate:'Retire Date', col_yearstoretire:'Yrs to Retire',
   col_career:'Career %', col_flags:'Flags', col_error:'Error',
-  status_valid:'Valid', status_error:'Error', status_null:'Null',
+  status_valid:'Plausible', status_error:'Error', status_null:'Null',
   upload_drop_title:'Drop a file or tap to browse', upload_drop_types:'.xlsx, .xls, or .csv',
   upload_col_label:'National ID column', upload_file_default:'File: —', upload_rows:n=>`${n} rows`,
   upload_preview_label:'Data preview', upload_preview_note:(shown,total)=>`Showing ${shown} of ${total} rows — the highlighted column follows your selection below.`,
@@ -1135,7 +1135,7 @@ en:{
   toast_dupes_renamed:n=>`${n} duplicate column name${n===1?'':'s'} renamed automatically`,
   toast_dupes_overwritten:n=>`${n} duplicate column name${n===1?'':'s'} detected — later columns overwrote earlier ones`,
   upload_drop_hint:'Up to 25 MB · processed locally in your browser', upload_remove_title:'Remove file',
-  btn_extract:'Extract & Process', upload_results_title:'File results', upload_summary:(n,v,e,nl,note)=>`${n} rows processed (${v} valid, ${e} errors${nl?`, ${nl} null`:''})${note}`,
+  btn_extract:'Extract & Process', upload_results_title:'File results', upload_summary:(n,v,e,nl,note)=>`${n} rows processed (${v} plausible, ${e} errors${nl?`, ${nl} null`:''})${note}`,
   upload_file_label:name=>name, upload_rows_detected:n=>`${n} rows detected`,
   toast_no_rows_file:'No rows found in file', toast_processing:'Processing…', toast_file_processed:'File processed', toast_file_downloaded:'File downloaded',
   toast_file_too_large:'File is too large (max 25 MB)', toast_file_read_error:'Could not read the file', toast_file_parse_error:'Could not read this file — check it\'s a valid Excel or CSV file',
@@ -1225,11 +1225,11 @@ ar:{
   batch_label:'الصق قائمة الأرقام القومية لإجراء تحليل معمّق', batch_count:n=>`تم اكتشاف ${n}`,
   btn_paste:'لصق', btn_sample:'رقم تجريبي', btn_clear:'مسح', btn_run_analytics:'تشغيل التحليل',
   batch_empty:'الصق قائمة الأرقام أعلاه وشغّل التحليل لعرض التفاصيل الكاملة هنا.',
-  results_title:'النتائج', results_summary:(t,v,e,n)=>`تمت معالجة ${t} صفًا إجماليًا (${v} صحيح، ${e} بها أخطاء${n?`، ${n} فارغ`:''})`,
-  kpi_total:'الإجمالي', kpi_valid:'صحيح', kpi_errors:'أخطاء', kpi_null:'فارغ',
-  filter_all:'الكل', filter_valid:'صحيح', filter_error:'أخطاء', filter_null:'فارغ', search_ph:'بحث…',
+  results_title:'النتائج', results_summary:(t,v,e,n)=>`تمت معالجة ${t} صفًا إجماليًا (${v} محتمل، ${e} بها أخطاء${n?`، ${n} فارغ`:''})`,
+  kpi_total:'الإجمالي', kpi_valid:'محتمل', kpi_errors:'أخطاء', kpi_null:'فارغ',
+  filter_all:'الكل', filter_valid:'محتمل', filter_error:'أخطاء', filter_null:'فارغ', search_ph:'بحث…',
   btn_excel:'إكسل', btn_csv:'CSV', btn_copy:'نسخ', btn_download:'تنزيل', copy_visible_title:'نسخ الصفوف الظاهرة', copy_row_title:'نسخ الصف',
-  scope_all:'كل الصفوف', scope_valid:'صحيح', scope_error:'أخطاء', scope_null:'فارغ',
+  scope_all:'كل الصفوف', scope_valid:'محتمل', scope_error:'أخطاء', scope_null:'فارغ',
   toggle_ignore_nulls:'تجاهل الصفوف الفارغة', more_options_title:'خيارات إضافية', checklist_title:'اختر الصفوف',
   btn_select_all:'تحديد الكل', btn_copy_selected:'نسخ المحدد', rows_selected_count:(n)=>`تم تحديد ${n} صفًا`,
   no_matching_rows:'لا توجد صفوف مطابقة',
@@ -1237,7 +1237,7 @@ ar:{
   col_age:'العمر', col_totaldays:'إجمالي الأيام', col_gender:'النوع', col_govcode:'كود المحافظة', col_gov:'المحافظة', col_serial:'الرقم التسلسلي',
   col_check:'رقم التحقق', col_retireage:'سن المعاش', col_retiredate:'تاريخ المعاش', col_yearstoretire:'سنوات حتى المعاش',
   col_career:'نسبة التقدم للمعاش', col_flags:'ملاحظات', col_error:'الخطأ',
-  status_valid:'صحيح', status_error:'خطأ', status_null:'فارغ',
+  status_valid:'محتمل', status_error:'خطأ', status_null:'فارغ',
   upload_drop_title:'أفلت ملفًا هنا أو اضغط للاستعراض', upload_drop_types:'‎.xlsx أو ‎.xls أو ‎.csv',
   upload_col_label:'عمود الرقم القومي', upload_file_default:'الملف: —', upload_rows:n=>`${n} صفًا`,
   upload_preview_label:'معاينة البيانات', upload_preview_note:(shown,total)=>`عرض ${shown} من ${total} صفًا — يتبع العمود المُظلَّل اختيارك أدناه.`,
@@ -1245,7 +1245,7 @@ ar:{
   toast_dupes_renamed:n=>`تمت إعادة تسمية ${n} من أسماء الأعمدة المكررة تلقائيًا`,
   toast_dupes_overwritten:n=>`تم رصد ${n} من أسماء الأعمدة المكررة — استبدلت الأعمدة اللاحقة السابقة لها`,
   upload_drop_hint:'حتى 25 ميجابايت · تتم المعالجة محليًا داخل متصفحك', upload_remove_title:'إزالة الملف',
-  btn_extract:'استخراج ومعالجة', upload_results_title:'نتائج الملف', upload_summary:(n,v,e,nl,note)=>`تمت معالجة ${n} صفًا (${v} صحيح، ${e} أخطاء${nl?`، ${nl} فارغ`:''})${note}`,
+  btn_extract:'استخراج ومعالجة', upload_results_title:'نتائج الملف', upload_summary:(n,v,e,nl,note)=>`تمت معالجة ${n} صفًا (${v} محتمل، ${e} أخطاء${nl?`، ${nl} فارغ`:''})${note}`,
   upload_file_label:name=>name, upload_rows_detected:n=>`تم رصد ${n} صفًا`,
   toast_no_rows_file:'لم يتم العثور على صفوف في الملف', toast_processing:'جارٍ المعالجة…', toast_file_processed:'تمت معالجة الملف', toast_file_downloaded:'تم تنزيل الملف',
   toast_file_too_large:'الملف كبير جدًا (الحد الأقصى 25 ميجابايت)', toast_file_read_error:'تعذرت قراءة الملف', toast_file_parse_error:'تعذرت قراءة هذا الملف — تأكد أنه ملف إكسل أو CSV صالح',
@@ -2514,7 +2514,7 @@ function copyBatchRow(idx,elId){
   const r=lastBatchRows[idx];
   if(!r) return;
   const status=r.valid?t('status_valid'):(r.isNull?t('status_null'):t('status_error'));
-  const line=r.valid?`${r.id}\t${status.toUpperCase()}\t${r.centuryLabel}\t${r.birthDateStr}\t${dayName(r.birthDayIndex)}\t${r.currentAgeYears}\t${r.totalDaysLived}\t${r.gender}\t${r.govCode}\t${govDisplay(r.govCode)}\t${r.serial}\t${r.checkDigit}\t${r.retireAge}\t${r.retireDateStr}\t${r.yearsUntilRetire}\t${r.careerPercent}%\t${(r.flags||[]).map(f=>flagLabel(f)).join(', ')}`:`${r.raw}\t${status.toUpperCase()}\t${r.error}`;
+  const line=r.valid?`${r.id}\t${status}\t${r.centuryLabel}\t${r.birthDateStr}\t${dayName(r.birthDayIndex)}\t${r.currentAgeYears}\t${r.totalDaysLived}\t${r.gender}\t${r.govCode}\t${govDisplay(r.govCode)}\t${r.serial}\t${r.checkDigit}\t${r.retireAge}\t${r.retireDateStr}\t${r.yearsUntilRetire}\t${r.careerPercent}%\t${(r.flags||[]).map(f=>flagLabel(f)).join(', ')}`:`${r.raw}\t${status}\t${r.error}`;
   copyText(line,null,t('toast_row_copied'));
   const el=document.getElementById(elId);
   if(el){el.textContent='check';el.style.color='var(--mint)';setTimeout(()=>{el.textContent='content_copy';el.style.color='';},1200);}
@@ -3139,7 +3139,7 @@ function feCareerPercentExpr(ref){
 function batchColumnValue(r,key){
   switch(key){
     case 'id':return r.valid?r.id:r.raw;
-    case 'status':return r.valid?'VALID':(r.isNull?'NULL':'ERROR');
+    case 'status':return r.valid?t('status_valid'):(r.isNull?t('status_null'):t('status_error'));
     case 'century':return r.valid?r.centuryLabel:'';
     case 'birthdate':return r.valid?r.birthDateStr:'';
     case 'weekday':return r.valid?dayName(r.birthDayIndex):'';
