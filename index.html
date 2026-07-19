@@ -1998,6 +1998,7 @@ function markDuplicates(results){
 
 function normalizeIDInput(raw){
   let s=String(raw??'').trim();
+  if(/^[0-9]+$/.test(s)) return s;
   s=s.replace(/[\u0660-\u0669]/g,d=>String(d.charCodeAt(0)-0x0660));
   s=s.replace(/[\u06F0-\u06F9]/g,d=>String(d.charCodeAt(0)-0x06F0));
   return s.replace(/\D/g,'');
@@ -2047,100 +2048,101 @@ function calcAge(birthDate,asOf){
   const intendedMonth=((anchorMonthIndex%12)+12)%12;
   const anchor=new Date(birthDate.getFullYear()+Math.floor(anchorMonthIndex/12),intendedMonth,birthDate.getDate());
   if(anchor.getMonth()!==intendedMonth)anchor.setDate(0);
-  const days=Math.floor((stripTime(now)-stripTime(anchor))/86400000);
-  const totalDays=Math.floor((stripTime(now)-stripTime(birthDate))/86400000);
+  const nowStripped=stripTime(now);
+  const days=Math.round((nowStripped-stripTime(anchor))/86400000);
+  const totalDays=Math.round((nowStripped-stripTime(birthDate))/86400000);
   return {years,months,days,totalDays};
 }
 
-function parseID(rawInput){
+function parseID(rawInput,wantTrace){
   const trace=[];
   const out={valid:false,isNull:false,error:'',trace,raw:String(rawInput??''),normalized:'',id:'',centuryDigit:'',centuryLabel:'',birthYear:null,birthMonth:null,birthDay:null,birthDateObj:null,birthDateStr:'',birthDayOfWeek:'',birthDayIndex:0,govCode:'',governorate:'',governorateKnown:false,serial:'',checkDigit:'',genderDigit:null,gender:'',retireAge:null,retireDateObj:null,retireDateStr:'',currentAgeYears:0,currentAgeMonths:0,currentAgeDays:0,totalDaysLived:0,yearsUntilRetire:0,daysUntilRetire:0,isEligible:false,careerPercent:0,fakePattern:false,retireRule:'',flags:[],checks:[]};
 
-  if(rawInput===null||rawInput===undefined){out.isNull=true;out.error=t('err_empty');trace.push('Input is null or undefined');return out;}
+  if(rawInput===null||rawInput===undefined){out.isNull=true;out.error=t('err_empty');if(wantTrace)trace.push('Input is null or undefined');return out;}
   let originalStr=String(rawInput).trim();
-  if(originalStr===''){out.isNull=true;out.error=t('err_empty');trace.push('Input is empty after trim — likely a blank cell copied from a spreadsheet');return out;}
-  if(/^-?[0-9]*\.?[0-9]+e[+\-]?\d+$/i.test(originalStr)){
+  if(originalStr===''){out.isNull=true;out.error=t('err_empty');if(wantTrace)trace.push('Input is empty after trim — likely a blank cell copied from a spreadsheet');return out;}
+  if((originalStr.indexOf('e')!==-1||originalStr.indexOf('E')!==-1)&&/^-?[0-9]*\.?[0-9]+e[+\-]?\d+$/i.test(originalStr)){
     const asNum=Number(originalStr);
     if(Number.isFinite(asNum)&&Number.isInteger(asNum)&&Math.abs(asNum)<Number.MAX_SAFE_INTEGER){
       const reconstructed=asNum.toFixed(0);
-      trace.push(`Scientific notation "${originalStr}" reconstructed as exact integer ${reconstructed} (safe because 14-digit values fit inside a double's integer precision)`);
+      if(wantTrace)trace.push(`Scientific notation "${originalStr}" reconstructed as exact integer ${reconstructed} (safe because 14-digit values fit inside a double's integer precision)`);
       originalStr=reconstructed;
     } else {
       out.error=t('err_scientific');
-      trace.push('Scientific notation could not be reconstructed as an exact integer (value out of safe integer range)');
+      if(wantTrace)trace.push('Scientific notation could not be reconstructed as an exact integer (value out of safe integer range)');
       return out;
     }
   }
 
   const cleaned=normalizeIDInput(originalStr);
   out.normalized=cleaned;
-  trace.push(`Normalized "${originalStr}" → ${cleaned.length} digits (Arabic-Indic digits supported)`);
+  if(wantTrace)trace.push(`Normalized "${originalStr}" → ${cleaned.length} digits (Arabic-Indic digits supported)`);
 
-  if(cleaned.length===0){out.isNull=true;out.error=t('err_empty');trace.push('No digits found after normalization (stray spaces or invisible characters) — treated as a blank row');return out;}
-  if(cleaned.length!==14){out.error=t('err_length',cleaned.length);trace.push(`Length check failed: got ${cleaned.length}, need 14`);return out;}
-  if(isFakePattern(cleaned)){out.fakePattern=true;out.flags.push('fake-pattern');trace.push('Fake pattern detected: repeated or sequential digits');}
+  if(cleaned.length===0){out.isNull=true;out.error=t('err_empty');if(wantTrace)trace.push('No digits found after normalization (stray spaces or invisible characters) — treated as a blank row');return out;}
+  if(cleaned.length!==14){out.error=t('err_length',cleaned.length);if(wantTrace)trace.push(`Length check failed: got ${cleaned.length}, need 14`);return out;}
+  if(isFakePattern(cleaned)){out.fakePattern=true;out.flags.push('fake-pattern');if(wantTrace)trace.push('Fake pattern detected: repeated or sequential digits');}
 
   const centuryNum=parseInt(cleaned[0],10);
-  if(!VALID_CENTURY_DIGITS.includes(centuryNum)){out.error=t('err_century',cleaned[0]);trace.push(`Century digit '${cleaned[0]}' is not a currently-issued century block`);return out;}
+  if(!VALID_CENTURY_DIGITS.includes(centuryNum)){out.error=t('err_century',cleaned[0]);if(wantTrace)trace.push(`Century digit '${cleaned[0]}' is not a currently-issued century block`);return out;}
   const baseYear=(centuryNum-2)*100+1900;
   out.centuryDigit=cleaned[0];
   out.centuryLabel=`${baseYear}s`;
-  trace.push(`Century: digit '${cleaned[0]}' → base year computed as (${centuryNum}-2)×100+1900 = ${baseYear}`);
+  if(wantTrace)trace.push(`Century: digit '${cleaned[0]}' → base year computed as (${centuryNum}-2)×100+1900 = ${baseYear}`);
 
   const yy=parseInt(cleaned.substring(1,3),10);
   const mm=parseInt(cleaned.substring(3,5),10);
   const dd=parseInt(cleaned.substring(5,7),10);
   const birthYear=baseYear+yy;
   out.birthYear=birthYear;out.birthMonth=mm;out.birthDay=dd;
-  trace.push(`Birth year: ${baseYear} + ${yy} = ${birthYear}`);
+  if(wantTrace)trace.push(`Birth year: ${baseYear} + ${yy} = ${birthYear}`);
 
-  if(mm<1||mm>12){out.error=t('err_month',mm);trace.push(`Month check failed: ${mm} is out of range 1–12`);return out;}
+  if(mm<1||mm>12){out.error=t('err_month',mm);if(wantTrace)trace.push(`Month check failed: ${mm} is out of range 1–12`);return out;}
   const checkDate=new Date(birthYear,mm-1,dd);
-  if(checkDate.getFullYear()!==birthYear||checkDate.getMonth()!==mm-1||checkDate.getDate()!==dd){out.error=t('err_day',dd,monthName(mm-1),birthYear);trace.push(`Date validation failed: ${dd}/${mm}/${birthYear} is not a real calendar date`);return out;}
+  if(checkDate.getFullYear()!==birthYear||checkDate.getMonth()!==mm-1||checkDate.getDate()!==dd){out.error=t('err_day',dd,monthName(mm-1),birthYear);if(wantTrace)trace.push(`Date validation failed: ${dd}/${mm}/${birthYear} is not a real calendar date`);return out;}
 
   const now=new Date();
-  if(checkDate>now){out.flags.push('future-birth');trace.push(`Warning: birth date ${birthYear}-${mm}-${dd} is in the future`);}
+  if(checkDate>now){out.flags.push('future-birth');if(wantTrace)trace.push(`Warning: birth date ${birthYear}-${mm}-${dd} is in the future`);}
 
   out.birthDateObj=checkDate;
   out.birthDateStr=`${birthYear}-${pad2(mm)}-${pad2(dd)}`;
   out.birthDayIndex=checkDate.getDay();
   out.birthDayOfWeek=DAY_NAMES[checkDate.getDay()];
-  trace.push(`Birth date validated: ${out.birthDateStr} (${out.birthDayOfWeek})`);
+  if(wantTrace)trace.push(`Birth date validated: ${out.birthDateStr} (${out.birthDayOfWeek})`);
 
   out.govCode=cleaned.substring(7,9);
   const govName=GOVERNORATES[out.govCode];
-  if(govName){out.governorate=govName;out.governorateKnown=true;trace.push(`Governorate: code '${out.govCode}' → ${govName}`);}
-  else{out.governorate='Unknown';out.governorateKnown=false;out.flags.push('unknown-governorate');trace.push(`Governorate code '${out.govCode}' not recognized — marked Unknown explicitly`);}
+  if(govName){out.governorate=govName;out.governorateKnown=true;if(wantTrace)trace.push(`Governorate: code '${out.govCode}' → ${govName}`);}
+  else{out.governorate='Unknown';out.governorateKnown=false;out.flags.push('unknown-governorate');if(wantTrace)trace.push(`Governorate code '${out.govCode}' not recognized — marked Unknown explicitly`);}
 
   out.serial=cleaned.substring(9,12);
-  trace.push(`Serial (3 digits): ${out.serial}`);
+  if(wantTrace)trace.push(`Serial (3 digits): ${out.serial}`);
 
   out.genderDigit=parseInt(cleaned[12],10);
   out.gender=out.genderDigit%2===1?'Male':'Female';
-  trace.push(`Gender: digit '${cleaned[12]}' at position 13 → ${out.gender} (odd = Male, even = Female)`);
+  if(wantTrace)trace.push(`Gender: digit '${cleaned[12]}' at position 13 → ${out.gender} (odd = Male, even = Female)`);
 
   out.checkDigit=cleaned[13];
-  trace.push(`Check digit (14th digit): ${out.checkDigit}`);
+  if(wantTrace)trace.push(`Check digit (14th digit): ${out.checkDigit}`);
 
   const retire=getRetirementInfo(checkDate);
   out.retireAge=retire.age;
   out.retireRule=retire.rule;
   out.retireDateObj=retire.retireDate;
   out.retireDateStr=`${retire.retireDate.getFullYear()}-${pad2(retire.retireDate.getMonth()+1)}-${pad2(retire.retireDate.getDate())}`;
-  trace.push(`Retirement (Law 148/2019): ${retire.rule}`);
-  trace.push(`Retirement date: ${out.retireDateStr}`);
+  if(wantTrace)trace.push(`Retirement (Law 148/2019): ${retire.rule}`);
+  if(wantTrace)trace.push(`Retirement date: ${out.retireDateStr}`);
 
   const age=calcAge(checkDate,now);
   out.currentAgeYears=age.years;out.currentAgeMonths=age.months;out.currentAgeDays=age.days;
-  out.totalDaysLived=daysBetween(checkDate,now);
-  trace.push(`Current age: ${age.years}y ${age.months}m ${age.days}d (as of ${now.toDateString()})`);
+  out.totalDaysLived=age.totalDays;
+  if(wantTrace)trace.push(`Current age: ${age.years}y ${age.months}m ${age.days}d (as of ${now.toDateString()})`);
 
   out.daysUntilRetire=daysBetween(now,retire.retireDate);
   out.yearsUntilRetire=out.daysUntilRetire>0?Math.floor(out.daysUntilRetire/365.25):0;
   out.isEligible=out.daysUntilRetire<=0;
   out.careerPercent=Math.max(0,Math.min(100,Math.round((age.years/out.retireAge)*100)));
-  trace.push(`Career progress: ${age.years}/${out.retireAge} years = ${out.careerPercent}%`);
-  trace.push(`Retirement eligibility: ${out.isEligible?'Eligible now':out.yearsUntilRetire+' years remaining'}`);
+  if(wantTrace)trace.push(`Career progress: ${age.years}/${out.retireAge} years = ${out.careerPercent}%`);
+  if(wantTrace)trace.push(`Retirement eligibility: ${out.isEligible?'Eligible now':out.yearsUntilRetire+' years remaining'}`);
 
   out.checks=[
     {key:'len14',pass:true},
@@ -2150,13 +2152,13 @@ function parseID(rawInput){
     {key:'gov',pass:out.governorateKnown},
     {key:'notfuture',pass:checkDate<=now}
   ];
-  if(mm===2&&dd===29){out.checks.push({key:'feb29',pass:true,note:true});trace.push('Note: Feb 29 birth date — an unusual but valid edge case, handled without drift');}
-  if(birthYear<1905){out.flags.push('very-early-birth-year');trace.push('Note: birth year is unusually early for a living person');}
-  if(yy===0&&mm===1&&dd===1){out.flags.push('jan-1-of-century');trace.push('Note: Jan 1 of the century block is a common placeholder date');}
+  if(mm===2&&dd===29){out.checks.push({key:'feb29',pass:true,note:true});if(wantTrace)trace.push('Note: Feb 29 birth date — an unusual but valid edge case, handled without drift');}
+  if(birthYear<1905){out.flags.push('very-early-birth-year');if(wantTrace)trace.push('Note: birth year is unusually early for a living person');}
+  if(yy===0&&mm===1&&dd===1){out.flags.push('jan-1-of-century');if(wantTrace)trace.push('Note: Jan 1 of the century block is a common placeholder date');}
   out.checksPassed=out.checks.filter(c=>c.pass).length;
   out.checksTotal=out.checks.length;
-  trace.push(`Structural checks: ${out.checksPassed}/${out.checksTotal} passed`);
-  trace.push('Note: these are format checks only and cannot confirm the ID is genuine or currently active — that requires verification against official records');
+  if(wantTrace)trace.push(`Structural checks: ${out.checksPassed}/${out.checksTotal} passed`);
+  if(wantTrace)trace.push('Note: these are format checks only and cannot confirm the ID is genuine or currently active — that requires verification against official records');
 
   out.valid=true;
   out.id=cleaned;
@@ -2298,7 +2300,7 @@ function processBatch(){
   if(lines.length===0){showToast(t('toast_enter_id'),'info');return;}
   const btn=document.getElementById('btn-run-analytics');
   setBusy(btn,true,t('toast_analyzing'));
-  chunkProcess(lines,parseID,{onDone:results=>{
+  chunkProcess(lines,id=>parseID(id,false),{onDone:results=>{
     batchResults=batchIgnoreNulls?results.filter(r=>!r.isNull):results;
     markDuplicates(batchResults);
     batchTableCats=new Set(['valid','error','null']);
