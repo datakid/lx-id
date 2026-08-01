@@ -9,10 +9,14 @@
 <link rel="icon" href="icon-32.png" type="image/png" sizes="32x32">
 <link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="LX ID">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650;9..144,760&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" defer></script>
+<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" defer crossorigin="anonymous"></script>
 <style>
 :root{
   --bg:#F7F3EC; --bg-deep:#EFE9DD;
@@ -422,6 +426,10 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
 .toast-error .material-symbols-rounded{color:var(--scarlet);background:var(--scarlet-soft)}
 .toast-info .material-symbols-rounded{color:var(--amber-text);background:var(--amber-soft)}
 .toast.leaving{animation:toastout .22s ease-in forwards}
+.toast-undo-btn{background:rgba(255,255,255,.16);color:inherit;border:none;border-radius:999px;padding:.3rem .7rem;font-size:.74rem;font-weight:700;cursor:pointer;flex-shrink:0;font-family:inherit;transition:background .15s ease}
+.toast-undo-btn:hover{background:rgba(255,255,255,.28)}
+.dark .toast-undo-btn{background:rgba(255,255,255,.1)}
+.dark .toast-undo-btn:hover{background:rgba(255,255,255,.18)}
 @keyframes toastin{from{opacity:0;transform:translateY(-14px) scale(.88)}to{opacity:1;transform:translateY(0) scale(1)}}
 @keyframes toastout{to{opacity:0;transform:scale(.92)}}
 
@@ -493,6 +501,20 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
 .checkicon.pass{background:var(--mint-soft);color:var(--mint)}
 .checkicon.fail{background:var(--scarlet-soft);color:var(--scarlet)}
 .checkgrid{display:grid;grid-template-columns:1fr;gap:0 1.25rem}
+.idseg-compound{min-width:4.5rem}
+.idseg-nested{font-size:.6em;vertical-align:.55em;margin-inline-start:.14em;padding:.04em .24em;border-radius:5px;background:var(--rose-soft);color:var(--rose-text);font-weight:700;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.idseg-traceactive{transform:translateY(-3px);border-color:var(--amber)!important;background:var(--amber-soft)!important;box-shadow:0 0 0 2px var(--amber),0 8px 16px -8px rgba(138,75,38,.4)!important}
+.checkicon.indeterminate{background:var(--glass-lo);color:var(--ink-3)}
+.checkicon.indeterminate span{font-weight:800;font-size:1rem}
+.trace-toggle{all:unset;display:flex;width:100%;align-items:center;justify-content:space-between;cursor:pointer;gap:.5rem}
+.trace-chevron{transition:transform .22s cubic-bezier(.16,1,.3,1);color:var(--ink-3);flex-shrink:0}
+.trace-toggle[aria-expanded="true"] .trace-chevron{transform:rotate(180deg)}
+.trace-row{cursor:default;align-items:flex-start}
+.trace-row[data-seg-ref]{cursor:help}
+.trace-row .checkicon{background:var(--glass-lo);color:var(--ink-3);margin-top:.05rem}
+.trace-row:focus-visible{outline:2px solid var(--amber);outline-offset:2px;border-radius:8px}
+.trace-text{font-size:.78rem;color:var(--ink-2);line-height:1.45;padding-top:.15rem}
+.checksum-row{display:flex;align-items:center;gap:.65rem;padding:.6rem .15rem .2rem;margin-top:.2rem;border-top:1px dashed var(--edge)}
 @media(min-width:640px){.checkgrid{grid-template-columns:1fr 1fr}.checkgrid .checkrow:nth-child(2n){border-inline-start:1px solid var(--edge);padding-inline-start:1.1rem}}
 
 .emptybox{width:4.4rem;height:4.4rem;border-radius:999px;background:radial-gradient(circle at 35% 30%,var(--milk-strong),var(--milk));display:inline-flex;align-items:center;justify-content:center;margin-bottom:.8rem;box-shadow:inset 0 1px 0 rgba(255,255,255,.4), var(--sh-1)}
@@ -599,6 +621,15 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
 @media(min-width:1024px){
   .mobile-only{display:none !important}
 }
+@media print{
+  body{background:#fff!important}
+  .grain,.field,.topbar,.bottomnav,#toasts,.noprint{display:none!important}
+  main.wrap{padding:0!important;max-width:100%!important}
+  .card,.idcard{box-shadow:none!important;border:1px solid #ccc!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;background:#fff!important}
+  .idcard::after,.idcard::before,.idwatermark{display:none!important}
+  .trace-body{display:block!important}
+  .idseg-group,.idseg-group .idseg{background:#fff!important}
+}
 </style>
 </head>
 <body>
@@ -651,7 +682,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
     <div>
       <h1 class="pagetitle" data-i18n="idtools_title">ID Tools</h1>
     </div>
-    <div class="pillrow">
+    <div class="pillrow noprint">
       <button class="pill active focusable" data-subtab="single" onclick="switchSubTab('single')"><span class="material-symbols-rounded" style="font-size:1rem;">fingerprint</span><span data-i18n="sub_single">Single</span></button>
       <button class="pill focusable" data-subtab="batch" onclick="switchSubTab('batch')"><span class="material-symbols-rounded" style="font-size:1rem;">table_rows</span><span data-i18n="sub_batch">Batch</span></button>
       <button class="pill focusable" data-subtab="upload" onclick="switchSubTab('upload')"><span class="material-symbols-rounded" style="font-size:1rem;">upload_file</span><span data-i18n="sub_upload">Upload</span></button>
@@ -659,7 +690,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
   </div>
 
   <div id="subtab-single" class="subtabpanel stack">
-    <div class="card pad stack">
+    <div class="card pad stack noprint">
       <div class="row" style="gap:.6rem;">
         <div class="field-clearable" style="flex:1;">
           <input type="text" id="inspector-input" data-i18n-ph="single_placeholder" placeholder="Enter a 14-digit national ID…" class="field-input mono focusable" style="width:100%;padding-inline-end:2.3rem;font-size:.95rem;letter-spacing:.02em;" oninput="inspectID()">
@@ -737,6 +768,14 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
             <table class="previewtable"><thead id="upload-preview-thead"></thead><tbody id="upload-preview-tbody"></tbody></table>
           </div>
           <p class="previewnote" id="upload-preview-note">Highlighted column below follows your selection.</p>
+        </div>
+        <div id="upload-sheet-wrap" class="hide">
+          <label class="eyebrow" data-i18n="upload_sheet_label">Sheet</label>
+          <select id="upload-sheet-select" class="field-select focusable" onchange="onUploadSheetChange(this.value)"></select>
+        </div>
+        <div>
+          <label class="eyebrow" data-i18n="upload_header_row_label">Header row</label>
+          <input type="number" id="upload-header-row" class="field-input focusable" min="1" step="1" value="1" style="max-width:8rem;" onchange="onUploadHeaderRowChange(this.value)">
         </div>
         <div>
           <label class="eyebrow" data-i18n="upload_col_label">National ID column</label>
@@ -859,6 +898,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
       <button class="pill focusable" data-datesub="age" onclick="switchDateSub('age')"><span class="material-symbols-rounded" style="font-size:1rem;">cake</span><span data-i18n="sub_age">Age</span></button>
       <button class="pill focusable" data-datesub="weekday" onclick="switchDateSub('weekday')"><span class="material-symbols-rounded" style="font-size:1rem;">view_week</span><span data-i18n="sub_weekday">Weekday</span></button>
       <button class="pill focusable" data-datesub="leapyears" onclick="switchDateSub('leapyears')"><span class="material-symbols-rounded" style="font-size:1rem;">event_repeat</span><span data-i18n="sub_leap">Leap Years</span></button>
+      <button class="pill focusable" data-datesub="calendars" onclick="switchDateSub('calendars')"><span class="material-symbols-rounded" style="font-size:1rem;">dark_mode</span><span data-i18n="sub_calendars">Hijri / Coptic</span></button>
     </div>
   </div>
 
@@ -917,6 +957,14 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
         <div id="leap-range-result"></div>
       </div>
     </div>
+  </div>
+
+  <div id="datesub-calendars" class="datesubpanel grid2 hide">
+    <div class="card pad stack">
+      <div><label class="eyebrow" data-i18n="lbl_any_date" style="display:block;margin-bottom:.35rem;">Any date</label><input type="date" id="dt-calconvert" class="field-input focusable" oninput="computeCalendarConvert()"></div>
+      <p data-i18n="hijri_estimated_hint" style="font-size:.72rem;color:var(--ink-3);margin:0;">Calculated (tabular Islamic calendar) — the officially announced date can differ by a day or two</p>
+    </div>
+    <div id="calconvert-result" class="card pad"></div>
   </div>
 </section>
 
@@ -1100,7 +1148,15 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
       </label>
     </div>
 
-    <p style="font-size:.7rem;color:var(--ink-3);margin:1rem 0 0;" data-i18n="settings_footer">Saved to this browser only — nothing is sent anywhere. ID numbers you enter are never saved unless you turn that on above, and even then only for this browser tab.</p>
+    <div class="settings-section">
+      <span class="eyebrow" data-i18n="settings_advanced">Advanced</span>
+      <label class="row" style="gap:.5rem;align-items:flex-start;cursor:pointer;">
+        <input type="checkbox" id="checksum-heuristic-toggle" onchange="setChecksumHeuristicEnabled(this.checked)" style="margin-top:.2rem;">
+        <span style="font-size:.8rem;" data-i18n="settings_checksum_heuristic">Show the unofficial checksum heuristic on ID results (a reverse-engineered pattern, not an official rule — never affects whether an ID is marked Plausible)</span>
+      </label>
+    </div>
+
+    <p style="font-size:.7rem;color:var(--ink-3);margin:1rem 0 0;" data-i18n="settings_footer">Saved to this browser only — nothing is sent anywhere. ID numbers and birth dates you enter are never saved unless you turn that on above, and even then only for this browser tab. Other calculator inputs (like generic date ranges) are stored locally so your work is there when you return.</p>
   </div>
 </div>
 
@@ -1132,6 +1188,20 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
         <span class="material-symbols-rounded" style="font-size:1.05rem;">delete_sweep</span>
         <span data-i18n="btn_clear_all">Clear all</span>
       </button>
+    </div>
+
+    <div class="card pad" style="margin-top:1rem;background:var(--glass-lo);">
+      <div class="row-between" style="margin-bottom:.3rem;flex-wrap:wrap;gap:.5rem;">
+        <label class="eyebrow" data-i18n="holiday_pack_title">Egyptian holiday pack</label>
+        <div class="row" style="gap:.4rem;">
+          <input type="number" id="holiday-pack-year" class="field-input focusable" style="max-width:6.5rem;" min="1900" max="2200">
+          <button type="button" class="btn btn-soft btn-sm focusable" onclick="addEgyptHolidayPack()">
+            <span class="material-symbols-rounded" style="font-size:1.05rem;">event_repeat</span>
+            <span data-i18n="btn_add_pack">Add for year</span>
+          </button>
+        </div>
+      </div>
+      <p style="font-size:.72rem;color:var(--ink-3);margin:0;" data-i18n="holiday_pack_hint">National days, Coptic Christmas &amp; Sham El Nessim (calculated), and Islamic holidays (estimated — may differ from the officially announced date by a day or two).</p>
     </div>
 
     <div id="holiday-issues-wrap" class="hide" style="margin-top:1rem;">
@@ -1189,6 +1259,7 @@ const ICON_DEFS={
   man:'<circle cx="10" cy="14" r="6"/><path d="M14.6 9.4L20 4M20 4h-4.4M20 4v4.4"/>',
   woman:'<circle cx="12" cy="9" r="6"/><path d="M12 15v6.5M8.8 18.6h6.4"/>',
   play_arrow:'<path d="M7 4.5l13 7.5-13 7.5v-15z" fill="currentColor" stroke="none"/>',
+  print:'<path d="M7 8.5V3.5h10v5"/><rect x="4.5" y="8.5" width="15" height="8" rx="1.8"/><path d="M7 14.5h10v6H7z"/><circle cx="16.3" cy="11.5" r=".6" fill="currentColor" stroke="none"/>',
   public:'<circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c2.6 2.4 4 5.3 4 8.5s-1.4 6.1-4 8.5c-2.6-2.4-4-5.3-4-8.5s1.4-6.1 4-8.5z"/>',
   gavel:'<path d="M8.5 3.5l6 6-2.3 2.3-6-6z"/><path d="M4.7 10.6l3.6-3.6 6.7 6.7-3.6 3.6z"/><path d="M13 13l7 7"/><path d="M3.5 20.5h9"/>',
   science:'<path d="M10 3h4"/><path d="M10.5 3v5.3l-5 8.7a1.8 1.8 0 001.6 2.7h9.8a1.8 1.8 0 001.6-2.7l-5-8.7V3"/><path d="M8.3 15h7.4"/>',
@@ -1241,23 +1312,23 @@ en:{
   filter_all:'All', filter_valid:'Plausible', filter_error:'Errors', filter_null:'Null', search_ph:'Search…',
   btn_excel:'Excel', btn_csv:'CSV', btn_copy:'Copy', btn_download:'Download', copy_visible_title:'Copy visible rows', copy_row_title:'Copy row',
   scope_all:'All rows', scope_valid:'Plausible', scope_error:'Errors', scope_null:'Null',
-  toggle_ignore_nulls:'Ignore blank rows', more_options_title:'More options', checklist_title:'Choose rows',
+  toggle_ignore_nulls:'Ignore blank rows', more_options_title:'More options', checklist_title:'Choose rows', checklist_subtitle:'Starts from your current filters above — adjust here to export a different mix',
   btn_select_all:'Select all', btn_copy_selected:'Copy selected', rows_selected_count:(n)=>`${n} row${n===1?'':'s'} selected`,
-  no_matching_rows:'No matching rows',
+  no_matching_rows:'No matching rows', rows_capped_notice:(cap,total)=>`Showing the first ${localeNum(cap)} of ${localeNum(total)} matching rows on screen — use Copy or Download to get all of them.`, btn_undo:'Undo',
   col_id:'National ID', col_status:'Status', col_century:'Century', col_birthdate:'Birth Date', col_weekday:'Weekday',
   col_age:'Age', col_totaldays:'Total Days', col_gender:'Gender', col_govcode:'Gov Code', col_gov:'Birth Gov', col_serial:'Serial',
   col_check:'Check', col_retireage:'Retire Age', col_retiredate:'Retire Date', col_yearstoretire:'Yrs to Retire',
-  col_career:'Career %', col_flags:'Flags', col_error:'Error',
+  col_career:'Retirement Progress %', col_flags:'Flags', col_error:'Error',
   status_valid:'Plausible', status_error:'Error', status_null:'Null',
   upload_drop_title:'Drop a file or tap to browse', upload_drop_types:'.xlsx, .xls, or .csv',
-  upload_col_label:'National ID column', upload_file_default:'File: —', upload_rows:n=>`${n} rows`,
+  upload_col_label:'National ID column', upload_sheet_label:'Sheet', upload_header_row_label:'Header row', upload_file_default:'File: —', upload_rows:n=>`${n} rows`,
   upload_preview_label:'Data preview', upload_preview_note:(shown,total)=>`Showing ${shown} of ${total} rows — the highlighted column follows your selection below.`,
   toggle_auto_rename_dupes:'Auto-rename duplicate columns', upload_col_unnamed:n=>`Column ${n}`,
   toast_dupes_renamed:n=>`${n} duplicate column name${n===1?'':'s'} renamed automatically`,
   toast_dupes_overwritten:n=>`${n} duplicate column name${n===1?'':'s'} detected — later columns overwrote earlier ones`,
   upload_drop_hint:'Up to 25 MB · processed locally in your browser', upload_remove_title:'Remove file',
   btn_extract:'Extract & Process', upload_results_title:'File results', upload_summary:(n,v,e,nl,note)=>`${n} rows processed (${v} plausible, ${e} errors${nl?`, ${nl} null`:''})${note}`,
-  upload_file_label:name=>name, upload_rows_detected:n=>`${n} rows detected`,
+  upload_file_label:name=>name, upload_reading_file:name=>`Reading ${name}\u2026`, upload_rows_detected:n=>`${n} rows detected`,
   toast_no_rows_file:'No rows found in file', toast_processing:'Processing…', toast_file_processed:'File processed', toast_file_downloaded:'File downloaded',
   toast_file_too_large:'File is too large (max 25 MB)', toast_file_read_error:'Could not read the file', toast_file_parse_error:'Could not read this file — check it\'s a valid Excel or CSV file',
   upload_shown_note:(shown,total)=>` — showing first ${shown} of ${total}`,
@@ -1269,10 +1340,11 @@ en:{
   ph_table1:'Table1', ph_national_id:'National ID', ph_a2:'A2',
   card_birth:'Birth date', card_gender:'Gender', card_retirement:'Retirement age & date', lbl_paste_in:'Paste in',
   auto_assign_title:'Auto-assign location',
-  date_no_selection:'No date selected yet', date_invalid:'That date doesn\u2019t exist — check day & month', date_today:'Today', date_clear:'Clear',
+  date_no_selection:'No date selected yet', date_invalid:'That date doesn\u2019t exist — check day & month', date_in_progress:'Still typing\u2026 keeping the last valid date', date_today:'Today', date_clear:'Clear',
   date_open_calendar:'Open calendar', date_prev_month:'Previous month', date_next_month:'Next month',
   date_seg_day:'Day', date_seg_month:'Month', date_seg_year:'Year',
-  dates_title:'Date Tools', sub_between:'Between Dates', sub_age:'Age', sub_weekday:'Weekday', sub_leap:'Leap Years',
+  dates_title:'Date Tools', sub_between:'Between Dates', sub_age:'Age', sub_weekday:'Weekday', sub_leap:'Leap Years', sub_calendars:'Hijri / Coptic',
+  calconvert_hijri:'Hijri (Islamic) date', calconvert_coptic:'Coptic date', calconvert_gregorian:'Gregorian date', dt_pick_calconvert:'Pick a date to convert',
   lbl_start_date:'Start date', lbl_end_date:'End date', lbl_working_days:'Working days',
   lbl_birth_date:'Birth date', lbl_asof:'As of (optional)', lbl_any_date:'Any date',
   lbl_single_year:'Single year', lbl_year_range:'Year range', ph_year_eg:'e.g. 2028',
@@ -1280,13 +1352,17 @@ en:{
   dt_pick_birth:'Pick a birth date.', dt_exact_age:'Exact age', dt_total_days_lived:'Total days lived', dt_days_to_next_bday:'Days to next birthday', dt_born_on:'Born on',
   dt_pick_date:'Pick a date.', dt_day_of_year:'Day of year', dt_week_number:'Week number', dt_leap_year:'Leap year', dt_leap_yes:'Yes — 366 days', dt_leap_no:'No — 365 days',
   dt_enter_valid_year:'Enter a valid year.', dt_is_leap:n=>`${n} is a leap year`, dt_is_not_leap:n=>`${n} is not a leap year`,
-  dt_div_rule:(y,d4,d100,d400)=>`${y}/4=${d4}, ${y}/100=${d100}, ${y}/400=${d400} — divisible by 4 and (not by 100, or by 400)`,
+  dt_div_rule:(y,r4,r100,r400)=>`${y} mod 4 = ${r4}, mod 100 = ${r100}, mod 400 = ${r400} — needs mod 4 = 0 to qualify; century years also need mod 400 = 0`,
   dt_enter_valid_years:'Enter valid years.', dt_range_too_large:'Range too large — keep it under 500 years.',
   dt_leap_years_found:'Leap years found', dt_none_in_range:'None in range',
   lbl_holidays:'Custom holidays', btn_import_holidays:'Import', lbl_holidays_in_range:'Holidays in range', lbl_net_working_days:'Net working days',
   holiday_modal_title:'Import Holidays', holiday_modal_hint:'One date per line — YYYY-MM-DD or DD/MM/YYYY. Add an optional label after a comma.',
   holiday_placeholder:"2026-01-01, New Year's Day\n25/04/2026, Sinai Liberation Day",
   btn_upload_file:'Upload file', btn_add_holidays:'Add holidays', btn_clear_all:'Clear all', btn_remove:'Remove',
+  holiday_pack_title:'Egyptian holiday pack', holiday_pack_hint:'National days, Coptic Christmas & Sham El Nessim (calculated), and Islamic holidays (estimated — may differ from the officially announced date by a day or two).', btn_add_pack:'Add for year', holiday_pack_estimated_tag:'(est.)',
+  holiday_pack_revolution_jan25:'Revolution Day (Jan 25)', holiday_pack_sinai:'Sinai Liberation Day', holiday_pack_labour:'Labour Day', holiday_pack_june30:'June 30 Revolution Day', holiday_pack_july23:'July 23 Revolution Day', holiday_pack_armedforces:'Armed Forces Day',
+  holiday_pack_coptic_christmas:'Coptic Christmas', holiday_pack_coptic_easter:'Coptic Easter Sunday', holiday_pack_sham_el_nessim:'Sham El Nessim',
+  holiday_pack_hijri_new_year:'Islamic New Year', holiday_pack_mawlid:'Prophet\u2019s Birthday (Mawlid)', holiday_pack_eid_fitr:'Eid al-Fitr', holiday_pack_arafat:'Arafat Day', holiday_pack_eid_adha:'Eid al-Adha',
   close_holidays_title:'Close', holiday_issues_title:'Rows needing attention', holiday_saved_title:'Saved holidays',
   holiday_footer:'Saved to this browser only. Holidays that fall on a working day are subtracted from the working-days count above.',
   th_row:'Row', th_reason:'Reason',
@@ -1309,11 +1385,13 @@ en:{
   gov_col_code:'Code', gov_col_name:'Governorate', gov_empty:'No matching governorates.', gov_unknown:'Unknown',
   law_badge:'Law 148/2019', law_title:'Egypt\u2019s phased retirement age increase',
   law_desc:'The standard pension age of 60 steps up gradually until it reaches 65. The age that applies to a given person depends on their birth date.',
-  law_col_from:'Applies from', law_col_age:'Retirement age', law_years:n=>`${n} years`, law_baseline:'Before 1 Jul 2032',
+  law_col_from:'Applies from', law_col_age:'Retirement age', law_years:n=>`${n} years`, law_baseline:d=>`Before ${d}`,
+  retire_rule_baseline:d=>`Turns 60 before ${d} → retirement age stays at 60`, retire_rule_threshold:(d,age)=>`Turns 60 on/after ${d} → retirement age is ${age} (Law 148/2019)`,
   settings_theme:'Theme', theme_system:'System', theme_light:'Light', theme_dark:'Dark',
   settings_surface:'Surface style', settings_typeface:'Typeface',
   settings_privacy:'Privacy', settings_remember_sensitive:'Remember ID numbers I enter, for this browser tab only (off by default — turn on only if you\'re on a private device)',
-  settings_footer:'Saved to this browser only — nothing is sent anywhere. ID numbers you enter are never saved unless you turn that on above, and even then only for this browser tab.',
+  settings_footer:'Saved to this browser only — nothing is sent anywhere. ID numbers and birth dates you enter are never saved unless you turn that on above, and even then only for this browser tab. Other calculator inputs (like generic date ranges) are stored locally so your work is there when you return.',
+  settings_advanced:'Advanced', settings_checksum_heuristic:'Show the unofficial checksum heuristic on ID results (a reverse-engineered pattern, not an official rule — never affects whether an ID is marked Plausible)',
   cmdk_ph:'Type a command…', cmdk_nav:'Navigate', cmdk_select:'Select', cmdk_close:'Close',
   cmdk_group_nav:'Navigate', cmdk_group_actions:'Actions', cmdk_group_smart:'Smart', cmdk_no_results:'No matching actions',
   cmdk_smart_single:id=>`Process "${id}" as a single ID`, cmdk_smart_batch:n=>`Process ${n} IDs as a batch`,
@@ -1324,7 +1402,6 @@ en:{
   cmd_act_paste_clipboard:'Paste ID List From Clipboard', cmd_act_sample_batch:'Load Sample Data (Batch Analytics)', cmd_act_sample_single:'Load Sample ID (Single)',
   cmd_act_theme:'Toggle Light / Dark Theme', cmd_act_theme_system:'Use System Theme', cmd_act_clear_cache:'Clear Cached Local Data',
   confirm_title:'Are you sure?', confirm_message:'This action cannot be undone.', btn_cancel:'Cancel', btn_confirm:'Confirm',
-  clear_cache_title:'Clear cached local data?', clear_cache_msg:'This clears saved inputs and preferences from this browser. This cannot be undone.',
   toast_clipboard_empty:'Clipboard is empty', toast_pasted:'Pasted from clipboard', toast_clipboard_denied:'Clipboard access denied — try Ctrl/Cmd+V',
   toast_sample_loaded:'Sample IDs loaded', toast_cleared:'Cleared', toast_enter_id:'Paste at least one ID first',
   toast_analyzing:'Analyzing…', toast_analyzed:n=>`Analyzed ${n} IDs`, toast_row_copied:'Row copied',
@@ -1337,8 +1414,10 @@ en:{
   toast_formulas_need_id:'Include the ID column to inject formulas',
   toast_save_failed:'Local save failed — your changes may not persist', toast_cache_cleared:'Cached data cleared', toast_system_theme:'Following system theme',
   gender_male:'Male', gender_female:'Female',
-  flags:{'fake-pattern':'Fake pattern','unknown-governorate':'Unknown governorate','duplicate-id':'Duplicate ID','future-birth':'Future birth date','very-early-birth-year':'Unusually early birth year','jan-1-of-century':'Jan 1 placeholder date'},
-  checks:{len14:'14-digit length',century:'Century digit valid (2 or 3)',realdate:'Real calendar date',notfake:'Not a repeating/sequential pattern',gov:'Governorate code recognized',notfuture:'Birth date not in the future',feb29:'Feb 29 birth date (leap-year edge case)'},
+  flags:{'fake-pattern':'Fake pattern','unknown-governorate':'Unknown governorate','duplicate-id':'Duplicate ID','future-birth':'Future birth date','very-early-birth-year':'Unusually early birth year','jan-1-of-century':'Jan 1 placeholder date','feb29-birthdate':'Feb 29 birth date (leap-year edge case)'},
+  hijriMonths:['Muharram','Safar','Rabi\u02bb al-Awwal','Rabi\u02bb al-Thani','Jumada al-Awwal','Jumada al-Thani','Rajab','Sha\u2019ban','Ramadan','Shawwal','Dhu al-Qi\u2019dah','Dhu al-Hijjah'],
+  copticMonths:['Thout','Paopi','Hathor','Koiak','Tobi','Meshir','Paremhat','Paremoude','Pashons','Paoni','Epip','Mesori','Pi Kogi Enavot'],
+  checks:{len14:'14-digit length',century:'Century digit valid (2 or 3)',realdate:'Real calendar date',notfake:'Not a repeating/sequential pattern',gov:'Governorate code recognized',notfuture:'Birth date not in the future'},
   err_empty:'Empty value', err_scientific:'Scientific notation detected — format the cell as text',
   err_length:n=>`Invalid length: ${n} digits (expected 14)`,
   err_century:d=>`Invalid century digit '${d}' (must be 2 for 1900s or 3 for 2000s)`,
@@ -1346,9 +1425,14 @@ en:{
   identity_title:'Identity', country_name:'Arab Republic of Egypt',
   seg_cent:'Cent.', seg_year:'Year', seg_month:'Month', seg_day:'Day', seg_gov:'Gov', seg_serial:'Serial', seg_gender:'Gender', seg_check:'Check',
   age_label:'Age', weekday_label:'Weekday', gov_field_label:'Birth governorate', retire_age_years:n=>`${n}-year retirement age`,
-  total_days_lived:n=>`${n.toLocaleString('en-US')} days lived (total)`,
+  total_days_lived:n=>`${localeNum(n)} days lived (total)`,
   retires_label:'Retires', already_eligible:'Already eligible', years_remaining:n=>`${n} years remaining`,
   checks_title:n=>`Checks — ${n.p}/${n.t} passed`,
+  age_ymd:(y,m,d)=>`${y}y ${m}m ${d}d`,
+  trace_title:'How this was derived', trace_toggle_hint:'Century arithmetic, date checks, and the retirement rule that fired',
+  checksum_heuristic_label:'Checksum heuristic (unofficial)', checksum_heuristic_match:'matches an unpublished Luhn-style pattern', checksum_heuristic_mismatch:'doesn\u2019t match that pattern',
+  btn_print:'Print', serial_gender_hint:'Last digit of the serial also encodes gender (odd = Male, even = Female)',
+  alt_calendars_label:'Hijri / Coptic', hijri_suffix:'AH', coptic_suffix:'AM', hijri_estimated_hint:'Calculated (tabular Islamic calendar) — the officially announced date can differ by a day or two',
   invalid_id:'Invalid national ID', normalized_input:'Normalized input:',
   copy_summary_id:res=>`National ID: ${res.id}\nGender: ${res.gender}\nBirth Date: ${res.birthDateStr} (${res.birthDayOfWeek})\nGovernorate: ${res.governorate} (${res.govCode})\nCurrent Age: ${res.currentAgeYears}y ${res.currentAgeMonths}m ${res.currentAgeDays}d\nTotal Days Lived: ${res.totalDaysLived}\nRetirement Age: ${res.retireAge} years\nRetirement Date: ${res.retireDateStr}\nStructural checks: ${res.checksPassed}/${res.checksTotal} passed`,
 },
@@ -1366,23 +1450,23 @@ ar:{
   filter_all:'الكل', filter_valid:'محتمل', filter_error:'أخطاء', filter_null:'فارغ', search_ph:'بحث…',
   btn_excel:'إكسل', btn_csv:'CSV', btn_copy:'نسخ', btn_download:'تنزيل', copy_visible_title:'نسخ الصفوف الظاهرة', copy_row_title:'نسخ الصف',
   scope_all:'كل الصفوف', scope_valid:'محتمل', scope_error:'أخطاء', scope_null:'فارغ',
-  toggle_ignore_nulls:'تجاهل الصفوف الفارغة', more_options_title:'خيارات إضافية', checklist_title:'اختر الصفوف',
+  toggle_ignore_nulls:'تجاهل الصفوف الفارغة', more_options_title:'خيارات إضافية', checklist_title:'اختر الصفوف', checklist_subtitle:'يبدأ مطابقًا للمرشِّحات الحالية أعلاه — عدّل هنا لتصدير مجموعة مختلفة',
   btn_select_all:'تحديد الكل', btn_copy_selected:'نسخ المحدد', rows_selected_count:(n)=>`تم تحديد ${n} صفًا`,
-  no_matching_rows:'لا توجد صفوف مطابقة',
+  no_matching_rows:'لا توجد صفوف مطابقة', rows_capped_notice:(cap,total)=>`تُعرض أول ${localeNum(cap)} من إجمالي ${localeNum(total)} صفًا مطابقًا — استخدم النسخ أو التنزيل للحصول عليها كاملة.`, btn_undo:'تراجع',
   col_id:'الرقم القومي', col_status:'الحالة', col_century:'القرن', col_birthdate:'تاريخ الميلاد', col_weekday:'يوم الأسبوع',
   col_age:'العمر', col_totaldays:'إجمالي الأيام', col_gender:'النوع', col_govcode:'كود المحافظة', col_gov:'محافظة الميلاد', col_serial:'الرقم التسلسلي',
   col_check:'رقم التحقق', col_retireage:'سن المعاش', col_retiredate:'تاريخ المعاش', col_yearstoretire:'سنوات حتى المعاش',
   col_career:'نسبة التقدم للمعاش', col_flags:'ملاحظات', col_error:'الخطأ',
   status_valid:'محتمل', status_error:'خطأ', status_null:'فارغ',
   upload_drop_title:'أفلت ملفًا هنا أو اضغط للاستعراض', upload_drop_types:'‎.xlsx أو ‎.xls أو ‎.csv',
-  upload_col_label:'عمود الرقم القومي', upload_file_default:'الملف: —', upload_rows:n=>`${n} صفًا`,
+  upload_col_label:'عمود الرقم القومي', upload_sheet_label:'الورقة', upload_header_row_label:'صف العناوين', upload_file_default:'الملف: —', upload_rows:n=>`${n} صفًا`,
   upload_preview_label:'معاينة البيانات', upload_preview_note:(shown,total)=>`عرض ${shown} من ${total} صفًا — يتبع العمود المُظلَّل اختيارك أدناه.`,
   toggle_auto_rename_dupes:'إعادة تسمية الأعمدة المكررة تلقائيًا', upload_col_unnamed:n=>`عمود ${n}`,
   toast_dupes_renamed:n=>`تمت إعادة تسمية ${n} من أسماء الأعمدة المكررة تلقائيًا`,
   toast_dupes_overwritten:n=>`تم رصد ${n} من أسماء الأعمدة المكررة — استبدلت الأعمدة اللاحقة السابقة لها`,
   upload_drop_hint:'حتى 25 ميجابايت · تتم المعالجة محليًا داخل متصفحك', upload_remove_title:'إزالة الملف',
   btn_extract:'استخراج ومعالجة', upload_results_title:'نتائج الملف', upload_summary:(n,v,e,nl,note)=>`تمت معالجة ${n} صفًا (${v} محتمل، ${e} أخطاء${nl?`، ${nl} فارغ`:''})${note}`,
-  upload_file_label:name=>name, upload_rows_detected:n=>`تم رصد ${n} صفًا`,
+  upload_file_label:name=>name, upload_reading_file:name=>`جارٍ قراءة ${name}\u2026`, upload_rows_detected:n=>`تم رصد ${n} صفًا`,
   toast_no_rows_file:'لم يتم العثور على صفوف في الملف', toast_processing:'جارٍ المعالجة…', toast_file_processed:'تمت معالجة الملف', toast_file_downloaded:'تم تنزيل الملف',
   toast_file_too_large:'الملف كبير جدًا (الحد الأقصى 25 ميجابايت)', toast_file_read_error:'تعذرت قراءة الملف', toast_file_parse_error:'تعذرت قراءة هذا الملف — تأكد أنه ملف إكسل أو CSV صالح',
   upload_shown_note:(shown,total)=>` — يُعرض أول ${shown} من ${total}`,
@@ -1394,10 +1478,11 @@ ar:{
   ph_table1:'Table1', ph_national_id:'الرقم القومي', ph_a2:'A2',
   card_birth:'تاريخ الميلاد', card_gender:'النوع', card_retirement:'سن وتاريخ المعاش', lbl_paste_in:'الصق في',
   auto_assign_title:'تعيين الموقع تلقائيًا',
-  date_no_selection:'لم يتم اختيار تاريخ بعد', date_invalid:'هذا التاريخ غير موجود — تحقق من اليوم والشهر', date_today:'اليوم', date_clear:'مسح',
+  date_no_selection:'لم يتم اختيار تاريخ بعد', date_invalid:'هذا التاريخ غير موجود — تحقق من اليوم والشهر', date_in_progress:'جارٍ الكتابة\u2026 مع الاحتفاظ بآخر تاريخ صالح', date_today:'اليوم', date_clear:'مسح',
   date_open_calendar:'فتح التقويم', date_prev_month:'الشهر السابق', date_next_month:'الشهر التالي',
   date_seg_day:'اليوم', date_seg_month:'الشهر', date_seg_year:'السنة',
-  dates_title:'أدوات التاريخ', sub_between:'بين تاريخين', sub_age:'العمر', sub_weekday:'يوم الأسبوع', sub_leap:'السنوات الكبيسة',
+  dates_title:'أدوات التاريخ', sub_between:'بين تاريخين', sub_age:'العمر', sub_weekday:'يوم الأسبوع', sub_leap:'السنوات الكبيسة', sub_calendars:'هجري / قبطي',
+  calconvert_hijri:'التاريخ الهجري', calconvert_coptic:'التاريخ القبطي', calconvert_gregorian:'التاريخ الميلادي', dt_pick_calconvert:'اختر تاريخًا للتحويل',
   lbl_start_date:'تاريخ البداية', lbl_end_date:'تاريخ النهاية', lbl_working_days:'أيام العمل',
   lbl_birth_date:'تاريخ الميلاد', lbl_asof:'حتى تاريخ (اختياري)', lbl_any_date:'أي تاريخ',
   lbl_single_year:'سنة واحدة', lbl_year_range:'نطاق سنوات', ph_year_eg:'مثال: 2028',
@@ -1405,13 +1490,17 @@ ar:{
   dt_pick_birth:'اختر تاريخ الميلاد.', dt_exact_age:'العمر الدقيق', dt_total_days_lived:'إجمالي أيام العمر', dt_days_to_next_bday:'أيام حتى عيد الميلاد القادم', dt_born_on:'وُلد في',
   dt_pick_date:'اختر تاريخًا.', dt_day_of_year:'اليوم في السنة', dt_week_number:'رقم الأسبوع', dt_leap_year:'سنة كبيسة', dt_leap_yes:'نعم — 366 يومًا', dt_leap_no:'لا — 365 يومًا',
   dt_enter_valid_year:'أدخل سنة صحيحة.', dt_is_leap:n=>`${n} سنة كبيسة`, dt_is_not_leap:n=>`${n} ليست سنة كبيسة`,
-  dt_div_rule:(y,d4,d100,d400)=>`${y}/4=${d4}، ${y}/100=${d100}، ${y}/400=${d400} — تُقسَم على 4 وليست على 100، أو تُقسَم على 400`,
+  dt_div_rule:(y,r4,r100,r400)=>`${y} باقي القسمة على 4 = ${r4}، على 100 = ${r100}، على 400 = ${r400} — يلزم أن يكون الباقي على 4 صفرًا؛ وسنوات القرن يلزم أيضًا أن يكون الباقي على 400 صفرًا`,
   dt_enter_valid_years:'أدخل سنوات صحيحة.', dt_range_too_large:'النطاق كبير جدًا — اجعله أقل من 500 عام.',
   dt_leap_years_found:'السنوات الكبيسة الموجودة', dt_none_in_range:'لا توجد ضمن النطاق',
   lbl_holidays:'الإجازات المخصصة', btn_import_holidays:'استيراد', lbl_holidays_in_range:'الإجازات ضمن الفترة', lbl_net_working_days:'صافي أيام العمل',
   holiday_modal_title:'استيراد الإجازات', holiday_modal_hint:'تاريخ واحد في كل سطر — YYYY-MM-DD أو DD/MM/YYYY. يمكن إضافة تسمية اختيارية بعد فاصلة.',
   holiday_placeholder:"2026-01-01, رأس السنة\n25/04/2026, عيد تحرير سيناء",
   btn_upload_file:'رفع ملف', btn_add_holidays:'إضافة الإجازات', btn_clear_all:'مسح الكل', btn_remove:'حذف',
+  holiday_pack_title:'باقة الإجازات المصرية', holiday_pack_hint:'الأعياد القومية، عيد الميلاد المجيد وشم النسيم (محسوبة)، والأعياد الإسلامية (تقديرية — قد تختلف يومًا أو يومين عن التاريخ المُعلَن رسميًا).', btn_add_pack:'إضافة لسنة', holiday_pack_estimated_tag:'(تقديري)',
+  holiday_pack_revolution_jan25:'عيد ثورة 25 يناير', holiday_pack_sinai:'عيد تحرير سيناء', holiday_pack_labour:'عيد العمال', holiday_pack_june30:'عيد ثورة 30 يونيو', holiday_pack_july23:'عيد ثورة 23 يوليو', holiday_pack_armedforces:'عيد القوات المسلحة',
+  holiday_pack_coptic_christmas:'عيد الميلاد المجيد (قبطي)', holiday_pack_coptic_easter:'عيد القيامة المجيد (قبطي)', holiday_pack_sham_el_nessim:'شم النسيم',
+  holiday_pack_hijri_new_year:'رأس السنة الهجرية', holiday_pack_mawlid:'المولد النبوي الشريف', holiday_pack_eid_fitr:'عيد الفطر', holiday_pack_arafat:'يوم عرفة', holiday_pack_eid_adha:'عيد الأضحى',
   close_holidays_title:'إغلاق', holiday_issues_title:'صفوف تحتاج إلى مراجعة', holiday_saved_title:'الإجازات المحفوظة',
   holiday_footer:'يُحفظ في هذا المتصفح فقط. الإجازات التي تقع في يوم عمل تُخصم من عدد أيام العمل أعلاه.',
   th_row:'السطر', th_reason:'السبب',
@@ -1434,11 +1523,13 @@ ar:{
   gov_col_code:'الكود', gov_col_name:'المحافظة', gov_empty:'لا توجد محافظات مطابقة.', gov_unknown:'غير معروفة',
   law_badge:'القانون رقم 148 لسنة 2019', law_title:'الزيادة التدريجية لسن المعاش في مصر',
   law_desc:'يرتفع سن المعاش القياسي البالغ 60 عامًا تدريجيًا حتى يصل إلى 65 عامًا. السن المطبَّق على كل شخص يعتمد على تاريخ ميلاده.',
-  law_col_from:'يُطبَّق اعتبارًا من', law_col_age:'سن المعاش', law_years:n=>`${n} عامًا`, law_baseline:'قبل 1 يوليو 2032',
+  law_col_from:'يُطبَّق اعتبارًا من', law_col_age:'سن المعاش', law_years:n=>`${n} عامًا`, law_baseline:d=>`قبل ${d}`,
+  retire_rule_baseline:d=>`يبلغ الستين قبل ${d} → يظل سن المعاش 60`, retire_rule_threshold:(d,age)=>`يبلغ الستين في أو بعد ${d} → سن المعاش ${age} (القانون 148 لسنة 2019)`,
   settings_theme:'المظهر', theme_system:'النظام', theme_light:'فاتح', theme_dark:'داكن',
   settings_surface:'نمط السطح', settings_typeface:'الخط',
   settings_privacy:'الخصوصية', settings_remember_sensitive:'تذكّر الأرقام القومية التي أدخلها، لهذا التبويب فقط (معطّل افتراضيًا — فعّله فقط إذا كنت على جهاز خاص)',
-  settings_footer:'يُحفظ في هذا المتصفح فقط — لا يُرسَل شيء إلى أي جهة. الأرقام القومية التي تدخلها لا تُحفظ أبدًا ما لم تفعّل ذلك أعلاه، وحتى في هذه الحالة تُحفظ لهذا التبويب فقط.',
+  settings_footer:'يُحفظ في هذا المتصفح فقط — لا يُرسَل شيء إلى أي جهة. الأرقام القومية وتواريخ الميلاد التي تدخلها لا تُحفظ أبدًا ما لم تفعّل ذلك أعلاه، وحتى في هذه الحالة تُحفظ لهذا التبويب فقط. أما مدخلات الحاسبات الأخرى (مثل الفروق الزمنية العامة) فتُحفظ محليًا حتى تجد عملك عند العودة.',
+  settings_advanced:'إعدادات متقدمة', settings_checksum_heuristic:'إظهار ترجيح رقم التحقق غير الرسمي في نتائج البطاقة (نمط تم استنتاجه وليس قاعدة رسمية — لا يؤثر أبدًا على وصف البطاقة بأنها \u201cمرجَّحة\u201d)',
   cmdk_ph:'اكتب أمرًا…', cmdk_nav:'تنقّل', cmdk_select:'اختيار', cmdk_close:'إغلاق',
   cmdk_group_nav:'التنقّل', cmdk_group_actions:'إجراءات', cmdk_group_smart:'ذكي', cmdk_no_results:'لا توجد إجراءات مطابقة',
   cmdk_smart_single:id=>`معالجة "${id}" كرقم فردي`, cmdk_smart_batch:n=>`معالجة ${n} أرقام كدفعة`,
@@ -1449,7 +1540,6 @@ ar:{
   cmd_act_paste_clipboard:'لصق قائمة الأرقام من الحافظة', cmd_act_sample_batch:'تحميل بيانات تجريبية (تحليل الدفعة)', cmd_act_sample_single:'تحميل رقم تجريبي (فردي)',
   cmd_act_theme:'تبديل المظهر الفاتح / الداكن', cmd_act_theme_system:'استخدام مظهر النظام', cmd_act_clear_cache:'مسح البيانات المحلية المخزّنة',
   confirm_title:'هل أنت متأكد؟', confirm_message:'لا يمكن التراجع عن هذا الإجراء.', btn_cancel:'إلغاء', btn_confirm:'تأكيد',
-  clear_cache_title:'مسح البيانات المحفوظة محليًا؟', clear_cache_msg:'سيؤدي هذا إلى مسح المدخلات والتفضيلات المحفوظة في هذا المتصفح. لا يمكن التراجع عن هذا الإجراء.',
   toast_clipboard_empty:'الحافظة فارغة', toast_pasted:'تم اللصق من الحافظة', toast_clipboard_denied:'تم رفض الوصول إلى الحافظة — جرّب Ctrl/Cmd+V',
   toast_sample_loaded:'تم تحميل أرقام تجريبية', toast_cleared:'تم المسح', toast_enter_id:'الصق رقمًا واحدًا على الأقل أولًا',
   toast_analyzing:'جارٍ التحليل…', toast_analyzed:n=>`تم تحليل ${n} رقمًا`, toast_row_copied:'تم نسخ الصف',
@@ -1462,8 +1552,10 @@ ar:{
   toast_formulas_need_id:'أضف عمود الرقم القومي لتفعيل الصيغ',
   toast_save_failed:'فشل الحفظ المحلي — قد لا تُحفظ تغييراتك', toast_cache_cleared:'تم مسح البيانات المخزّنة', toast_system_theme:'اتباع مظهر النظام',
   gender_male:'ذكر', gender_female:'أنثى',
-  flags:{'fake-pattern':'نمط غير واقعي','unknown-governorate':'محافظة غير معروفة','duplicate-id':'رقم مكرر','future-birth':'تاريخ ميلاد مستقبلي','very-early-birth-year':'سنة ميلاد مبكرة بشكل غير معتاد','jan-1-of-century':'تاريخ افتراضي (1 يناير)'},
-  checks:{len14:'الطول 14 رقمًا',century:'رقم القرن صحيح (2 أو 3)',realdate:'تاريخ تقويمي حقيقي',notfake:'ليس نمطًا متكررًا أو متسلسلًا',gov:'كود المحافظة معروف',notfuture:'تاريخ الميلاد ليس في المستقبل',feb29:'ميلاد في 29 فبراير (حالة سنة كبيسة)'},
+  flags:{'fake-pattern':'نمط غير واقعي','unknown-governorate':'محافظة غير معروفة','duplicate-id':'رقم مكرر','future-birth':'تاريخ ميلاد مستقبلي','very-early-birth-year':'سنة ميلاد مبكرة بشكل غير معتاد','jan-1-of-century':'تاريخ افتراضي (1 يناير)','feb29-birthdate':'ميلاد في 29 فبراير (حالة سنة كبيسة)'},
+  hijriMonths:['محرم','صفر','ربيع الأول','ربيع الآخر','جمادى الأولى','جمادى الآخرة','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'],
+  copticMonths:['توت','بابه','هاتور','كيهك','طوبة','أمشير','برمهات','برمودة','بشنس','بؤونة','أبيب','مسرى','النسيء'],
+  checks:{len14:'الطول 14 رقمًا',century:'رقم القرن صحيح (2 أو 3)',realdate:'تاريخ تقويمي حقيقي',notfake:'ليس نمطًا متكررًا أو متسلسلًا',gov:'كود المحافظة معروف',notfuture:'تاريخ الميلاد ليس في المستقبل'},
   err_empty:'قيمة فارغة', err_scientific:'تم رصد ترميز علمي — نسّق الخلية كنص',
   err_length:n=>`طول غير صحيح: ${n} رقمًا (المطلوب 14)`,
   err_century:d=>`رقم قرن غير صالح '${d}' (يجب أن يكون 2 لمواليد القرن العشرين أو 3 لمواليد ما بعد 2000)`,
@@ -1471,9 +1563,14 @@ ar:{
   identity_title:'الهوية', country_name:'جمهورية مصر العربية',
   seg_cent:'القرن', seg_year:'السنة', seg_month:'الشهر', seg_day:'اليوم', seg_gov:'المحافظة', seg_serial:'تسلسلي', seg_gender:'النوع', seg_check:'تحقق',
   age_label:'العمر', weekday_label:'يوم الأسبوع', gov_field_label:'محافظة الميلاد', retire_age_years:n=>`سن معاش ${n} عامًا`,
-  total_days_lived:n=>`${n.toLocaleString('en-US')} يومًا (الإجمالي منذ الميلاد)`,
+  total_days_lived:n=>`${localeNum(n)} يومًا (الإجمالي منذ الميلاد)`,
   retires_label:'يبلغ سن المعاش في', already_eligible:'مستحق بالفعل', years_remaining:n=>`${n} عامًا متبقيًا`,
   checks_title:n=>`الفحوصات — اجتاز ${n.p} من ${n.t}`,
+  age_ymd:(y,m,d)=>`${y} سنة ${m} شهر ${d} يوم`,
+  trace_title:'كيف تم اشتقاق هذا', trace_toggle_hint:'حساب القرن، فحوصات التاريخ، وقاعدة المعاش التي انطبقت',
+  checksum_heuristic_label:'ترجيح رقم التحقق (غير رسمي)', checksum_heuristic_match:'يطابق نمطًا غير منشور شبيهًا بخوارزمية Luhn', checksum_heuristic_mismatch:'لا يطابق هذا النمط',
+  btn_print:'طباعة', serial_gender_hint:'الرقم الأخير من المسلسل يحمل أيضًا دلالة النوع (فردي = ذكر، زوجي = أنثى)',
+  alt_calendars_label:'هجري / قبطي', hijri_suffix:'هـ', coptic_suffix:'ق.ش', hijri_estimated_hint:'تاريخ محسوب (تقويم هجري حسابي) — قد يختلف يومًا أو يومين عن التاريخ المُعلَن رسميًا',
   invalid_id:'رقم قومي غير صالح', normalized_input:'المدخل بعد التنسيق:',
   copy_summary_id:res=>`الرقم القومي: ${res.id}\nالنوع: ${t('gender_'+(res.gender==='Male'?'male':'female'))}\nتاريخ الميلاد: ${res.birthDateStr} (${dayName(res.birthDayIndex)})\nالمحافظة: ${govDisplay(res.govCode)} (${res.govCode})\nالعمر الحالي: ${res.currentAgeYears} سنة ${res.currentAgeMonths} شهر ${res.currentAgeDays} يوم\nإجمالي أيام العمر: ${res.totalDaysLived}\nسن المعاش: ${res.retireAge} عامًا\nتاريخ المعاش: ${res.retireDateStr}\nالفحوصات الهيكلية: ${res.checksPassed}/${res.checksTotal} اجتازت`,
 }
@@ -1554,10 +1651,13 @@ const RETIREMENT_LAW=[
 const SAMPLE_IDS=['29805121401234','30101011509876','27510202100001','26501010100001','29202290001234','30501010100001'];
 const STORAGE_KEY='lxid-state-v8';
 const SESSION_STORAGE_KEY='lxid-session-v1';
-const SENSITIVE_KEYS=['inspectorValue','batchInput','batchResultsCache'];
+const SENSITIVE_KEYS=['inspectorValue','batchInput','batchResultsCache','dtBirth'];
 
 let uploadedSheetData=[];
 let uploadedSheetDisplayData=[];
+let uploadedWorkbook=null;
+let uploadedSheetName='';
+let uploadedHeaderRowIndex=1;
 let processedUploadResults=[];
 let uploadAutoRenameDupes=true;
 let formulaMode='table';
@@ -1565,7 +1665,8 @@ let saveTimer=null;
 let workDaySet=new Set([0,1,2,3,4]);
 let holidayMap=new Map();
 let holidayIssues=[];
-let activeToast=null;
+let activeToasts=[];
+const TOAST_MAX_STACK=3;
 let batchResults=[];
 let batchSearch='';
 
@@ -1602,9 +1703,17 @@ function saveState(patch){
 }
 function saveStateDebounced(patch){clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveState(patch),350);}
 function clearAllCache(){
+  const localSnapshot=loadLocalBlob();
+  const sessionSnapshot=loadSessionBlob();
   localStorage.removeItem(STORAGE_KEY);
   sessionStorage.removeItem(SESSION_STORAGE_KEY);
-  showToast(t('toast_cache_cleared'),'delete_sweep');
+  showUndoToast(t('toast_cache_cleared'),()=>{
+    try{
+      if(Object.keys(localSnapshot).length) localStorage.setItem(STORAGE_KEY,JSON.stringify(localSnapshot));
+      if(Object.keys(sessionSnapshot).length) sessionStorage.setItem(SESSION_STORAGE_KEY,JSON.stringify(sessionSnapshot));
+    }catch(e){}
+    location.reload();
+  });
 }
 function setRememberSensitiveInput(enabled){
   saveState({rememberSensitiveInput:!!enabled});
@@ -1614,6 +1723,17 @@ function setRememberSensitiveInput(enabled){
 function updateRememberSensitiveUI(){
   const el=document.getElementById('remember-sensitive-toggle');
   if(el)el.checked=isRememberSensitiveEnabled();
+}
+function isChecksumHeuristicEnabled(){try{const raw=localStorage.getItem(STORAGE_KEY);return raw?!!JSON.parse(raw).checksumHeuristicEnabled:false;}catch(e){return false;}}
+function setChecksumHeuristicEnabled(enabled){
+  saveState({checksumHeuristicEnabled:!!enabled});
+  updateChecksumHeuristicUI();
+  const inp=document.getElementById('inspector-input');
+  if(inp&&inp.value.trim()) inspectID();
+}
+function updateChecksumHeuristicUI(){
+  const el=document.getElementById('checksum-heuristic-toggle');
+  if(el)el.checked=isChecksumHeuristicEnabled();
 }
 
 let pendingConfirmAction=null;
@@ -1633,10 +1753,6 @@ function runPendingConfirm(){
   if(action) action();
 }
 document.getElementById('confirm-action-btn')?.addEventListener?.('click',runPendingConfirm);
-
-function confirmClearCache(){
-  openConfirm(t('clear_cache_title'),t('clear_cache_msg'),clearAllCache);
-}
 
 function systemPrefersDark(){
   return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -1756,6 +1872,7 @@ function openSettings(){
   renderFontPicker();
   updateThemePickerUI();
   updateRememberSensitiveUI();
+  updateChecksumHeuristicUI();
   const state=loadState();
   applyStylePreset(state.stylePreset||'buttery',false);
   applyFontPairing(state.fontPairing||'fraunces',false);
@@ -1765,16 +1882,35 @@ function closeSettings(){document.getElementById('settings-overlay').classList.r
 
 const TOAST_SUCCESS_ICONS=['check_circle','download_done','task_alt','check','auto_awesome','auto_fix_high','content_paste_go'];
 const TOAST_ERROR_ICONS=['error','block','cancel'];
+function dismissToast(el){
+  if(!el||!el.parentNode) return;
+  if(el._toastTimer) clearTimeout(el._toastTimer);
+  el.classList.add('leaving');
+  setTimeout(()=>{el.remove();activeToasts=activeToasts.filter(x=>x!==el);},220);
+}
 function showToast(msg,icon,type){
   const box=document.getElementById('toasts');
-  const t=document.createElement('div');
+  const el=document.createElement('div');
   const kind=type||(TOAST_ERROR_ICONS.includes(icon)?'error':TOAST_SUCCESS_ICONS.includes(icon)?'success':'info');
-  t.className='toast toast-'+kind;
-  t.innerHTML=`<span class="material-symbols-rounded" style="font-size:1.05rem;">${icon||'info'}</span><span>${escapeHtml(msg)}</span>`;
-  box.appendChild(t);
-  if(activeToast) activeToast.remove();
-  activeToast=t;
-  setTimeout(()=>{t.classList.add('leaving');setTimeout(()=>{t.remove();if(activeToast===t)activeToast=null;},220);},2200);
+  el.className='toast toast-'+kind;
+  el.innerHTML=`<span class="material-symbols-rounded" style="font-size:1.05rem;">${icon||'info'}</span><span>${escapeHtml(msg)}</span>`;
+  box.appendChild(el);
+  activeToasts.push(el);
+  while(activeToasts.length>TOAST_MAX_STACK) dismissToast(activeToasts.shift());
+  const dwell=kind==='error'?3400:kind==='info'?2900:2200;
+  el._toastTimer=setTimeout(()=>dismissToast(el),dwell);
+}
+function showUndoToast(msg,undoFn){
+  const box=document.getElementById('toasts');
+  const el=document.createElement('div');
+  el.className='toast toast-info';
+  const btnId='undo-'+Math.random().toString(36).slice(2,8);
+  el.innerHTML=`<span class="material-symbols-rounded" style="font-size:1.05rem;">delete</span><span style="flex:1;">${escapeHtml(msg)}</span><button type="button" class="toast-undo-btn focusable" id="${btnId}">${t('btn_undo')}</button>`;
+  box.appendChild(el);
+  activeToasts.push(el);
+  while(activeToasts.length>TOAST_MAX_STACK) dismissToast(activeToasts.shift());
+  document.getElementById(btnId).onclick=()=>{undoFn();dismissToast(el);};
+  el._toastTimer=setTimeout(()=>dismissToast(el),6000);
 }
 function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 
@@ -1796,6 +1932,7 @@ function isoToLocalDate(iso){
   return isNaN(dt.getTime())?null:dt;
 }
 function pad2(n){return String(n).padStart(2,'0');}
+function localeNum(n){return Number(n).toLocaleString(currentLang==='ar'?'ar-EG':'en-US',{numberingSystem:'latn'});}
 function clampInt(n,min,max){return Math.min(max,Math.max(min,n));}
 function formatCaption(d){
   if(currentLang==='ar') return `${dayName(d.getDay())}، ${d.getDate()} ${monthName(d.getMonth())} ${d.getFullYear()}`;
@@ -1807,6 +1944,10 @@ function closeAllDateCalendars(except){
 }
 document.addEventListener('click',()=>closeAllDateCalendars());
 document.addEventListener('keydown',(e)=>{if(e.key==='Escape') closeAllDateCalendars();});
+document.addEventListener('mouseover',e=>{const row=e.target.closest('.trace-row[data-seg-ref]');if(row) applyTraceHighlight(row.dataset.segRef);});
+document.addEventListener('mouseout',e=>{const row=e.target.closest('.trace-row[data-seg-ref]');if(row) clearTraceHighlight();});
+document.addEventListener('focusin',e=>{const row=e.target.closest('.trace-row[data-seg-ref]');if(row) applyTraceHighlight(row.dataset.segRef);});
+document.addEventListener('focusout',e=>{const row=e.target.closest('.trace-row[data-seg-ref]');if(row) clearTraceHighlight();});
 
 function buildDateField(nativeInput){
   if(nativeInput.dataset.dateEnhanced) return;
@@ -1856,9 +1997,14 @@ function buildDateField(nativeInput){
     const d=segD.value.trim(),m=segM.value.trim(),y=segY.value.trim();
     if(!d||!m||y.length<4){
       box.classList.remove('invalid');
-      liveEl.dataset.empty='1';liveEl.dataset.invalid='0';
-      liveEl.textContent=t('date_no_selection');
-      if(nativeInput.value!==''){nativeInput.value='';nativeInput.dispatchEvent(new Event('input',{bubbles:true}));}
+      if(!d&&!m&&!y){
+        liveEl.dataset.empty='1';liveEl.dataset.invalid='0';
+        liveEl.textContent=t('date_no_selection');
+        if(nativeInput.value!==''){nativeInput.value='';nativeInput.dispatchEvent(new Event('input',{bubbles:true}));}
+      }else{
+        liveEl.dataset.empty='0';liveEl.dataset.invalid='0';
+        liveEl.textContent=t('date_in_progress');
+      }
       return;
     }
     const di=+d,mi=+m,yi=+y;
@@ -1868,7 +2014,6 @@ function buildDateField(nativeInput){
       box.classList.add('invalid');
       liveEl.dataset.empty='0';liveEl.dataset.invalid='1';
       liveEl.textContent=t('date_invalid');
-      if(nativeInput.value!==''){nativeInput.value='';nativeInput.dispatchEvent(new Event('input',{bubbles:true}));}
       return;
     }
     box.classList.remove('invalid');
@@ -2077,6 +2222,10 @@ function setBusy(btn,busy,label){
 function chunkProcess(items,worker,{onDone,frameBudgetMs=12}={}){
   const results=new Array(items.length);
   let i=0;
+  function schedule(fn){
+    if(document.hidden) setTimeout(fn,0);
+    else requestAnimationFrame(fn);
+  }
   function step(){
     const start=performance.now();
     while(i<items.length&&performance.now()-start<frameBudgetMs){
@@ -2084,12 +2233,12 @@ function chunkProcess(items,worker,{onDone,frameBudgetMs=12}={}){
       i++;
     }
     if(i<items.length){
-      requestAnimationFrame(step);
+      schedule(step);
     }else if(onDone){
       onDone(results);
     }
   }
-  requestAnimationFrame(step);
+  schedule(step);
 }
 
 function markDuplicates(results){
@@ -2131,13 +2280,21 @@ function addYears(date,years){
 }
 function daysBetween(a,b){return Math.round((stripTime(b)-stripTime(a))/86400000);}
 function stripTime(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate());}
+const XLSX_DATE_EPOCH=new Date(1899,11,30);
+function toExcelSerial(d){return daysBetween(XLSX_DATE_EPOCH,d);}
+function isoStrToExcelSerial(isoStr){
+  const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(isoStr||'');
+  if(!m) return undefined;
+  return toExcelSerial(new Date(+m[1],+m[2]-1,+m[3]));
+}
 
 function getRetirementInfo(birthDate){
   const turn60=addYears(birthDate,60);
-  let age=60,rule=`Turns 60 before 1 Jul 2032 → retirement age stays at 60`;
-  for(const t of RETIREMENT_LAW){
-    if(turn60.getTime()>=t.date.getTime()){age=t.age;rule=`Turns 60 on/after ${t.label} → retirement age is ${t.age} (Law 148/2019)`;}
+  let age=60,matched=null;
+  for(const lawRule of RETIREMENT_LAW){
+    if(turn60.getTime()>=lawRule.date.getTime()){age=lawRule.age;matched=lawRule;}
   }
+  const rule=matched?t('retire_rule_threshold',formatLawDate(matched.date),matched.age):t('retire_rule_baseline',formatLawDate(RETIREMENT_LAW[0].date));
   const retireDate=addYears(birthDate,age);
   return {age,turn60,retireDate,rule};
 }
@@ -2158,116 +2315,246 @@ function calcAge(birthDate,asOf){
   return {years,months,days,totalDays};
 }
 
+const CHECK_ORDER=['len14','century','realdate','notfake','gov','notfuture'];
+function luhnExpectedCheckDigit(first13){
+  let sum=0;
+  for(let i=0;i<13;i++){
+    let d=first13.charCodeAt(i)-48;
+    if(i%2===0){d*=2;if(d>9)d-=9;}
+    sum+=d;
+  }
+  return (10-(sum%10))%10;
+}
 function parseID(rawInput,wantTrace){
   const trace=[];
-  const out={valid:false,isNull:false,error:'',trace,raw:String(rawInput??''),normalized:'',id:'',centuryDigit:'',centuryLabel:'',birthYear:null,birthMonth:null,birthDay:null,birthDateObj:null,birthDateStr:'',birthDayOfWeek:'',birthDayIndex:0,govCode:'',governorate:'',governorateKnown:false,serial:'',checkDigit:'',genderDigit:null,gender:'',retireAge:null,retireDateObj:null,retireDateStr:'',currentAgeYears:0,currentAgeMonths:0,currentAgeDays:0,totalDaysLived:0,yearsUntilRetire:0,daysUntilRetire:0,isEligible:false,careerPercent:0,fakePattern:false,retireRule:'',flags:[],checks:[]};
+  function pushTrace(text,seg){if(wantTrace)trace.push({text,seg:seg||null});}
+  const checksMap={};
+  const out={valid:false,isNull:false,error:'',trace,raw:String(rawInput??''),normalized:'',id:'',centuryDigit:'',centuryLabel:'',birthYear:null,birthMonth:null,birthDay:null,birthDateObj:null,birthDateStr:'',birthDayOfWeek:'',birthDayIndex:0,govCode:'',governorate:'',governorateKnown:false,serial:'',checkDigit:'',genderDigit:null,gender:'',retireAge:null,retireDateObj:null,retireDateStr:'',currentAgeYears:0,currentAgeMonths:0,currentAgeDays:0,totalDaysLived:0,yearsUntilRetire:0,daysUntilRetire:0,isEligible:false,careerPercent:0,fakePattern:false,retireRule:'',flags:[],checks:[],checksumHeuristic:null};
+  function finalizeChecks(){
+    out.checks=CHECK_ORDER.map(k=>({key:k,pass:Object.prototype.hasOwnProperty.call(checksMap,k)?checksMap[k]:null}));
+    out.checksTotal=out.checks.length;
+    out.checksPassed=out.checks.filter(c=>c.pass===true).length;
+  }
 
-  if(rawInput===null||rawInput===undefined){out.isNull=true;out.error=t('err_empty');if(wantTrace)trace.push('Input is null or undefined');return out;}
+  if(rawInput===null||rawInput===undefined){out.isNull=true;out.error=t('err_empty');pushTrace('Input is null or undefined');finalizeChecks();return out;}
   let originalStr=String(rawInput).trim();
-  if(originalStr===''){out.isNull=true;out.error=t('err_empty');if(wantTrace)trace.push('Input is empty after trim — likely a blank cell copied from a spreadsheet');return out;}
+  if(originalStr===''){out.isNull=true;out.error=t('err_empty');pushTrace('Input is empty after trim — likely a blank cell copied from a spreadsheet');finalizeChecks();return out;}
   if((originalStr.indexOf('e')!==-1||originalStr.indexOf('E')!==-1)&&/^-?[0-9]*\.?[0-9]+e[+\-]?\d+$/i.test(originalStr)){
     const asNum=Number(originalStr);
     if(Number.isFinite(asNum)&&Number.isInteger(asNum)&&Math.abs(asNum)<Number.MAX_SAFE_INTEGER){
       const reconstructed=asNum.toFixed(0);
-      if(wantTrace)trace.push(`Scientific notation "${originalStr}" reconstructed as exact integer ${reconstructed} (safe because 14-digit values fit inside a double's integer precision)`);
+      pushTrace(`Scientific notation "${originalStr}" reconstructed as exact integer ${reconstructed} (safe because 14-digit values fit inside a double's integer precision)`);
       originalStr=reconstructed;
     } else {
       out.error=t('err_scientific');
-      if(wantTrace)trace.push('Scientific notation could not be reconstructed as an exact integer (value out of safe integer range)');
-      return out;
+      pushTrace('Scientific notation could not be reconstructed as an exact integer (value out of safe integer range)');
+      finalizeChecks();return out;
     }
   }
 
   const cleaned=normalizeIDInput(originalStr);
   out.normalized=cleaned;
-  if(wantTrace)trace.push(`Normalized "${originalStr}" → ${cleaned.length} digits (Arabic-Indic digits supported)`);
+  pushTrace(`Normalized "${originalStr}" → ${cleaned.length} digits (Arabic-Indic digits supported)`);
 
-  if(cleaned.length===0){out.isNull=true;out.error=t('err_empty');if(wantTrace)trace.push('No digits found after normalization (stray spaces or invisible characters) — treated as a blank row');return out;}
-  if(cleaned.length!==14){out.error=t('err_length',cleaned.length);if(wantTrace)trace.push(`Length check failed: got ${cleaned.length}, need 14`);return out;}
-  if(isFakePattern(cleaned)){out.fakePattern=true;out.flags.push('fake-pattern');if(wantTrace)trace.push('Fake pattern detected: repeated or sequential digits');}
+  if(cleaned.length===0){out.isNull=true;out.error=t('err_empty');pushTrace('No digits found after normalization (stray spaces or invisible characters) — treated as a blank row');finalizeChecks();return out;}
+
+  const len14ok=cleaned.length===14;
+  checksMap.len14=len14ok;
+  if(!len14ok){
+    out.error=t('err_length',cleaned.length);
+    pushTrace(`Length check failed: got ${cleaned.length}, need 14`);
+    finalizeChecks();
+    return out;
+  }
+
+  const fakePattern=isFakePattern(cleaned);
+  out.fakePattern=fakePattern;
+  checksMap.notfake=!fakePattern;
+  if(fakePattern){out.flags.push('fake-pattern');pushTrace('Fake pattern detected: repeated or sequential digits','all');}
+
+  out.govCode=cleaned.substring(7,9);
+  const govName=GOVERNORATES[out.govCode];
+  checksMap.gov=!!govName;
+  if(govName){out.governorate=govName;out.governorateKnown=true;pushTrace(`Governorate: code '${out.govCode}' → ${govName}`,'gov');}
+  else{out.governorate='Unknown';out.governorateKnown=false;out.flags.push('unknown-governorate');pushTrace(`Governorate code '${out.govCode}' not recognized — marked Unknown explicitly`,'gov');}
 
   const centuryNum=parseInt(cleaned[0],10);
-  if(!VALID_CENTURY_DIGITS.includes(centuryNum)){out.error=t('err_century',cleaned[0]);if(wantTrace)trace.push(`Century digit '${cleaned[0]}' is not a currently-issued century block`);return out;}
+  const centuryOk=VALID_CENTURY_DIGITS.includes(centuryNum);
+  checksMap.century=centuryOk;
+  if(!centuryOk){
+    out.error=t('err_century',cleaned[0]);
+    pushTrace(`Century digit '${cleaned[0]}' is not a currently-issued century block`,'century');
+    finalizeChecks();
+    return out;
+  }
   const baseYear=(centuryNum-2)*100+1900;
   out.centuryDigit=cleaned[0];
   out.centuryLabel=`${baseYear}s`;
-  if(wantTrace)trace.push(`Century: digit '${cleaned[0]}' → base year computed as (${centuryNum}-2)×100+1900 = ${baseYear}`);
+  pushTrace(`Century: digit '${cleaned[0]}' → base year computed as (${centuryNum}-2)×100+1900 = ${baseYear}`,'century');
 
   const yy=parseInt(cleaned.substring(1,3),10);
   const mm=parseInt(cleaned.substring(3,5),10);
   const dd=parseInt(cleaned.substring(5,7),10);
   const birthYear=baseYear+yy;
   out.birthYear=birthYear;out.birthMonth=mm;out.birthDay=dd;
-  if(wantTrace)trace.push(`Birth year: ${baseYear} + ${yy} = ${birthYear}`);
+  pushTrace(`Birth year: ${baseYear} + ${yy} = ${birthYear}`,'year');
 
-  if(mm<1||mm>12){out.error=t('err_month',mm);if(wantTrace)trace.push(`Month check failed: ${mm} is out of range 1–12`);return out;}
-  const checkDate=new Date(birthYear,mm-1,dd);
-  if(checkDate.getFullYear()!==birthYear||checkDate.getMonth()!==mm-1||checkDate.getDate()!==dd){out.error=t('err_day',dd,monthName(mm-1),birthYear);if(wantTrace)trace.push(`Date validation failed: ${dd}/${mm}/${birthYear} is not a real calendar date`);return out;}
+  let checkDate=null,dateOk=mm>=1&&mm<=12;
+  if(!dateOk){
+    out.error=t('err_month',mm);
+    pushTrace(`Month check failed: ${mm} is out of range 1–12`,'month');
+  }else{
+    checkDate=new Date(birthYear,mm-1,dd);
+    dateOk=checkDate.getFullYear()===birthYear&&checkDate.getMonth()===mm-1&&checkDate.getDate()===dd;
+    if(!dateOk){
+      out.error=t('err_day',dd,monthName(mm-1),birthYear);
+      pushTrace(`Date validation failed: ${dd}/${mm}/${birthYear} is not a real calendar date`,'day');
+    }
+  }
+  checksMap.realdate=dateOk;
+  if(!dateOk){finalizeChecks();return out;}
 
   const now=new Date();
-  if(checkDate>now){out.flags.push('future-birth');if(wantTrace)trace.push(`Warning: birth date ${birthYear}-${mm}-${dd} is in the future`);}
+  checksMap.notfuture=checkDate<=now;
+  if(checkDate>now){out.flags.push('future-birth');pushTrace(`Warning: birth date ${birthYear}-${mm}-${dd} is in the future`,['year','month','day']);}
 
   out.birthDateObj=checkDate;
   out.birthDateStr=`${birthYear}-${pad2(mm)}-${pad2(dd)}`;
   out.birthDayIndex=checkDate.getDay();
   out.birthDayOfWeek=DAY_NAMES[checkDate.getDay()];
-  if(wantTrace)trace.push(`Birth date validated: ${out.birthDateStr} (${out.birthDayOfWeek})`);
+  pushTrace(`Birth date validated: ${out.birthDateStr} (${out.birthDayOfWeek})`,['year','month','day']);
 
-  out.govCode=cleaned.substring(7,9);
-  const govName=GOVERNORATES[out.govCode];
-  if(govName){out.governorate=govName;out.governorateKnown=true;if(wantTrace)trace.push(`Governorate: code '${out.govCode}' → ${govName}`);}
-  else{out.governorate='Unknown';out.governorateKnown=false;out.flags.push('unknown-governorate');if(wantTrace)trace.push(`Governorate code '${out.govCode}' not recognized — marked Unknown explicitly`);}
-
-  out.serial=cleaned.substring(9,12);
-  if(wantTrace)trace.push(`Serial (3 digits): ${out.serial}`);
+  out.serial=cleaned.substring(9,13);
+  pushTrace(`Serial: digits 10–13 → ${out.serial} (last digit also encodes gender)`,'serial');
 
   out.genderDigit=parseInt(cleaned[12],10);
   out.gender=out.genderDigit%2===1?'Male':'Female';
-  if(wantTrace)trace.push(`Gender: digit '${cleaned[12]}' at position 13 → ${out.gender} (odd = Male, even = Female)`);
+  pushTrace(`Gender: last serial digit '${cleaned[12]}' → ${out.gender} (odd = Male, even = Female)`,'serial');
 
   out.checkDigit=cleaned[13];
-  if(wantTrace)trace.push(`Check digit (14th digit): ${out.checkDigit}`);
+  pushTrace(`Check digit (14th digit): ${out.checkDigit}`,'check');
+
+  const luhnExpected=luhnExpectedCheckDigit(cleaned.substring(0,13));
+  out.checksumHeuristic={expected:String(luhnExpected),actual:out.checkDigit,match:String(luhnExpected)===out.checkDigit};
 
   const retire=getRetirementInfo(checkDate);
   out.retireAge=retire.age;
   out.retireRule=retire.rule;
   out.retireDateObj=retire.retireDate;
   out.retireDateStr=`${retire.retireDate.getFullYear()}-${pad2(retire.retireDate.getMonth()+1)}-${pad2(retire.retireDate.getDate())}`;
-  if(wantTrace)trace.push(`Retirement (Law 148/2019): ${retire.rule}`);
-  if(wantTrace)trace.push(`Retirement date: ${out.retireDateStr}`);
+  pushTrace(`Retirement (Law 148/2019): ${retire.rule}`,['year','month','day']);
+  pushTrace(`Retirement date: ${out.retireDateStr}`,['year','month','day']);
 
   const age=calcAge(checkDate,now);
   out.currentAgeYears=age.years;out.currentAgeMonths=age.months;out.currentAgeDays=age.days;
   out.totalDaysLived=age.totalDays;
-  if(wantTrace)trace.push(`Current age: ${age.years}y ${age.months}m ${age.days}d (as of ${now.toDateString()})`);
+  pushTrace(`Current age: ${age.years}y ${age.months}m ${age.days}d (as of ${now.toDateString()})`,['year','month','day']);
 
   out.daysUntilRetire=daysBetween(now,retire.retireDate);
   out.yearsUntilRetire=out.daysUntilRetire>0?Math.floor(out.daysUntilRetire/365.25):0;
   out.isEligible=out.daysUntilRetire<=0;
   out.careerPercent=Math.max(0,Math.min(100,Math.round((age.years/out.retireAge)*100)));
-  if(wantTrace)trace.push(`Career progress: ${age.years}/${out.retireAge} years = ${out.careerPercent}%`);
-  if(wantTrace)trace.push(`Retirement eligibility: ${out.isEligible?'Eligible now':out.yearsUntilRetire+' years remaining'}`);
+  pushTrace(`Career progress: ${age.years}/${out.retireAge} years = ${out.careerPercent}%`,['year','month','day']);
+  pushTrace(`Retirement eligibility: ${out.isEligible?'Eligible now':out.yearsUntilRetire+' years remaining'}`,['year','month','day']);
 
-  out.checks=[
-    {key:'len14',pass:true},
-    {key:'century',pass:true},
-    {key:'realdate',pass:true},
-    {key:'notfake',pass:!out.fakePattern},
-    {key:'gov',pass:out.governorateKnown},
-    {key:'notfuture',pass:checkDate<=now}
-  ];
-  if(mm===2&&dd===29){out.checks.push({key:'feb29',pass:true,note:true});if(wantTrace)trace.push('Note: Feb 29 birth date — an unusual but valid edge case, handled without drift');}
-  if(birthYear<1905){out.flags.push('very-early-birth-year');if(wantTrace)trace.push('Note: birth year is unusually early for a living person');}
-  if(yy===0&&mm===1&&dd===1){out.flags.push('jan-1-of-century');if(wantTrace)trace.push('Note: Jan 1 of the century block is a common placeholder date');}
-  out.checksPassed=out.checks.filter(c=>c.pass).length;
-  out.checksTotal=out.checks.length;
-  if(wantTrace)trace.push(`Structural checks: ${out.checksPassed}/${out.checksTotal} passed`);
-  if(wantTrace)trace.push('Note: these are format checks only and cannot confirm the ID is genuine or currently active — that requires verification against official records');
+  if(mm===2&&dd===29){out.flags.push('feb29-birthdate');pushTrace('Note: Feb 29 birth date — an unusual but valid edge case, handled without drift',['month','day']);}
+  if(birthYear<1905){out.flags.push('very-early-birth-year');pushTrace('Note: birth year is unusually early for a living person','year');}
+  if(yy===0&&mm===1&&dd===1){out.flags.push('jan-1-of-century');pushTrace('Note: Jan 1 of the century block is a common placeholder date',['year','month','day']);}
+
+  finalizeChecks();
+  pushTrace(`Structural checks: ${out.checksPassed}/${out.checksTotal} passed`,'all');
+  pushTrace('Note: these are format checks only and cannot confirm the ID is genuine or currently active — that requires verification against official records');
 
   out.valid=true;
   out.id=cleaned;
   return out;
 }
+
+function gregorianToJD(y,m,d){
+  const isLeap=(y%4===0&&y%100!==0)||y%400===0;
+  let leapAdj;
+  if(m<=2) leapAdj=0; else if(isLeap) leapAdj=-1; else leapAdj=-2;
+  const EPOCH=1721425.5;
+  return EPOCH-1+(365*(y-1))+Math.floor((y-1)/4)-Math.floor((y-1)/100)+Math.floor((y-1)/400)+Math.floor((((367*m)-362)/12)+leapAdj+d);
+}
+function julianToJD(y,m,d){
+  if(m<=2){y-=1;m+=12;}
+  return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d-1524.5;
+}
+function jdToGregorianDate(jd){
+  return new Date(Math.round((jd+0.5-2440588)*86400000));
+}
+function islamicToJD(y,m,d){
+  const EPOCH=1948439.5;
+  return d+Math.ceil(29.5*(m-1))+(y-1)*354+Math.floor((3+11*y)/30)+EPOCH-1;
+}
+function jdToIslamic(jd){
+  const EPOCH=1948439.5;
+  jd=Math.floor(jd)+0.5;
+  const year=Math.floor(((30*(jd-EPOCH))+10646)/10631);
+  const month=Math.min(12,Math.ceil((jd-(29+islamicToJD(year,1,1)))/29.5)+1);
+  const day=Math.floor(jd-islamicToJD(year,month,1))+1;
+  return {year,month,day};
+}
+function copticToJD(y,m,d){
+  const EPOCH=1825029.5;
+  return d+(m-1)*30+(y-1)*365+Math.floor(y/4)+EPOCH-1;
+}
+function jdToCoptic(jd){
+  const EPOCH=1825029.5;
+  const cdc=Math.floor(jd)+0.5-EPOCH;
+  const year=Math.floor((cdc-Math.floor((cdc+366)/1461))/365)+1;
+  const yday=jd-copticToJD(year,1,1);
+  const month=Math.floor(yday/30)+1;
+  const day=yday-(month-1)*30+1;
+  return {year,month,day};
+}
+function gregorianToHijri(date){return jdToIslamic(gregorianToJD(date.getFullYear(),date.getMonth()+1,date.getDate()));}
+function gregorianToCoptic(date){return jdToCoptic(gregorianToJD(date.getFullYear(),date.getMonth()+1,date.getDate()));}
+function hijriYearsSpanning(gregYear){
+  const y1=jdToIslamic(gregorianToJD(gregYear,1,1)).year;
+  const y2=jdToIslamic(gregorianToJD(gregYear,12,31)).year;
+  const years=new Set();
+  for(let y=y1-1;y<=y2+1;y++) years.add(y);
+  return [...years];
+}
+function hijriDatesInGregYear(gregYear,month,day){
+  const results=[];
+  hijriYearsSpanning(gregYear).forEach(hy=>{
+    const dt=jdToGregorianDate(islamicToJD(hy,month,day));
+    if(dt.getFullYear()===gregYear) results.push(dt);
+  });
+  return results;
+}
+function copticDateInGregYear(gregYear,month,day){
+  const cy=jdToCoptic(gregorianToJD(gregYear,1,1)).year;
+  for(const y of [cy,cy+1,cy-1]){
+    const dt=jdToGregorianDate(copticToJD(y,month,day));
+    if(dt.getFullYear()===gregYear) return dt;
+  }
+  return jdToGregorianDate(copticToJD(cy,month,day));
+}
+function orthodoxEasterJulian(year){
+  const a=year%4,b=year%7,c=year%19;
+  const d=(19*c+15)%30;
+  const e=(2*a+4*b-d+34)%7;
+  const month=Math.floor((d+e+114)/31);
+  const day=((d+e+114)%31)+1;
+  return {year,month,day};
+}
+function copticEasterInGregYear(gregYear){
+  for(const y of [gregYear,gregYear-1,gregYear+1]){
+    const je=orthodoxEasterJulian(y);
+    const dt=jdToGregorianDate(julianToJD(je.year,je.month,je.day));
+    if(dt.getFullYear()===gregYear) return dt;
+  }
+  const je=orthodoxEasterJulian(gregYear);
+  return jdToGregorianDate(julianToJD(je.year,je.month,je.day));
+}
+function hijriMonthName(idx){return (I18N[currentLang].hijriMonths||I18N.en.hijriMonths)[idx]||'';}
+function copticMonthName(idx){return (I18N[currentLang].copticMonths||I18N.en.copticMonths)[idx]||'';}
+function formatHijri(hd){return `${hd.day} ${hijriMonthName(hd.month-1)} ${hd.year} ${t('hijri_suffix')}`;}
+function formatCoptic(cd){return `${cd.day} ${copticMonthName(cd.month-1)} ${cd.year} ${t('coptic_suffix')}`;}
 
 function genderBadge(gender,size){
   const isM=gender==='Male';
@@ -2382,13 +2669,25 @@ function batchLoadSample(){
   showToast(t('toast_sample_loaded'),'auto_awesome');
 }
 function batchClear(){
+  const prevInput=document.getElementById('batch-input').value;
+  const prevResults=batchResults;
+  const prevSearch=batchSearch;
+  if(!prevInput.trim()&&!prevResults.length) return;
   document.getElementById('batch-input').value='';
   updateBatchCount();
   batchResults=[];
   batchSearch='';
   renderBatchTable();
   saveState({batchResultsCache:null,batchSearch:''});
-  showToast(t('toast_cleared'),'delete');
+  showUndoToast(t('toast_cleared'),()=>{
+    document.getElementById('batch-input').value=prevInput;
+    updateBatchCount();
+    batchResults=prevResults;
+    batchSearch=prevSearch;
+    renderBatchTable();
+    cacheBatchResults();
+    saveStateDebounced({batchInput:prevInput});
+  });
 }
 
 let batchIgnoreNulls=false;
@@ -2408,6 +2707,8 @@ function processBatch(){
     batchResults=batchIgnoreNulls?results.filter(r=>!r.isNull):results;
     markDuplicates(batchResults);
     batchTableCats=new Set(['valid','error','null']);
+    batchMenuSelection=new Set(batchTableCats);
+    batchMenuCustomized=false;
     batchSearch='';
     renderBatchTable();
     cacheBatchResults();
@@ -2427,8 +2728,10 @@ function cacheBatchResults(){
 function catOf(r){return r.valid?'valid':(r.isNull?'null':'error');}
 
 let batchTableCats=new Set(['valid','error','null']);
+let batchMenuCustomized=false;
 function toggleBatchTableCat(cat){
   if(batchTableCats.has(cat)) batchTableCats.delete(cat); else batchTableCats.add(cat);
+  if(!batchMenuCustomized) batchMenuSelection=new Set(batchTableCats);
   renderBatchTable();
   saveStateDebounced({batchTableCats:[...batchTableCats]});
 }
@@ -2437,10 +2740,89 @@ function clearBatchSearch(){batchSearch='';renderBatchTable();saveStateDebounced
 
 let lastBatchRows=[];
 
-function rowCopyBtn(rowId,idx,fnName){
-  return `<span class="material-symbols-rounded rowcopy focusable" id="${rowId}" role="button" tabindex="0" title="${t('copy_row_title')}" onclick="${fnName}(${idx},'${rowId}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();${fnName}(${idx},'${rowId}')}">content_copy</span>`;
+function rowCopyBtn(rowId,idx,fnName,tabbable){
+  return `<span class="material-symbols-rounded rowcopy focusable" id="${rowId}" role="button" tabindex="${tabbable?'0':'-1'}" title="${t('copy_row_title')}" onclick="${fnName}(${idx},'${rowId}')" onkeydown="handleRovingCopyKey(event,'${fnName}',${idx},'${rowId}')">content_copy</span>`;
 }
+function handleRovingCopyKey(e,fnName,idx,rowId){
+  if(e.key==='Enter'||e.key===' '){e.preventDefault();window[fnName](idx,rowId);return;}
+  if(e.key!=='ArrowDown'&&e.key!=='ArrowUp') return;
+  e.preventDefault();
+  const items=[...document.querySelectorAll('#batch-table-wrap .rowcopy')];
+  const curIdx=items.indexOf(e.target);
+  if(curIdx===-1) return;
+  const nextIdx=e.key==='ArrowDown'?Math.min(items.length-1,curIdx+1):Math.max(0,curIdx-1);
+  if(nextIdx===curIdx) return;
+  items.forEach((el,i)=>el.setAttribute('tabindex',i===nextIdx?'0':'-1'));
+  items[nextIdx].focus();
+}
+function batchCellHtml(r,key){
+  switch(key){
+    case 'id':return `<td class="mono" style="font-weight:650;">${escapeHtml(r.id)}</td>`;
+    case 'status':return `<td><span class="statuspill"><span class="statdot ok"></span>${t('status_valid')}</span></td>`;
+    case 'century':return `<td>${r.centuryLabel}</td>`;
+    case 'birthdate':return `<td>${r.birthDateStr}</td>`;
+    case 'weekday':return `<td>${dayName(r.birthDayIndex)}</td>`;
+    case 'age':return `<td>${r.currentAgeYears}</td>`;
+    case 'totaldays':return `<td class="mono">${localeNum(r.totalDaysLived)}</td>`;
+    case 'gender':return `<td>${genderBadge(r.gender,'.85rem')}</td>`;
+    case 'govcode':return `<td class="mono">${r.govCode}</td>`;
+    case 'gov':return `<td style="${r.governorateKnown?'':'font-style:italic;color:var(--ink-2);'}">${govDisplay(r.govCode)}</td>`;
+    case 'serial':return `<td class="mono">${r.serial}</td>`;
+    case 'check':return `<td class="mono">${r.checkDigit||'—'}</td>`;
+    case 'retireage':return `<td style="color:var(--amber-text);font-weight:650;">${r.retireAge}</td>`;
+    case 'retiredate':return `<td style="color:var(--amber);font-weight:650;">${r.retireDateStr}</td>`;
+    case 'yearstoretire':return `<td>${r.yearsUntilRetire}</td>`;
+    case 'career':return `<td>${r.careerPercent}%</td>`;
+    case 'flags':return `<td style="font-size:.7rem;color:var(--ink-2);">${r.flags.length?r.flags.map(f=>flagLabel(f)).join(', '):'—'}</td>`;
+    default:return '<td>—</td>';
+  }
+}
+const BATCH_ROW_CAP=150;
 
+function computeBatchRows(){
+  const searchTerm=batchSearch.toLowerCase();
+  let rows=batchResults.filter(r=>batchTableCats.has(catOf(r)));
+  if(searchTerm) rows=rows.filter(r=>(r.raw+' '+(r.id||'')+' '+(r.error||'')+' '+(r.governorate||'')).toLowerCase().includes(searchTerm));
+  return rows;
+}
+function buildBatchTableHtml(rows){
+  const visibleDefs=BATCH_COLUMN_DEFS.filter(c=>c.key!=='error'&&batchColumnsSelected.has(c.key));
+  const cols=visibleDefs.map(c=>t(c.labelKey));
+  const idVisible=visibleDefs.some(c=>c.key==='id');
+  const statusVisible=visibleDefs.some(c=>c.key==='status');
+  const otherCount=visibleDefs.length-(idVisible?1:0)-(statusVisible?1:0);
+  const capped=rows.length>BATCH_ROW_CAP;
+  const visibleRows=capped?rows.slice(0,BATCH_ROW_CAP):rows;
+
+  const rowHtml=visibleRows.map((r,idx)=>{
+    const rowId=`brow-${idx}`;
+    const copyCell=`<td>${rowCopyBtn(rowId,idx,'copyBatchRow',idx===0)}</td>`;
+    if(r.valid){
+      return `<tr>${copyCell}${visibleDefs.map(c=>batchCellHtml(r,c.key)).join('')}</tr>`;
+    }
+    const idCellHtml=idVisible?(r.isNull
+      ?`<td class="mono" style="font-weight:650;color:var(--ink-3);font-style:italic;">—</td>`
+      :`<td class="mono" style="font-weight:650;">${escapeHtml(r.raw)}</td>`):'';
+    const statusCellHtml=statusVisible?(r.isNull
+      ?`<td><span class="statuspill"><span class="statdot warn"></span>${t('status_null')}</span></td>`
+      :`<td><span class="statuspill"><span class="statdot bad"></span>${t('status_error')}</span></td>`):'';
+    const msgHtml=otherCount>0?`<td colspan="${otherCount}" style="${r.isNull?'color:var(--ink-3);font-style:italic;':'color:var(--scarlet);font-weight:600;'}">${escapeHtml(r.error)}</td>`:'';
+    return `<tr>${copyCell}${idCellHtml}${statusCellHtml}${msgHtml}</tr>`;
+  }).join('');
+  const tableHtml=`<table class="dtable"><thead><tr><th></th>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
+          <tbody>${rowHtml||`<tr><td colspan="${cols.length+1}" style="text-align:center;padding:3rem;color:var(--ink-3);">${t('no_matching_rows')}</td></tr>`}</tbody></table>`;
+  return {tableHtml,capped};
+}
+function refreshBatchTableOnly(){
+  const wrap=document.getElementById('batch-table-wrap');
+  const notice=document.getElementById('batch-capped-notice');
+  if(!wrap) return;
+  const rows=computeBatchRows();
+  lastBatchRows=rows;
+  const {tableHtml,capped}=buildBatchTableHtml(rows);
+  wrap.innerHTML=tableHtml;
+  if(notice) notice.innerHTML=capped?t('rows_capped_notice',BATCH_ROW_CAP,rows.length):'';
+}
 function renderBatchTable(){
   const resultEl=document.getElementById('batch-result');
   const prevSearchInput=document.getElementById('batch-search');
@@ -2456,54 +2838,9 @@ function renderBatchTable(){
   const nullCount=batchResults.filter(r=>r.isNull).length;
   const errorCount=total-validCount-nullCount;
   const showNullBucket=nullCount>0;
-  const searchTerm=batchSearch.toLowerCase();
-  let rows=batchResults.filter(r=>batchTableCats.has(catOf(r)));
-  if(searchTerm) rows=rows.filter(r=>(r.raw+' '+(r.id||'')+' '+(r.error||'')+' '+(r.governorate||'')).toLowerCase().includes(searchTerm));
+  const rows=computeBatchRows();
   lastBatchRows=rows;
-  const cols=[t('col_id'),t('col_status'),t('col_century'),t('col_birthdate'),t('col_weekday'),t('col_age'),t('col_totaldays'),t('col_gender'),t('col_govcode'),t('col_gov'),t('col_serial'),t('col_check'),t('col_retireage'),t('col_retiredate'),t('col_yearstoretire'),t('col_career'),t('col_flags')];
-
-  const rowHtml=rows.map((r,idx)=>{
-    const rowId=`brow-${idx}`;
-    if(r.valid){
-      const flagsText=r.flags.length?r.flags.map(f=>flagLabel(f)).join(', '):'—';
-      return `<tr>
-        <td>${rowCopyBtn(rowId,idx,'copyBatchRow')}</td>
-        <td class="mono" style="font-weight:650;">${r.id}</td>
-        <td><span class="statuspill"><span class="statdot ok"></span>${t('status_valid')}</span></td>
-        <td>${r.centuryLabel}</td>
-        <td>${r.birthDateStr}</td>
-        <td>${dayName(r.birthDayIndex)}</td>
-        <td>${r.currentAgeYears}</td>
-        <td class="mono">${r.totalDaysLived.toLocaleString('en-US')}</td>
-        <td>${genderBadge(r.gender,'.85rem')}</td>
-        <td class="mono">${r.govCode}</td>
-        <td style="${r.governorateKnown?'':'font-style:italic;color:var(--ink-2);'}">${govDisplay(r.govCode)}</td>
-        <td class="mono">${r.serial}</td>
-        <td class="mono">${r.checkDigit||'—'}</td>
-        <td style="color:var(--amber-text);font-weight:650;">${r.retireAge}</td>
-        <td style="color:var(--amber);font-weight:650;">${r.retireDateStr}</td>
-        <td>${r.yearsUntilRetire}</td>
-        <td>${r.careerPercent}%</td>
-        <td style="font-size:.7rem;color:var(--ink-2);">${flagsText}</td>
-      </tr>`;
-    }
-    if(r.isNull){
-      return `<tr>
-        <td>${rowCopyBtn(rowId,idx,'copyBatchRow')}</td>
-        <td class="mono" style="font-weight:650;color:var(--ink-3);font-style:italic;">—</td>
-        <td><span class="statuspill"><span class="statdot warn"></span>${t('status_null')}</span></td>
-        <td colspan="14" style="color:var(--ink-3);font-style:italic;">${escapeHtml(r.error)}</td>
-        <td>—</td>
-      </tr>`;
-    }
-    return `<tr>
-      <td>${rowCopyBtn(rowId,idx,'copyBatchRow')}</td>
-      <td class="mono" style="font-weight:650;">${escapeHtml(r.raw)}</td>
-      <td><span class="statuspill"><span class="statdot bad"></span>${t('status_error')}</span></td>
-      <td colspan="14" style="color:var(--scarlet);font-weight:600;">${escapeHtml(r.error)}</td>
-      <td>—</td>
-    </tr>`;
-  }).join('');
+  const {tableHtml,capped}=buildBatchTableHtml(rows);
 
   resultEl.innerHTML=`
     <div class="card pad stack">
@@ -2557,11 +2894,9 @@ function renderBatchTable(){
           <button type="button" class="field-clear-btn" tabindex="-1" onclick="clearBatchSearch()" data-i18n-title="clear_search_title" title="Clear search" aria-label="Clear search"><span class="material-symbols-rounded">cancel</span></button>
         </div>
       </div>
+      <p id="batch-capped-notice" style="font-size:.72rem;color:var(--ink-3);margin:0;">${capped?t('rows_capped_notice',BATCH_ROW_CAP,rows.length):''}</p>
       <div class="scrollx" style="border-radius:16px;border:1px solid var(--edge);">
-        <div style="max-height:460px;overflow:auto;">
-          <table class="dtable"><thead><tr><th></th>${cols.map(c=>`<th>${c}</th>`).join('')}</tr></thead>
-          <tbody>${rowHtml||`<tr><td colspan="${cols.length+1}" style="text-align:center;padding:3rem;color:var(--ink-3);">${t('no_matching_rows')}</td></tr>`}</tbody></table>
-        </div>
+        <div id="batch-table-wrap" style="max-height:460px;overflow:auto;">${tableHtml}</div>
       </div>
     </div>`;
   if(searchWasFocused){
@@ -2578,10 +2913,10 @@ const BATCH_COLUMN_DEFS=[
   {key:'status',labelKey:'col_status'},
   {key:'century',labelKey:'col_century'},
   {key:'birthdate',labelKey:'col_birthdate',formula:feBirthDateExpr,fmt:'yyyy-mm-dd'},
-  {key:'weekday',labelKey:'col_weekday',formula:feWeekdayExpr},
+  {key:'weekday',labelKey:'col_weekday',formula:feWeekdayExpr,type:'s'},
   {key:'age',labelKey:'col_age',formula:feAgeExpr},
   {key:'totaldays',labelKey:'col_totaldays',formula:feTotalDaysExpr},
-  {key:'gender',labelKey:'col_gender'},
+  {key:'gender',labelKey:'col_gender',formula:feGenderExpr,type:'s'},
   {key:'govcode',labelKey:'col_govcode'},
   {key:'gov',labelKey:'col_gov'},
   {key:'serial',labelKey:'col_serial'},
@@ -2621,6 +2956,7 @@ function columnsMenuHtml(){
 function toggleBatchColumn(key){
   if(batchColumnsSelected.has(key)) batchColumnsSelected.delete(key); else batchColumnsSelected.add(key);
   syncColumnsMenu();
+  refreshBatchTableOnly();
   saveState({batchColumnsSelected:[...batchColumnsSelected]});
 }
 function batchColumnsSelectAll(){
@@ -2628,6 +2964,7 @@ function batchColumnsSelectAll(){
   const allSelected=all.every(k=>batchColumnsSelected.has(k));
   batchColumnsSelected=allSelected?new Set():new Set(all);
   syncColumnsMenu();
+  refreshBatchTableOnly();
   saveState({batchColumnsSelected:[...batchColumnsSelected]});
 }
 function syncColumnsMenu(){
@@ -2675,6 +3012,7 @@ function batchChecklistHtml(kind){
       <span class="batch-dropmenu-headlabel">${t('checklist_title')}</span>
       <span class="batch-dropmenu-headcount" id="head-count-${kind}">${selectedCount}/3</span>
     </label>
+    <p style="font-size:.68rem;color:var(--ink-3);margin:-.15rem 0 .1rem;padding:0 .2rem;">${t('checklist_subtitle')}</p>
     ${rowsHtml}
     <div class="batch-dropmenu-summary" id="sel-summary-${kind}">${t('rows_selected_count',getSelectedBatchRows().length)}</div>
     <div class="batch-dropmenu-div"></div>
@@ -2683,10 +3021,12 @@ function batchChecklistHtml(kind){
 }
 
 function toggleBatchMenuSelection(cat){
+  batchMenuCustomized=true;
   if(batchMenuSelection.has(cat)) batchMenuSelection.delete(cat); else batchMenuSelection.add(cat);
   syncBatchMenus();
 }
 function batchMenuSelectAll(){
+  batchMenuCustomized=true;
   const allSelected=['valid','error','null'].every(c=>batchMenuSelection.has(c));
   batchMenuSelection=allSelected?new Set():new Set(['valid','error','null']);
   syncBatchMenus();
@@ -2798,6 +3138,9 @@ function confirmDownloadSelection(format){
 function resetUploadState(){
   uploadedSheetData=[];
   uploadedSheetDisplayData=[];
+  uploadedWorkbook=null;
+  uploadedSheetName='';
+  uploadedHeaderRowIndex=1;
   processedUploadResults=[];
   uploadColumnsSelected=new Set();
   uploadColumnsMenuKeys=[];
@@ -2808,6 +3151,8 @@ function resetUploadState(){
   document.getElementById('upload-preview-thead').innerHTML='';
   document.getElementById('upload-preview-tbody').innerHTML='';
   document.getElementById('upload-columns-wrap').innerHTML='';
+  const headerRowInput=document.getElementById('upload-header-row');
+  if(headerRowInput) headerRowInput.value='1';
 }
 
 function renderUploadPreview(headers){
@@ -2872,46 +3217,85 @@ function handleFileUpload(e){
     document.getElementById('file-input').value='';
     return;
   }
-  document.getElementById('file-info-text').textContent=t('upload_file_label',file.name);
+  const infoEl=document.getElementById('file-info-text');
+  infoEl.textContent=t('upload_reading_file',file.name);
   const reader=new FileReader();
   reader.onerror=function(){
     showToast(t('toast_file_read_error'),'error');
     document.getElementById('file-input').value='';
   };
   reader.onload=function(evt){
+    requestAnimationFrame(()=>requestAnimationFrame(()=>{
     try{
       const data=new Uint8Array(evt.target.result);
       const wb=XLSX.read(data,{type:'array',codepage:65001});
-      const firstSheet=wb.SheetNames[0];
-      if(!firstSheet) throw new Error('no-sheet');
-      const ws=wb.Sheets[firstSheet];
-      const aoaRaw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
-      const aoaDisplay=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:''});
-      if(aoaRaw.length<2){showToast(t('toast_no_rows_file'),'error');document.getElementById('file-input').value='';return;}
-      const rawHeaders=aoaRaw[0].map((h,i)=>{const s=String(h??'').trim();return s||t('upload_col_unnamed',i+1);});
-      const {headers,dupCount}=resolveDuplicateHeaders(rawHeaders,uploadAutoRenameDupes);
-      uploadedSheetData=aoaRaw.slice(1).map(rowArr=>rowFromArray(headers,rowArr));
-      uploadedSheetDisplayData=aoaDisplay.slice(1).map(rowArr=>rowFromArray(headers,rowArr));
-      if(uploadedSheetData.length===0){showToast(t('toast_no_rows_file'),'error');document.getElementById('file-input').value='';return;}
-      if(headers.length===0){showToast(t('toast_no_rows_file'),'error');document.getElementById('file-input').value='';return;}
-      document.getElementById('file-rows-text').textContent=t('upload_rows_detected',uploadedSheetData.length);
-      const select=document.getElementById('column-select');
-      select.innerHTML='';
-      headers.forEach(h=>{
-        const opt=document.createElement('option');
-        opt.value=h;opt.textContent=h;
-        if(/id|national|رقم/i.test(h)) opt.selected=true;
-        select.appendChild(opt);
-      });
-      renderUploadPreview(headers);
-      document.getElementById('upload-mapping').classList.remove('hide');
-      if(dupCount>0) showToast(uploadAutoRenameDupes?t('toast_dupes_renamed',dupCount):t('toast_dupes_overwritten',dupCount),'info');
+      if(!wb.SheetNames.length) throw new Error('no-sheet');
+      uploadedWorkbook=wb;
+      uploadedSheetName=wb.SheetNames[0];
+      uploadedHeaderRowIndex=1;
+      const sheetWrap=document.getElementById('upload-sheet-wrap');
+      const sheetSelect=document.getElementById('upload-sheet-select');
+      if(sheetSelect){
+        sheetSelect.innerHTML=wb.SheetNames.map(n=>`<option value="${escapeHtml(n)}">${escapeHtml(n)}</option>`).join('');
+        sheetSelect.value=uploadedSheetName;
+      }
+      if(sheetWrap) sheetWrap.classList.toggle('hide',wb.SheetNames.length<2);
+      infoEl.textContent=t('upload_file_label',file.name);
+      applySheetSelection();
     }catch(err){
       showToast(t('toast_file_parse_error'),'error');
       document.getElementById('file-input').value='';
+      infoEl.textContent=t('upload_file_default');
     }
+    }));
   };
   reader.readAsArrayBuffer(file);
+}
+function applySheetSelection(){
+  if(!uploadedWorkbook||!uploadedSheetName) return;
+  try{
+    const ws=uploadedWorkbook.Sheets[uploadedSheetName];
+    if(!ws) throw new Error('no-sheet');
+    const aoaRaw=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+    const aoaDisplay=XLSX.utils.sheet_to_json(ws,{header:1,raw:false,defval:''});
+    const headerIdx=Math.max(0,Math.min(Math.max(0,aoaRaw.length-1),uploadedHeaderRowIndex-1));
+    if(aoaRaw.length<headerIdx+2){showToast(t('toast_no_rows_file'),'error');return;}
+    const rawHeaders=aoaRaw[headerIdx].map((h,i)=>{const s=String(h??'').trim();return s||t('upload_col_unnamed',i+1);});
+    const {headers,dupCount}=resolveDuplicateHeaders(rawHeaders,uploadAutoRenameDupes);
+    uploadedSheetData=aoaRaw.slice(headerIdx+1).map(rowArr=>rowFromArray(headers,rowArr));
+    uploadedSheetDisplayData=aoaDisplay.slice(headerIdx+1).map(rowArr=>rowFromArray(headers,rowArr));
+    if(uploadedSheetData.length===0||headers.length===0){showToast(t('toast_no_rows_file'),'error');return;}
+    document.getElementById('file-rows-text').textContent=t('upload_rows_detected',uploadedSheetData.length);
+    const select=document.getElementById('column-select');
+    const prevSelected=select.value;
+    select.innerHTML='';
+    headers.forEach(h=>{
+      const opt=document.createElement('option');
+      opt.value=h;opt.textContent=h;
+      select.appendChild(opt);
+    });
+    if(headers.includes(prevSelected)){select.value=prevSelected;}
+    else{
+      const guess=headers.find(h=>/id|national|رقم/i.test(h));
+      if(guess) select.value=guess;
+    }
+    renderUploadPreview(headers);
+    document.getElementById('upload-mapping').classList.remove('hide');
+    if(dupCount>0) showToast(uploadAutoRenameDupes?t('toast_dupes_renamed',dupCount):t('toast_dupes_overwritten',dupCount),'info');
+  }catch(err){
+    showToast(t('toast_file_parse_error'),'error');
+  }
+}
+function onUploadSheetChange(name){
+  uploadedSheetName=name;
+  uploadedHeaderRowIndex=1;
+  const headerRowInput=document.getElementById('upload-header-row');
+  if(headerRowInput) headerRowInput.value='1';
+  applySheetSelection();
+}
+function onUploadHeaderRowChange(val){
+  uploadedHeaderRowIndex=Math.max(1,parseInt(val,10)||1);
+  applySheetSelection();
 }
 
 let uploadColumnsSelected=new Set();
@@ -2971,12 +3355,13 @@ function injectUploadXLSXFormulas(ws,keys){
   const idColIdx=keys.indexOf(uploadIdColName);
   if(idColIdx===-1) return;
   const statusKey=t('upload_col_status');
+  const birthKey=t('upload_col_birth'),ageKey=t('upload_col_age'),totalKey=t('upload_col_totaldays'),retireAgeKey=t('upload_col_retireage'),retireDateKey=t('upload_col_retiredate');
   const map={
-    [t('upload_col_birth')]:{formula:feBirthDateExpr,fmt:'yyyy-mm-dd'},
-    [t('upload_col_age')]:{formula:feAgeExpr},
-    [t('upload_col_totaldays')]:{formula:feTotalDaysExpr},
-    [t('upload_col_retireage')]:{formula:feRetireAgeExpr},
-    [t('upload_col_retiredate')]:{formula:feRetireDateExpr,fmt:'yyyy-mm-dd'}
+    [birthKey]:{formula:feBirthDateExpr,fmt:'yyyy-mm-dd',cache:row=>isoStrToExcelSerial(row[birthKey])},
+    [ageKey]:{formula:feAgeExpr,cache:row=>row[ageKey]},
+    [totalKey]:{formula:feTotalDaysExpr,cache:row=>row[totalKey]},
+    [retireAgeKey]:{formula:feRetireAgeExpr,cache:row=>row[retireAgeKey]},
+    [retireDateKey]:{formula:feRetireDateExpr,fmt:'yyyy-mm-dd',cache:row=>isoStrToExcelSerial(row[retireDateKey])}
   };
   processedUploadResults.forEach((row,i)=>{
     if(row[statusKey]!=='VALID') return;
@@ -2987,11 +3372,18 @@ function injectUploadXLSXFormulas(ws,keys){
       const targetRef=XLSX.utils.encode_cell({r:i+1,c:colIdx});
       const cell={t:'n',f:def.formula(idCellRef)};
       if(def.fmt) cell.z=def.fmt;
+      const cached=def.cache(row);
+      if(cached!==undefined&&cached!==null&&cached!=='') cell.v=cached;
       ws[targetRef]=cell;
     });
   });
 }
 
+function bestIdCellValue(rawVal,displayVal){
+  if(typeof rawVal==='number'&&Number.isFinite(rawVal)&&Number.isInteger(rawVal)) return String(rawVal);
+  if(typeof rawVal==='string'&&rawVal!=='') return rawVal;
+  return displayVal;
+}
 function processUploadedFile(){
   const idCol=document.getElementById('column-select').value;
   if(!idCol) return;
@@ -3001,8 +3393,7 @@ function processUploadedFile(){
   let collisionHit=false;
   chunkProcess(uploadedSheetData,(row,i)=>{
     const displayVal=(uploadedSheetDisplayData[i]||{})[idCol];
-    if(/[0-9]\.?[0-9]*e\+?\d+/i.test(String(displayVal??''))) return parseID(displayVal);
-    return parseID(row[idCol]);
+    return parseID(bestIdCellValue(row[idCol],displayVal));
   },{onDone:reses=>{
     processedUploadResults=[];
     let validCount=0,nullCount=0;
@@ -3140,7 +3531,7 @@ function inspectID(){
   saveStateDebounced({inspectorValue:raw});
   const box=document.getElementById('inspector-result');
   if(!raw.trim()){box.innerHTML='';return;}
-  const res=parseID(raw);
+  const res=parseID(raw,true);
   box.innerHTML=renderInspectorResult(res);
   if(res.valid){
     playRingDrawIn(box);
@@ -3149,28 +3540,69 @@ function inspectID(){
   }
 }
 
+function renderChecksGrid(res){
+  return res.checks.map(c=>{
+    const state=c.pass===true?'pass':c.pass===false?'fail':'indeterminate';
+    const icon=c.pass===true?'check_circle':c.pass===false?'cancel':'remove';
+    return `<div class="checkrow">
+      <div class="checkicon ${state}"><span class="material-symbols-rounded">${icon}</span></div>
+      <span style="font-size:.8rem;font-weight:600;${c.pass===null?'color:var(--ink-3);':''}">${checkLabel(c.key)}</span>
+    </div>`;
+  }).join('');
+}
+function renderTraceDrawer(res){
+  if(!res.trace||!res.trace.length) return '';
+  const rows=res.trace.map(step=>{
+    const segRef=step.seg?(Array.isArray(step.seg)?step.seg.join(' '):step.seg):'';
+    return `<div class="checkrow trace-row"${segRef?` data-seg-ref="${segRef}" tabindex="0"`:''}>
+      <div class="checkicon"><span class="material-symbols-rounded" style="font-size:.85rem;">chevron_right</span></div>
+      <span class="trace-text">${escapeHtml(step.text)}</span>
+    </div>`;
+  }).join('');
+  return `<div class="card pad stack">
+    <button class="trace-toggle focusable" aria-expanded="false" onclick="toggleTraceDrawer(this)">
+      <h4 class="cardtitle" style="margin:0;">${t('trace_title')}</h4>
+      <span class="material-symbols-rounded trace-chevron">expand_more</span>
+    </button>
+    <p class="trace-toggle-hint" style="font-size:.72rem;color:var(--ink-3);margin:-.3rem 0 0;">${t('trace_toggle_hint')}</p>
+    <div class="stack trace-body hide" style="gap:0;">${rows}</div>
+  </div>`;
+}
 function renderInspectorResult(res){
   if(!res.valid){
-    return `<div class="card pad" style="text-align:center;padding:2.5rem 1.5rem;">
-      <div class="emptybox" style="background:var(--scarlet-soft);"><span class="material-symbols-rounded" style="color:var(--scarlet);opacity:1;">error</span></div>
-      <h3 class="disp" style="font-weight:640;font-size:1rem;margin:0 0 .3rem;">${escapeHtml(res.error)}</h3>
-      <p style="font-size:.78rem;color:var(--ink-2);margin:0;">${t('normalized_input')} <span class="mono">${escapeHtml(res.normalized||res.raw)}</span></p>
+    return `<div class="stack">
+      <div class="card pad" style="text-align:center;padding:2.2rem 1.5rem;">
+        <div class="emptybox" style="background:var(--scarlet-soft);"><span class="material-symbols-rounded" style="color:var(--scarlet);opacity:1;">error</span></div>
+        <h3 class="disp" style="font-weight:640;font-size:1rem;margin:0 0 .3rem;">${escapeHtml(res.error)}</h3>
+        <p style="font-size:.78rem;color:var(--ink-2);margin:0;">${t('normalized_input')} <span class="mono">${escapeHtml(res.normalized||res.raw)}</span></p>
+      </div>
+      <div class="card pad stack">
+        <h4 class="cardtitle">${t('checks_title',{p:res.checksPassed,t:res.checksTotal})}</h4>
+        <div class="checkgrid">${renderChecksGrid(res)}</div>
+      </div>
+      ${renderTraceDrawer(res)}
     </div>`;
   }
+  const serialMain=res.serial.slice(0,3),serialGenderDigit=res.serial.slice(3);
   const segGroups=[
-    {cls:'g-date',items:[{val:res.centuryDigit,label:t('seg_cent')},{val:String(res.birthYear).slice(-2),label:t('seg_year')},{val:pad2(res.birthMonth),label:t('seg_month')},{val:pad2(res.birthDay),label:t('seg_day')}]},
-    {cls:'g-loc',items:[{val:res.govCode,label:t('seg_gov')},{val:res.serial,label:t('seg_serial')}]},
-    {cls:'g-meta',items:[{val:String(res.genderDigit),label:t('seg_gender')},{val:res.checkDigit,label:t('seg_check')}]}
+    {cls:'g-date',items:[{val:res.centuryDigit,label:t('seg_cent'),seg:'century'},{val:String(res.birthYear).slice(-2),label:t('seg_year'),seg:'year'},{val:pad2(res.birthMonth),label:t('seg_month'),seg:'month'},{val:pad2(res.birthDay),label:t('seg_day'),seg:'day'}]},
+    {cls:'g-loc',items:[{val:res.govCode,label:t('seg_gov'),seg:'gov'},{compound:true,label:t('seg_serial'),seg:'serial'}]},
+    {cls:'g-meta',items:[{val:res.checkDigit,label:t('seg_check'),seg:'check'}]}
   ];
   const segHtml=segGroups.map((g,gi)=>{
-    const items=g.items.map(s=>`<div class="idseg"><span>${s.val}</span><span class="tag">${s.label}</span></div>`).join('');
+    const items=g.items.map(s=>s.compound
+      ? `<div class="idseg idseg-compound" data-seg="${s.seg}" title="${escapeHtml(t('serial_gender_hint'))}"><span>${serialMain}<span class="idseg-nested">${serialGenderDigit}</span></span><span class="tag">${s.label}</span></div>`
+      : `<div class="idseg" data-seg="${s.seg}"><span>${s.val}</span><span class="tag">${s.label}</span></div>`
+    ).join('');
     return `<div class="idseg-group ${g.cls}">${items}</div>${gi<segGroups.length-1?'<div class="idseg-divider"></div>':''}`;
   }).join('');
   const flagsHtml=res.flags.length?res.flags.map(f=>`<span class="chip">${flagLabel(f)}</span>`).join(''):'';
-  const checksHtml=res.checks.map(c=>`<div class="checkrow">
-      <div class="checkicon ${c.pass?'pass':'fail'}"><span class="material-symbols-rounded">${c.pass?'check_circle':'cancel'}</span></div>
-      <span style="font-size:.8rem;font-weight:600;">${checkLabel(c.key)}</span>
-    </div>`).join('');
+  const hijri=formatHijri(gregorianToHijri(res.birthDateObj)),coptic=formatCoptic(gregorianToCoptic(res.birthDateObj));
+  const checksumEnabled=isChecksumHeuristicEnabled();
+  const checksumHtml=(checksumEnabled&&res.checksumHeuristic)?`<div class="checksum-row">
+      <div class="checkicon ${res.checksumHeuristic.match?'pass':'fail'}" style="opacity:.7;width:1.5rem;height:1.5rem;"><span class="material-symbols-rounded" style="font-size:.85rem;">${res.checksumHeuristic.match?'check_circle':'cancel'}</span></div>
+      <span style="font-size:.72rem;color:var(--ink-3);">${t('checksum_heuristic_label')}: ${res.checksumHeuristic.match?t('checksum_heuristic_match'):t('checksum_heuristic_mismatch')} <span class="mono">(${res.checksumHeuristic.expected} vs ${res.checksumHeuristic.actual})</span></span>
+    </div>`:'';
 
   return `
   <div class="stack">
@@ -3208,13 +3640,21 @@ function renderInspectorResult(res){
             <div class="stattile-icon c-mint"><span class="material-symbols-rounded">functions</span></div>
             <div>
               <div class="eyebrow">${t('age_label')}</div>
-              <div class="stattile-val">${res.currentAgeYears}y ${res.currentAgeMonths}m ${res.currentAgeDays}d</div>
-              <div class="stattile-sub"><span class="num" id="days-lived-val" style="font-size:.72rem;color:var(--ink-2);">${t('total_days_lived',res.totalDaysLived)}</span><span class="material-symbols-rounded rowcopy focusable" id="days-copy-icon" role="button" tabindex="0" title="${t('copy_visible_title')}" style="font-size:.95rem;" onclick="copyPlainNumber(this,${res.totalDaysLived})" onkeydown="if(event.key==='Enter'){copyPlainNumber(this,${res.totalDaysLived})}">content_copy</span></div>
+              <div class="stattile-val">${t('age_ymd',res.currentAgeYears,res.currentAgeMonths,res.currentAgeDays)}</div>
+              <div class="stattile-sub"><span class="num" id="days-lived-val" style="font-size:.72rem;color:var(--ink-2);">${t('total_days_lived',res.totalDaysLived)}</span><span class="material-symbols-rounded rowcopy focusable noprint" id="days-copy-icon" role="button" tabindex="0" title="${t('copy_visible_title')}" style="font-size:.95rem;" onclick="copyPlainNumber(this,${res.totalDaysLived})" onkeydown="if(event.key==='Enter'){copyPlainNumber(this,${res.totalDaysLived})}">content_copy</span></div>
             </div>
           </div>
           <div class="stattile">
             <div class="stattile-icon c-rose"><span class="material-symbols-rounded">fingerprint</span></div>
             <div><div class="eyebrow">${t('gov_field_label')}</div><div class="stattile-val" style="${res.governorateKnown?'':'font-style:italic;color:var(--ink-2);font-weight:600;'}">${govDisplay(res.govCode)}</div></div>
+          </div>
+          <div class="stattile" style="grid-column:1/-1;">
+            <div class="stattile-icon c-azure"><span class="material-symbols-rounded">dark_mode</span></div>
+            <div>
+              <div class="eyebrow">${t('alt_calendars_label')}</div>
+              <div class="stattile-val">${hijri}</div>
+              <div class="stattile-sub" style="color:var(--ink-3);font-size:.72rem;" title="${escapeHtml(t('hijri_estimated_hint'))}">${coptic}</div>
+            </div>
           </div>
         </div>
         ${res.flags.length?`<div class="row" style="flex-wrap:wrap;gap:.35rem;">${flagsHtml}</div>`:''}
@@ -3242,16 +3682,37 @@ function renderInspectorResult(res){
     <div class="card pad stack">
       <div class="row-between">
         <h4 class="cardtitle">${t('checks_title',{p:res.checksPassed,t:res.checksTotal})}</h4>
-        <button onclick="copyInspectorSummary()" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>${t('btn_copy')}</button>
+        <div class="row noprint" style="gap:.4rem;">
+          <button onclick="window.print()" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">print</span>${t('btn_print')}</button>
+          <button onclick="copyInspectorSummary()" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>${t('btn_copy')}</button>
+        </div>
       </div>
-      <div class="checkgrid">${checksHtml}</div>
+      <div class="checkgrid">${renderChecksGrid(res)}</div>
+      ${checksumHtml}
     </div>
+
+    ${renderTraceDrawer(res)}
   </div>`;
+}
+function toggleTraceDrawer(btn){
+  const body=btn.parentElement.querySelector('.trace-body');
+  if(!body) return;
+  const nowHidden=body.classList.toggle('hide');
+  btn.setAttribute('aria-expanded',nowHidden?'false':'true');
+}
+function applyTraceHighlight(segRefStr){
+  (segRefStr||'').split(' ').filter(Boolean).forEach(seg=>{
+    const sel=seg==='all'?'.idseg':`.idseg[data-seg="${seg}"]`;
+    document.querySelectorAll(sel).forEach(el=>el.classList.add('idseg-traceactive'));
+  });
+}
+function clearTraceHighlight(){
+  document.querySelectorAll('.idseg-traceactive').forEach(el=>el.classList.remove('idseg-traceactive'));
 }
 
 function copyPlainNumber(el,n){
   copyText(String(n),null,t('toast_row_copied'));
-  if(el){const orig=el.textContent;el.textContent='check';el.style.color='var(--mint)';setTimeout(()=>{el.textContent=orig;el.style.color='';},1200);}
+  if(el){el.textContent='check';el.style.color='var(--mint)';setTimeout(()=>{el.textContent='content_copy';el.style.color='';},1200);}
 }
 
 function copyInspectorSummary(){
@@ -3403,6 +3864,20 @@ function batchColumnValue(r,key){
   }
 }
 
+function formulaCachedValue(r,key){
+  switch(key){
+    case 'birthdate':return toExcelSerial(r.birthDateObj);
+    case 'retiredate':return toExcelSerial(r.retireDateObj);
+    case 'weekday':return DAY_NAMES[r.birthDayIndex];
+    case 'gender':return r.gender;
+    case 'age':return r.currentAgeYears;
+    case 'totaldays':return r.totalDaysLived;
+    case 'retireage':return r.retireAge;
+    case 'yearstoretire':return r.yearsUntilRetire;
+    case 'career':return r.careerPercent;
+    default:return undefined;
+  }
+}
 function injectXLSXFormulas(ws,rows,colKeys,idKey){
   const idColIdx=colKeys.indexOf(idKey);
   if(idColIdx===-1) return;
@@ -3413,8 +3888,10 @@ function injectXLSXFormulas(ws,rows,colKeys,idKey){
       const def=BATCH_COLUMN_MAP[key];
       if(!def||!def.formula) return;
       const targetRef=XLSX.utils.encode_cell({r:i+1,c:colIdx});
-      const cell={t:'n',f:def.formula(idCellRef)};
+      const cell={t:def.type||'n',f:def.formula(idCellRef)};
       if(def.fmt) cell.z=def.fmt;
+      const cached=formulaCachedValue(r,key);
+      if(cached!==undefined) cell.v=cached;
       ws[targetRef]=cell;
     });
   });
@@ -3502,11 +3979,62 @@ function computeBetweenDates(){
         <div class="kpi kpi-scarlet"><div class="lbl">${t('lbl_holidays_in_range')}</div><div class="num disp">${holidaysInRange}</div></div>
         <div class="kpi kpi-mint"><div class="lbl">${t('lbl_net_working_days')}</div><div class="num disp" style="color:var(--mint);">${netWorkdays}</div></div>
       </div>`:''}
-      <div class="kpi"><div class="lbl">${t('dt_calendar_span')}</div><div style="font-size:1.05rem;font-weight:650;" class="disp">${years}y ${months}m ${days}d</div></div>
+      <div class="kpi"><div class="lbl">${t('dt_calendar_span')}</div><div style="font-size:1.05rem;font-weight:650;" class="disp">${t('age_ymd',years,months,days)}</div></div>
     </div>`;
 }
 
 function isoDateKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+
+const EGYPT_HOLIDAY_PACK=[
+  {labelKey:'holiday_pack_revolution_jan25',kind:'fixed',month:1,day:25},
+  {labelKey:'holiday_pack_sinai',kind:'fixed',month:4,day:25},
+  {labelKey:'holiday_pack_labour',kind:'fixed',month:5,day:1},
+  {labelKey:'holiday_pack_june30',kind:'fixed',month:6,day:30},
+  {labelKey:'holiday_pack_july23',kind:'fixed',month:7,day:23},
+  {labelKey:'holiday_pack_armedforces',kind:'fixed',month:10,day:6},
+  {labelKey:'holiday_pack_coptic_christmas',kind:'coptic',copticMonth:4,copticDay:29},
+  {labelKey:'holiday_pack_coptic_easter',kind:'copticeaster',offsetDays:0},
+  {labelKey:'holiday_pack_sham_el_nessim',kind:'copticeaster',offsetDays:1},
+  {labelKey:'holiday_pack_hijri_new_year',kind:'hijri',hijriMonth:1,hijriDay:1},
+  {labelKey:'holiday_pack_mawlid',kind:'hijri',hijriMonth:3,hijriDay:12},
+  {labelKey:'holiday_pack_eid_fitr',kind:'hijri',hijriMonth:10,hijriDay:1},
+  {labelKey:'holiday_pack_arafat',kind:'hijri',hijriMonth:12,hijriDay:9},
+  {labelKey:'holiday_pack_eid_adha',kind:'hijri',hijriMonth:12,hijriDay:10}
+];
+function computeEgyptHolidaysForYear(year){
+  const out=[];
+  EGYPT_HOLIDAY_PACK.forEach(h=>{
+    if(h.kind==='fixed'){
+      out.push({date:new Date(year,h.month-1,h.day),label:t(h.labelKey)});
+    }else if(h.kind==='coptic'){
+      out.push({date:copticDateInGregYear(year,h.copticMonth,h.copticDay),label:t(h.labelKey)});
+    }else if(h.kind==='copticeaster'){
+      const d=new Date(copticEasterInGregYear(year));
+      d.setDate(d.getDate()+h.offsetDays);
+      out.push({date:d,label:t(h.labelKey)});
+    }else if(h.kind==='hijri'){
+      hijriDatesInGregYear(year,h.hijriMonth,h.hijriDay).forEach(d=>{
+        out.push({date:d,label:`${t(h.labelKey)} ${t('holiday_pack_estimated_tag')}`});
+      });
+    }
+  });
+  return out.map(o=>({key:isoDateKey(o.date),label:o.label}));
+}
+function addEgyptHolidayPack(){
+  const yearInput=document.getElementById('holiday-pack-year');
+  const year=Math.max(1900,Math.min(2200,parseInt(yearInput.value,10)||new Date().getFullYear()));
+  const entries=computeEgyptHolidaysForYear(year);
+  let added=0;
+  entries.forEach(e=>{
+    if(!holidayMap.has(e.key)){holidayMap.set(e.key,e.label);added++;}
+  });
+  persistHolidays();
+  renderSavedHolidays();
+  renderHolidaySummary();
+  renderHolidayIssues();
+  computeBetweenDates();
+  showToast(added?t('toast_holidays_added',added):t('toast_holidays_added_none'),added?'check_circle':'info');
+}
 
 function parseHolidayLine(raw){
   const line=raw.trim();
@@ -3578,6 +4106,8 @@ function renderHolidaySummary(){
 
 function openHolidayImport(){
   document.getElementById('holiday-overlay').classList.add('open');
+  const yearInput=document.getElementById('holiday-pack-year');
+  if(yearInput&&!yearInput.value) yearInput.value=new Date().getFullYear();
   renderHolidayIssues();
   renderSavedHolidays();
 }
@@ -3631,10 +4161,11 @@ function handleHolidayFileUpload(evt){
   reader.onload=()=>{
     const ta=document.getElementById('holiday-input');
     const existing=ta.value.trim();
-    const incoming=String(reader.result||'');
+    let incoming=String(reader.result||'');
+    if(incoming.charCodeAt(0)===0xFEFF) incoming=incoming.slice(1);
     ta.value=existing?existing+'\n'+incoming:incoming;
   };
-  reader.readAsText(file);
+  reader.readAsText(file,'UTF-8');
   evt.target.value='';
 }
 
@@ -3652,7 +4183,7 @@ function computeAge(){
   const daysToNext=daysBetween(stripTime(asof),stripTime(bday));
   box.innerHTML=`
     <div class="stack">
-      <div class="kpi"><div class="lbl">${t('dt_exact_age')}</div><div style="font-size:1.3rem;font-weight:650;" class="disp">${age.years}y ${age.months}m ${age.days}d</div></div>
+      <div class="kpi"><div class="lbl">${t('dt_exact_age')}</div><div style="font-size:1.3rem;font-weight:650;" class="disp">${t('age_ymd',age.years,age.months,age.days)}</div></div>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;">
         <div class="kpi"><div class="lbl">${t('dt_total_days_lived')}</div><div class="num disp">${age.totalDays}</div></div>
         <div class="kpi"><div class="lbl">${t('dt_days_to_next_bday')}</div><div class="num disp" style="color:var(--amber-text);">${daysToNext}</div></div>
@@ -3680,6 +4211,20 @@ function computeWeekday(){
     </div>`;
 }
 
+function computeCalendarConvert(){
+  const date=parseDateInput('dt-calconvert');
+  const box=document.getElementById('calconvert-result');
+  saveStateDebounced({dtCalconvert:document.getElementById('dt-calconvert').value});
+  if(!date){box.innerHTML=`<div style="text-align:center;padding:2rem 1rem;color:var(--ink-3);">${t('dt_pick_calconvert')}</div>`;return;}
+  const hijri=gregorianToHijri(date),coptic=gregorianToCoptic(date);
+  box.innerHTML=`
+    <div class="stack">
+      <div class="kpi"><div class="lbl">${t('calconvert_gregorian')}</div><div style="font-weight:650;">${dayName(date.getDay())}, ${monthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}</div></div>
+      <div class="kpi"><div class="lbl">${t('calconvert_hijri')}</div><div style="font-size:1.15rem;font-weight:650;" class="disp">${formatHijri(hijri)}</div></div>
+      <div class="kpi"><div class="lbl">${t('calconvert_coptic')}</div><div style="font-size:1.15rem;font-weight:650;" class="disp">${formatCoptic(coptic)}</div></div>
+    </div>`;
+}
+
 function computeLeapSingle(){
   const raw=document.getElementById('ly-year').value;
   const box=document.getElementById('leap-single-result');
@@ -3693,7 +4238,7 @@ function computeLeapSingle(){
       <span class="material-symbols-rounded" style="color:${leap?'var(--mint)':'var(--scarlet)'};">${leap?'check_circle':'cancel'}</span>
       <div style="font-weight:650;">${leap?t('dt_is_leap',y):t('dt_is_not_leap',y)}</div>
     </div>
-    <div style="font-size:.75rem;color:var(--ink-2);margin-top:.4rem;">${t('dt_div_rule',y,(y%4===0),(y%100===0),(y%400===0))}</div>
+    <div style="font-size:.75rem;color:var(--ink-2);margin-top:.4rem;">${t('dt_div_rule',y,y%4,y%100,y%400)}</div>
   </div>`;
 }
 
@@ -3736,7 +4281,7 @@ const COMMANDS=[
   {id:'act-sample-single',labelKey:'cmd_act_sample_single',groupKey:'cmdk_group_actions',icon:'science',run:()=>{switchTab('idtools');switchSubTab('single');loadSampleIntoInspector();}},
   {id:'act-theme',labelKey:'cmd_act_theme',groupKey:'cmdk_group_actions',icon:'contrast',run:()=>toggleTheme()},
   {id:'act-theme-system',labelKey:'cmd_act_theme_system',groupKey:'cmdk_group_actions',icon:'contrast',run:()=>useSystemTheme()},
-  {id:'act-clear-cache',labelKey:'cmd_act_clear_cache',groupKey:'cmdk_group_actions',icon:'layers_clear',run:()=>confirmClearCache()}
+  {id:'act-clear-cache',labelKey:'cmd_act_clear_cache',groupKey:'cmdk_group_actions',icon:'layers_clear',run:()=>clearAllCache()}
 ];
 let cmdkActiveIndex=0;
 let cmdkFiltered=COMMANDS;
@@ -3862,10 +4407,28 @@ function formatLawDate(d){
 }
 function renderLawTable(){
   const tbody=document.getElementById('law-tbody');
-  const baseline=`<tr><td>${t('law_baseline')}</td><td style="color:var(--amber-text);font-weight:650;">${t('law_years',60)}</td></tr>`;
+  const baseline=`<tr><td>${t('law_baseline',formatLawDate(RETIREMENT_LAW[0].date))}</td><td style="color:var(--amber-text);font-weight:650;">${t('law_years',60)}</td></tr>`;
   tbody.innerHTML=baseline+RETIREMENT_LAW.map(rule=>`<tr><td>${formatLawDate(rule.date)}</td><td style="color:var(--amber-text);font-weight:650;">${t('law_years',rule.age)}</td></tr>`).join('');
 }
 
+function rehydrateBatchResult(cached){
+  if(!cached||!cached.valid||!cached.birthDateStr) return cached;
+  const birthDateObj=isoToLocalDate(cached.birthDateStr);
+  if(!birthDateObj) return cached;
+  const now=new Date();
+  const age=calcAge(birthDateObj,now);
+  const retire=getRetirementInfo(birthDateObj);
+  const daysUntilRetire=daysBetween(now,retire.retireDate);
+  const yearsUntilRetire=daysUntilRetire>0?Math.floor(daysUntilRetire/365.25):0;
+  const isEligible=daysUntilRetire<=0;
+  const careerPercent=Math.max(0,Math.min(100,Math.round((age.years/retire.age)*100)));
+  return Object.assign({},cached,{
+    currentAgeYears:age.years,currentAgeMonths:age.months,currentAgeDays:age.days,totalDaysLived:age.totalDays,
+    retireAge:retire.age,retireRule:retire.rule,
+    retireDateStr:`${retire.retireDate.getFullYear()}-${pad2(retire.retireDate.getMonth()+1)}-${pad2(retire.retireDate.getDate())}`,
+    daysUntilRetire,yearsUntilRetire,isEligible,careerPercent
+  });
+}
 function restoreCachedState(){
   const state=loadState();
   if(state.lang&&state.lang!==currentLang){
@@ -3889,7 +4452,7 @@ function restoreCachedState(){
   }
   if(state.batchSearch) batchSearch=state.batchSearch;
   if(Array.isArray(state.batchResultsCache)&&state.batchResultsCache.length){
-    batchResults=state.batchResultsCache;
+    batchResults=state.batchResultsCache.map(rehydrateBatchResult);
     renderBatchTable();
   }
   if(state.formulaTableName) document.getElementById('cfg-table-name').value=state.formulaTableName;
@@ -3911,6 +4474,7 @@ function restoreCachedState(){
   if(state.dtBirth) document.getElementById('dt-birth').value=state.dtBirth;
   if(state.dtAsof) document.getElementById('dt-asof').value=state.dtAsof;
   if(state.dtWeekday) document.getElementById('dt-weekday').value=state.dtWeekday;
+  if(state.dtCalconvert) document.getElementById('dt-calconvert').value=state.dtCalconvert;
   if(state.lyYear) document.getElementById('ly-year').value=state.lyYear;
   if(state.lyFrom) document.getElementById('ly-from').value=state.lyFrom;
   if(state.lyTo) document.getElementById('ly-to').value=state.lyTo;
@@ -3984,6 +4548,9 @@ window.onload=function(){
   dropZone.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();document.getElementById('file-input').click();}});
 };
 window.addEventListener('resize',moveTopIndicator);
+if('serviceWorker' in navigator){
+  window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});
+}
 </script>
 </body>
 </html>
