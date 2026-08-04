@@ -23,7 +23,7 @@
   --bg:#F7F3EC; --bg-deep:#EFE9DD;
   --milk:rgba(255,255,255,0.55); --milk-strong:rgba(255,255,255,0.75); --milk-border:rgba(255,255,255,0.9);
   --edge:rgba(40,32,24,0.08); --edge-strong:rgba(40,32,24,0.14);
-  --ink:#221B14; --ink-2:#655A48; --ink-3:#9C8F78;
+  --ink:#221B14; --ink-2:#655A48; --ink-3:#756849;
   --amber:#C6733F; --amber-hi:#AD5F30; --amber-soft:#F0DEC8; --amber-text:#8A4B26;
   --rose:#C4587B; --rose-soft:#F3DCE4; --rose-text:#9C3E5C;
   --azure:#3E7CB1; --azure-soft:#D9E7F2; --azure-text:#2C5C87;
@@ -62,7 +62,7 @@
   --bg:#0D0B09; --bg-deep:#070605;
   --milk:rgba(255,250,242,0.05); --milk-strong:rgba(255,250,242,0.09); --milk-border:rgba(255,250,242,0.10);
   --edge:rgba(255,246,232,0.08); --edge-strong:rgba(255,246,232,0.14);
-  --ink:#F3ECDE; --ink-2:#B3A48A; --ink-3:#786C58;
+  --ink:#F3ECDE; --ink-2:#B3A48A; --ink-3:#8B7D65;
   --amber:#E2A06E; --amber-hi:#EDB183; --amber-soft:rgba(226,160,110,0.16); --amber-text:#F0BC8F;
   --rose:#E38BAA; --rose-soft:rgba(227,139,170,0.15); --rose-text:#EFA6C0;
   --azure:#7BAEDD; --azure-soft:rgba(123,174,221,0.15); --azure-text:#9AC3E7;
@@ -92,11 +92,11 @@ body{
     radial-gradient(ellipse 55% 40% at 86% 92%,color-mix(in srgb, var(--rose-soft) 40%, transparent),transparent 72%);
   opacity:.45;mix-blend-mode:multiply}
 .dark .field::before{mix-blend-mode:screen;opacity:.16}
-.orb{position:absolute;border-radius:50%;filter:blur(80px);animation:orbDrift 22s ease-in-out infinite}
+.orb{position:absolute;border-radius:50%;filter:blur(40px);will-change:transform;animation:orbDrift 22s ease-in-out infinite}
 .orb-a{width:36rem;height:36rem;top:-14rem;right:-10rem;background:radial-gradient(circle,var(--amber-soft),transparent 70%);opacity:.52}
 .orb-b{width:30rem;height:30rem;bottom:-12rem;left:-12rem;background:radial-gradient(circle,var(--amber-soft),transparent 70%);opacity:.26;animation-duration:27s;animation-delay:-6s}
 .orb-c{width:22rem;height:22rem;top:40%;left:60%;background:radial-gradient(circle,var(--amber-soft),transparent 72%);opacity:.16;animation-duration:19s;animation-delay:-11s}
-.dark .orb{filter:blur(100px)}
+.dark .orb{filter:blur(50px)}
 @keyframes orbDrift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-3%,3%) scale(1.045)}}
 @media(max-width:640px){
   .orb-a{width:15rem;height:15rem;top:-6rem;right:-6rem;opacity:.4}
@@ -140,9 +140,11 @@ body{
 .btn:disabled{opacity:.35;cursor:not-allowed}
 .btn-primary{position:relative;overflow:hidden;background:linear-gradient(155deg,var(--amber) 0%,var(--amber-hi) 100%);color:#FBF3E8;box-shadow:var(--sh-glow),inset 0 1px 0 rgba(255,255,255,.4),inset 0 -2px 3px rgba(0,0,0,.12)}
 .btn-primary::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 120% at 50% -30%,rgba(255,255,255,.35),transparent 60%);pointer-events:none}
-.btn-primary::after{content:'';position:absolute;top:0;inset-inline-start:-60%;width:35%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.45),transparent);transform:skewX(-18deg);transition:inset-inline-start .6s cubic-bezier(.16,1,.3,1)}
+.btn-primary::after{content:'';position:absolute;top:0;left:0;width:35%;height:100%;background:linear-gradient(120deg,transparent,rgba(255,255,255,.45),transparent);transform:translateX(-150%) skewX(-18deg);transition:transform .6s cubic-bezier(.16,1,.3,1)}
 .btn-primary:hover:not(:disabled){transform:translateY(-1.5px);box-shadow:0 2px 4px rgba(138,75,38,.35),0 20px 36px -14px rgba(138,75,38,.62),inset 0 1px 0 rgba(255,255,255,.45),inset 0 -2px 3px rgba(0,0,0,.12)}
-.btn-primary:hover:not(:disabled)::after{inset-inline-start:130%}
+.btn-primary:hover:not(:disabled)::after{transform:translateX(350%) skewX(-18deg)}
+[dir="rtl"] .btn-primary::after{transform:translateX(150%) skewX(18deg)}
+[dir="rtl"] .btn-primary:hover:not(:disabled)::after{transform:translateX(-350%) skewX(18deg)}
 .btn-ghost{background:transparent;color:var(--ink-2)}
 .btn-ghost:hover:not(:disabled){background:var(--milk-strong);color:var(--ink);box-shadow:var(--sh-1)}
 .btn-soft{background:var(--amber-soft);color:var(--amber-text);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),inset 0 0 0 1px rgba(138,75,38,.05)}
@@ -372,12 +374,12 @@ body{
 .batch-dropmenu-summary{font-size:.68rem;color:var(--ink-3);text-align:center;padding:.15rem 0 .05rem}
 .batch-dropmenu-actions{display:flex;gap:.4rem}
 .batch-dropmenu-confirm{display:flex;align-items:center;justify-content:center;gap:.4rem;width:100%}
-.kpi .num{font-size:1.7rem;line-height:1}
+.kpi .num{font-size:clamp(1.15rem,4.2vw,1.7rem);line-height:1}
 .kpi .lbl{font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.07em;font-weight:650;color:var(--ink-3);margin-bottom:.3rem}
 
 table.dtable{width:100%;text-align:start;font-size:.8rem;border-collapse:collapse}
 table.dtable thead{color:var(--ink-3);font-weight:700;font-size:.62rem;text-transform:uppercase;letter-spacing:.06em}
-table.dtable th{padding:.75rem .9rem;border-bottom:1px solid var(--edge);white-space:nowrap;background:var(--bg);background:color-mix(in srgb, var(--bg) 92%, transparent);position:sticky;top:0}
+table.dtable th{padding:.75rem .9rem;border-bottom:1px solid var(--edge);white-space:nowrap;background:var(--bg);position:sticky;top:0}
 table.dtable td{padding:.65rem .9rem;border-bottom:1px solid var(--edge);white-space:nowrap}
 table.dtable tbody tr{transition:background .18s}
 table.dtable tbody tr:hover{background:var(--milk)}
@@ -411,7 +413,7 @@ table.dtable tbody tr:hover .rowcopy,.rowcopy:focus-visible{opacity:1}
 .previewstat b{font-weight:700;color:var(--ink)}
 .previewtable-wrap{border-radius:16px;border:1px solid var(--edge);max-height:15.5rem;overflow-y:auto}
 table.previewtable{width:100%;text-align:start;font-size:.76rem;border-collapse:collapse}
-table.previewtable thead th{padding:.6rem .8rem;border-bottom:1px solid var(--edge);white-space:nowrap;background:var(--bg);background:color-mix(in srgb, var(--bg) 92%, transparent);position:sticky;top:0;color:var(--ink-3);font-weight:700;font-size:.6rem;text-transform:uppercase;letter-spacing:.05em;transition:color .18s,background .18s}
+table.previewtable thead th{padding:.6rem .8rem;border-bottom:1px solid var(--edge);white-space:nowrap;background:var(--bg);position:sticky;top:0;color:var(--ink-3);font-weight:700;font-size:.6rem;text-transform:uppercase;letter-spacing:.05em;transition:color .18s,background .18s}
 table.previewtable tbody td{padding:.55rem .8rem;border-bottom:1px solid var(--edge);white-space:nowrap;color:var(--ink-2);transition:background .18s,color .18s}
 table.previewtable tbody tr:last-child td{border-bottom:none}
 table.previewtable th.col-active{color:var(--amber-text);background:var(--amber-soft)}
@@ -450,8 +452,10 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
   transform:translateZ(0);transition:transform .4s cubic-bezier(.16,1,.3,1),box-shadow .4s ease}
 .idcard::before{content:'';position:absolute;inset:0;background:linear-gradient(128deg,rgba(255,255,255,.3) 0%,transparent 34%),radial-gradient(ellipse 70% 55% at 92% -10%,color-mix(in srgb, var(--amber-soft) 65%, transparent),transparent 70%);pointer-events:none;z-index:3}
 .dark .idcard::before{background:linear-gradient(128deg,rgba(255,255,255,.09) 0%,transparent 34%),radial-gradient(ellipse 70% 55% at 92% -10%,color-mix(in srgb, var(--amber-soft) 55%, transparent),transparent 70%)}
-.idcard::after{content:'';position:absolute;top:0;inset-inline-start:-75%;width:45%;height:100%;background:linear-gradient(75deg,transparent,rgba(255,255,255,.26),transparent);transform:skewX(-15deg);transition:inset-inline-start .85s cubic-bezier(.16,1,.3,1);pointer-events:none;z-index:4}
-.idcard:hover::after{inset-inline-start:150%}
+.idcard::after{content:'';position:absolute;top:0;left:0;width:45%;height:100%;background:linear-gradient(75deg,transparent,rgba(255,255,255,.26),transparent);transform:translateX(-160%) skewX(-15deg);transition:transform .85s cubic-bezier(.16,1,.3,1);pointer-events:none;z-index:4}
+.idcard:hover::after{transform:translateX(330%) skewX(-15deg)}
+[dir="rtl"] .idcard::after{transform:translateX(160%) skewX(15deg)}
+[dir="rtl"] .idcard:hover::after{transform:translateX(-330%) skewX(15deg)}
 .idcard:hover{transform:translateY(-3px) translateZ(0);box-shadow:var(--sh-3),0 26px 50px -20px rgba(20,14,8,.24),inset 0 1px 1px var(--glass-hi),inset 0 -1px 1px var(--glass-lo)}
 .dark .idcard:hover{box-shadow:var(--sh-3),0 30px 58px -20px rgba(0,0,0,.55),inset 0 1px 1px var(--glass-hi),inset 0 -1px 1px var(--glass-lo)}
 .idwatermark{position:absolute;z-index:-1;inset:0;pointer-events:none;
@@ -564,6 +568,10 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
 .checkrow:nth-child(5){animation-delay:.18s} .checkrow:nth-child(6){animation-delay:.22s}
 .checkrow:nth-child(n+7){animation-delay:.26s}
 
+#inspector-result:not(.anim-in) .idcard,
+#inspector-result:not(.anim-in) .idseg,
+#inspector-result:not(.anim-in) .checkrow{animation:none !important}
+
 @keyframes ringBlobDrift{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-4%,3%) scale(1.08)}}
 .ringcard::before{animation:ringBlobDrift 7s ease-in-out infinite}
 @keyframes chipShine{0%{background-position:-60% 0}100%{background-position:160% 0}}
@@ -636,7 +644,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
 <body>
 <div class="field"><div class="orb orb-a"></div><div class="orb orb-b"></div><div class="orb orb-c"></div></div>
 <div class="grain"></div>
-<div id="toasts"></div>
+<div id="toasts" aria-live="polite"></div>
 
 <header class="topbar">
   <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding-top:.85rem;padding-bottom:.85rem;position:relative;z-index:1;">
@@ -694,7 +702,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
     <div class="card pad stack noprint">
       <div class="row" style="gap:.6rem;">
         <div class="field-clearable" style="flex:1;">
-          <input type="text" id="inspector-input" data-i18n-ph="single_placeholder" placeholder="Enter a 14-digit national ID…" class="field-input mono focusable" style="width:100%;padding-inline-end:2.3rem;font-size:.95rem;letter-spacing:.02em;" oninput="inspectID()">
+          <input type="text" id="inspector-input" data-i18n-ph="single_placeholder" placeholder="Enter a 14-digit national ID…" class="field-input mono focusable" style="width:100%;padding-inline-end:2.3rem;font-size:.95rem;letter-spacing:.02em;" oninput="inspectIDDebounced()">
           <button type="button" class="field-clear-btn" tabindex="-1" onclick="clearFieldAndRefresh('inspector-input')" data-i18n-title="clear_id_title" title="Clear ID" aria-label="Clear ID"><span class="material-symbols-rounded">cancel</span></button>
         </div>
         <button onclick="pasteIntoInspector()" class="iconbtn focusable" data-i18n-title="paste_title" title="Paste" aria-label="Paste from clipboard"><span class="material-symbols-rounded">content_paste_go</span></button>
@@ -1151,7 +1159,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
   <button class="navitem" onclick="openCmdk()"><span class="material-symbols-rounded">search</span><span class="lbl" data-i18n="nav_search">Search</span></button>
 </nav>
 
-<div class="cmdk-overlay" id="cmdk-overlay" onclick="if(event.target===this)closeCmdk()">
+<div class="cmdk-overlay" id="cmdk-overlay" role="dialog" aria-modal="true" onclick="if(event.target===this)closeCmdk()">
   <div class="cmdk-box">
     <input class="cmdk-input" id="cmdk-input" data-i18n-ph="cmdk_ph" placeholder="Type a command…" oninput="renderCmdkResults(this.value)" onpaste="handleCmdkPaste(event)">
     <div class="cmdk-list" id="cmdk-list"></div>
@@ -1159,18 +1167,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
   </div>
 </div>
 
-<div class="cmdk-overlay" id="confirm-overlay" onclick="if(event.target===this)closeConfirm()">
-  <div class="cmdk-box pad stack" style="max-width:24rem;">
-    <h3 class="cardtitle" id="confirm-title" data-i18n="confirm_title">Are you sure?</h3>
-    <p id="confirm-message" style="font-size:.82rem;color:var(--ink-2);margin:0;" data-i18n="confirm_message">This action cannot be undone.</p>
-    <div class="row" style="justify-content:flex-end;gap:.5rem;">
-      <button class="btn btn-ghost btn-sm focusable" onclick="closeConfirm()" data-i18n="btn_cancel">Cancel</button>
-      <button class="btn btn-primary btn-sm focusable" id="confirm-action-btn" data-i18n="btn_confirm">Confirm</button>
-    </div>
-  </div>
-</div>
-
-<div class="cmdk-overlay" id="settings-overlay" onclick="if(event.target===this)closeSettings()">
+<div class="cmdk-overlay" id="settings-overlay" role="dialog" aria-modal="true" onclick="if(event.target===this)closeSettings()">
   <div class="cmdk-box pad" style="max-width:30rem;max-height:82vh;overflow-y:auto;">
     <div class="row-between" style="margin-bottom:.3rem;">
       <h3 class="cardtitle" data-i18n="settings_title">Settings</h3>
@@ -1218,7 +1215,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
   </div>
 </div>
 
-<div class="cmdk-overlay" id="holiday-overlay" onclick="if(event.target===this)closeHolidayImport()">
+<div class="cmdk-overlay" id="holiday-overlay" role="dialog" aria-modal="true" onclick="if(event.target===this)closeHolidayImport()">
   <div class="cmdk-box pad" style="max-width:34rem;max-height:85vh;overflow-y:auto;">
     <div class="row-between" style="margin-bottom:.3rem;">
       <h3 class="cardtitle" data-i18n="holiday_modal_title">Import Holidays</h3>
@@ -1481,7 +1478,7 @@ en:{
   columns_title:'Columns', inject_formulas_title:'Inject live formulas (Excel only)',
   inject_formulas_hint:'Date-based values recompute from the ID when the sheet is opened later, instead of staying frozen at export time. CSV has no formulas, so this only applies to Excel.',
   toast_formulas_need_id:'Include the ID column to inject formulas',
-  toast_save_failed:'Local save failed — your changes may not persist', toast_cache_cleared:'Cached data cleared', toast_system_theme:'Following system theme',
+  toast_save_failed:'Local save failed — your changes may not persist', toast_cache_cleared:'Cached data cleared', toast_system_theme:'Following system theme', toast_sheets_unavailable:'Spreadsheet engine still loading — try again in a moment',
   gender_male:'Male', gender_female:'Female',
   flags:{'fake-pattern':'Fake pattern','unknown-governorate':'Unknown governorate','duplicate-id':'Duplicate ID','future-birth':'Future birth date','very-early-birth-year':'Unusually early birth year','jan-1-of-century':'Jan 1 placeholder date','feb29-birthdate':'Feb 29 birth date (leap-year edge case)'},
   hijriMonths:['Muharram','Safar','Rabi\u02bb al-Awwal','Rabi\u02bb al-Thani','Jumada al-Awwal','Jumada al-Thani','Rajab','Sha\u2019ban','Ramadan','Shawwal','Dhu al-Qi\u2019dah','Dhu al-Hijjah'],
@@ -1628,7 +1625,7 @@ ar:{
   columns_title:'الأعمدة', inject_formulas_title:'حقن صيغ حيّة (إكسل فقط)',
   inject_formulas_hint:'القيم المرتبطة بالتاريخ تُعاد حسابها من الرقم عند فتح الملف لاحقًا، بدلًا من أن تبقى مجمّدة وقت التصدير. ملفات CSV لا تدعم الصيغ، لذا يسري هذا على إكسل فقط.',
   toast_formulas_need_id:'أضف عمود الرقم القومي لتفعيل الصيغ',
-  toast_save_failed:'فشل الحفظ المحلي — قد لا تُحفظ تغييراتك', toast_cache_cleared:'تم مسح البيانات المخزّنة', toast_system_theme:'اتباع مظهر النظام',
+  toast_save_failed:'فشل الحفظ المحلي — قد لا تُحفظ تغييراتك', toast_cache_cleared:'تم مسح البيانات المخزّنة', toast_system_theme:'اتباع مظهر النظام', toast_sheets_unavailable:'محرّك الجداول ما زال قيد التحميل — أعد المحاولة بعد لحظات',
   gender_male:'ذكر', gender_female:'أنثى',
   flags:{'fake-pattern':'نمط غير واقعي','unknown-governorate':'محافظة غير معروفة','duplicate-id':'رقم مكرر','future-birth':'تاريخ ميلاد مستقبلي','very-early-birth-year':'سنة ميلاد مبكرة بشكل غير معتاد','jan-1-of-century':'تاريخ افتراضي (1 يناير)','feb29-birthdate':'ميلاد في 29 فبراير (حالة سنة كبيسة)'},
   hijriMonths:['محرم','صفر','ربيع الأول','ربيع الآخر','جمادى الأولى','جمادى الآخرة','رجب','شعبان','رمضان','شوال','ذو القعدة','ذو الحجة'],
@@ -1693,6 +1690,12 @@ function refreshDynamicContent(){
   if(typeof computeLeapSingle==='function') computeLeapSingle();
   if(typeof computeLeapRange==='function') computeLeapRange();
   if(uploadedSheetData.length) renderUploadPreview(Object.keys(uploadedSheetData[0]));
+  if(typeof computeCalendarConvert==='function') computeCalendarConvert();
+  if(selectedPrayerCity){
+    const inp=document.getElementById('prayer-city-search');
+    if(inp) inp.value=(currentLang==='ar'&&selectedPrayerCity.ar)?selectedPrayerCity.ar:selectedPrayerCity.en;
+  }
+  if(typeof renderPrayerTimesResult==='function') renderPrayerTimesResult();
 }
 function applyLangFont(){
   if(currentLang==='ar'){
@@ -1813,24 +1816,6 @@ function updateChecksumHeuristicUI(){
   const el=document.getElementById('checksum-heuristic-toggle');
   if(el)el.checked=isChecksumHeuristicEnabled();
 }
-
-let pendingConfirmAction=null;
-function openConfirm(title,message,onConfirm){
-  document.getElementById('confirm-title').textContent=title;
-  document.getElementById('confirm-message').textContent=message;
-  pendingConfirmAction=onConfirm;
-  document.getElementById('confirm-overlay').classList.add('open');
-}
-function closeConfirm(){
-  document.getElementById('confirm-overlay').classList.remove('open');
-  pendingConfirmAction=null;
-}
-function runPendingConfirm(){
-  const action=pendingConfirmAction;
-  closeConfirm();
-  if(action) action();
-}
-document.getElementById('confirm-action-btn')?.addEventListener?.('click',runPendingConfirm);
 
 function systemPrefersDark(){
   return !!(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -2022,6 +2007,18 @@ function closeAllDateCalendars(except){
 }
 document.addEventListener('click',()=>closeAllDateCalendars());
 document.addEventListener('keydown',(e)=>{if(e.key==='Escape') closeAllDateCalendars();});
+document.addEventListener('visibilitychange',()=>{
+  const visible=!document.getElementById('tab-datetools').classList.contains('hide')
+    &&!document.getElementById('datesub-prayer').classList.contains('hide');
+  if(document.hidden||!visible) stopPrayerCountdown();
+  else{renderPrayerTimesResult();startPrayerCountdown();}
+});
+document.addEventListener('click',e=>{
+  const box=document.getElementById('prayer-city-results');
+  if(!box||box.classList.contains('hide'))return;
+  if(e.target.closest('#prayer-city-results')||e.target.closest('#prayer-city-search'))return;
+  box.classList.add('hide');
+});
 document.addEventListener('mouseover',e=>{const row=e.target.closest('.trace-row[data-seg-ref]');if(row) applyTraceHighlight(row.dataset.segRef);});
 document.addEventListener('mouseout',e=>{const row=e.target.closest('.trace-row[data-seg-ref]');if(row) clearTraceHighlight();});
 document.addEventListener('focusin',e=>{const row=e.target.closest('.trace-row[data-seg-ref]');if(row) applyTraceHighlight(row.dataset.segRef);});
@@ -6179,7 +6176,13 @@ function downloadBlob(content,filename,mime){
   a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
+function ensureXLSX(){
+  if(typeof XLSX!=='undefined') return true;
+  showToast(t('toast_sheets_unavailable'),'error');
+  return false;
+}
 function downloadXLSX(data,sheetName,filename,postProcess){
+  if(!ensureXLSX()) return;
   const ws=XLSX.utils.json_to_sheet(data);
   if(typeof postProcess==='function') postProcess(ws);
   const wb=XLSX.utils.book_new();
@@ -6196,6 +6199,8 @@ function switchTab(tabName){
   moveTopIndicator();
   if(tabName==='formula') updateFormulas();
   if(tabName==='idtools'){const inp=document.getElementById('inspector-input');if(inp.value.trim()) inspectID();}
+  const prayerVisible=tabName==='datetools'&&!document.getElementById('datesub-prayer').classList.contains('hide');
+  prayerVisible?startPrayerCountdown():stopPrayerCountdown();
   saveState({activeTab:tabName});
 }
 function moveTopIndicator(){
@@ -6336,8 +6341,11 @@ function toggleBatchTableCat(cat){
   renderBatchTable();
   saveStateDebounced({batchTableCats:[...batchTableCats]});
 }
-function onBatchSearch(val){batchSearch=val;renderBatchTable();saveStateDebounced({batchSearch:val});}
-function clearBatchSearch(){batchSearch='';renderBatchTable();saveStateDebounced({batchSearch:''});}
+function onBatchSearch(val){batchSearch=val;refreshBatchTableOnly();saveStateDebounced({batchSearch:val});}
+function clearBatchSearch(){
+  const el=document.getElementById('batch-search');if(el)el.value='';
+  batchSearch='';refreshBatchTableOnly();saveStateDebounced({batchSearch:''});
+}
 
 let lastBatchRows=[];
 
@@ -6421,7 +6429,9 @@ function refreshBatchTableOnly(){
   const rows=computeBatchRows();
   lastBatchRows=rows;
   const {tableHtml,capped}=buildBatchTableHtml(rows);
+  const st=wrap.scrollTop,sl=wrap.scrollLeft;
   wrap.innerHTML=tableHtml;
+  wrap.scrollTop=st;wrap.scrollLeft=sl;
   if(notice) notice.innerHTML=capped?t('rows_capped_notice',BATCH_ROW_CAP,rows.length):'';
 }
 function renderBatchTable(){
@@ -6478,7 +6488,7 @@ function renderBatchTable(){
           </div>
         </div>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(${showNullBucket?4:3},1fr);gap:.6rem;">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:.6rem;">
         <div class="kpi"><div class="lbl">${t('kpi_total')}</div><div class="num disp">${total}</div></div>
         <div class="kpi kpi-mint"><div class="lbl">${t('kpi_valid')}</div><div class="num disp" style="color:var(--mint);">${validCount}</div></div>
         <div class="kpi kpi-scarlet"><div class="lbl">${t('kpi_errors')}</div><div class="num disp" style="color:var(--scarlet);">${errorCount}</div></div>
@@ -6669,13 +6679,12 @@ function getSelectedBatchRows(){
 }
 
 function copyBatchRow(idx,elId){
-  const r=lastBatchRows[idx];
-  if(!r) return;
-  const status=r.valid?t('status_valid'):(r.isNull?t('status_null'):t('status_error'));
-  const line=r.valid?`${r.id}\t${status}\t${r.centuryLabel}\t${r.birthDateStr}\t${dayName(r.birthDayIndex)}\t${r.currentAgeYears}\t${r.totalDaysLived}\t${r.gender}\t${r.govCode}\t${govDisplay(r.govCode)}\t${r.serial}\t${r.checkDigit}\t${r.retireAge}\t${r.retireDateStr}\t${r.yearsUntilRetire}\t${r.careerPercent}%\t${(r.flags||[]).map(f=>flagLabel(f)).join(', ')}`:`${r.raw}\t${status}\t${r.error}`;
-  copyText(line,null,t('toast_row_copied'));
+  const r=lastBatchRows[idx];if(!r)return;
+  const keys=selectedBatchColumnKeys();
+  copyText(keys.map(k=>batchColumnValue(r,k)).join('\t'),null,t('toast_row_copied'));
   const el=document.getElementById(elId);
-  if(el){el.textContent='check';el.style.color='var(--mint)';setTimeout(()=>{el.textContent='content_copy';el.style.color='';},1200);}
+  if(el){el.textContent='check';el.style.color='var(--mint)';
+    setTimeout(()=>{el.textContent='content_copy';el.style.color='';},1200);}
 }
 
 function selectedBatchColumnKeys(){
@@ -6720,6 +6729,7 @@ function exportRows(rows,format,fname,colKeys,injectFormulas){
     const headers=Object.keys(data[0]);
     downloadBlob(toCSV(headers,data.map(row=>headers.map(h=>row[h]))),`${fname}.csv`,'text/csv;charset=utf-8;');
   }else{
+    if(!ensureXLSX()) return;
     const canInject=injectFormulas&&keys.includes('id');
     downloadXLSX(data,t('results_title'),`${fname}.xlsx`,canInject?(ws=>injectXLSXFormulas(ws,rows,keys,'id')):null);
     if(injectFormulas&&!keys.includes('id')) showToast(t('toast_formulas_need_id'),'info');
@@ -6811,6 +6821,7 @@ function clearUploadedFile(){
 function handleFileUpload(e){
   const file=e.target.files[0];
   if(!file) return;
+  if(!ensureXLSX()) return;
   resetUploadState();
   const maxBytes=25*1024*1024;
   if(file.size>maxBytes){
@@ -7042,9 +7053,11 @@ function processUploadedFile(){
       return `<tr>${cols.map(c=>{
         if(c===genderKey&&row[c]) return `<td>${genderBadge(row[c],'.9rem')}</td>`;
         if(c===statusKey){
-          const val=row[c];
-          const color=val==='VALID'?'var(--mint)':val==='NULL'?'var(--sun)':'var(--scarlet)';
-          return `<td style="color:${color};font-weight:650;">${escapeHtml(val)}</td>`;
+          const val=String(row[c]||'');
+          const isValid=val==='VALID',isNull=val==='NULL';
+          const color=isValid?'var(--mint)':isNull?'var(--sun)':'var(--scarlet)';
+          const shown=isValid?t('status_valid'):isNull?t('status_null'):t('status_error')+': '+val.replace(/^ERROR:\s*/,'');
+          return `<td style="color:${color};font-weight:650;">${escapeHtml(shown)}</td>`;
         }
         return `<td>${escapeHtml(row[c])}</td>`;
       }).join('')}</tr>`;
@@ -7071,6 +7084,7 @@ function downloadUpload(format){
   if(format==='csv'){
     downloadBlob(toCSV(keys,data.map(row=>keys.map(h=>row[h]))),'processed_national_ids.csv','text/csv;charset=utf-8;');
   }else{
+    if(!ensureXLSX()) return;
     const canInject=uploadInjectFormulas&&keys.includes(uploadIdColName);
     downloadXLSX(data,'Processed','processed_national_ids.xlsx',canInject?(ws=>injectUploadXLSXFormulas(ws,keys)):null);
     if(uploadInjectFormulas&&!keys.includes(uploadIdColName)) showToast(t('toast_formulas_need_id'),'info');
@@ -7127,12 +7141,17 @@ function animateCountUp(el,endValue,duration,formatter){
   requestAnimationFrame(tick);
 }
 
+let inspectDebounce=null,lastInspectorValid=false;
+function inspectIDDebounced(){clearTimeout(inspectDebounce);inspectDebounce=setTimeout(inspectID,120);}
 function inspectID(){
   const raw=document.getElementById('inspector-input').value;
   saveStateDebounced({inspectorValue:raw});
   const box=document.getElementById('inspector-result');
-  if(!raw.trim()){box.innerHTML='';return;}
+  if(!raw.trim()){box.innerHTML='';lastInspectorValid=false;return;}
   const res=parseID(raw,true);
+  const shouldAnimate=res.valid&&!lastInspectorValid;
+  lastInspectorValid=res.valid;
+  box.classList.toggle('anim-in',shouldAnimate);
   box.innerHTML=renderInspectorResult(res);
   if(res.valid){
     playRingDrawIn(box);
@@ -7414,7 +7433,7 @@ function feBirthDateExpr(ref){
   return `DATE((VALUE(LEFT(${p},1))-2)*100+1900+VALUE(MID(${p},2,2)),VALUE(MID(${p},4,2)),VALUE(MID(${p},6,2)))`;
 }
 function feGenderExpr(ref){
-  return `IF(MOD(VALUE(MID(${fePaddedExpr(ref)},13,1)),2)=1,"Male","Female")`;
+  return `IF(MOD(VALUE(MID(${fePaddedExpr(ref)},13,1)),2)=1,"${t('gender_male')}","${t('gender_female')}")`;
 }
 function feWeekdayExpr(ref){return `TEXT(${feBirthDateExpr(ref)},"dddd")`;}
 function feAgeExpr(ref){return `DATEDIF(${feBirthDateExpr(ref)},TODAY(),"y")`;}
@@ -7450,7 +7469,7 @@ function batchColumnValue(r,key){
     case 'weekday':return r.valid?dayName(r.birthDayIndex):'';
     case 'age':return r.valid?r.currentAgeYears:'';
     case 'totaldays':return r.valid?r.totalDaysLived:'';
-    case 'gender':return r.valid?r.gender:'';
+    case 'gender':return r.valid?t(r.gender==='Male'?'gender_male':'gender_female'):'';
     case 'govcode':return r.valid?r.govCode:'';
     case 'gov':return r.valid?govDisplay(r.govCode):'';
     case 'serial':return r.valid?r.serial:'';
@@ -7469,8 +7488,8 @@ function formulaCachedValue(r,key){
   switch(key){
     case 'birthdate':return toExcelSerial(r.birthDateObj);
     case 'retiredate':return toExcelSerial(r.retireDateObj);
-    case 'weekday':return DAY_NAMES[r.birthDayIndex];
-    case 'gender':return r.gender;
+    case 'weekday':return dayName(r.birthDayIndex);
+    case 'gender':return t(r.gender==='Male'?'gender_male':'gender_female');
     case 'age':return r.currentAgeYears;
     case 'totaldays':return r.totalDaysLived;
     case 'retireage':return r.retireAge;
@@ -8119,11 +8138,6 @@ window.onload=function(){
       overlay.classList.contains('open')?closeCmdk():openCmdk();
       return;
     }
-    if(document.getElementById('confirm-overlay').classList.contains('open')){
-      if(e.key==='Escape'){e.preventDefault();closeConfirm();}
-      else if(e.key==='Enter'){e.preventDefault();runPendingConfirm();}
-      return;
-    }
     if(document.getElementById('settings-overlay').classList.contains('open')){
       if(e.key==='Escape'){e.preventDefault();closeSettings();}
       return;
@@ -8162,6 +8176,7 @@ window.onload=function(){
     }
   });
   dropZone.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();document.getElementById('file-input').click();}});
+  if(document.getElementById('inspector-input').value.trim()) inspectID();
 };
 window.addEventListener('resize',moveTopIndicator);
 if('serviceWorker' in navigator){
