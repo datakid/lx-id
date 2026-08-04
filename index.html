@@ -497,7 +497,6 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
 .ringwrap{position:relative;flex-shrink:0;filter:drop-shadow(0 8px 18px rgba(138,75,38,.26))}
 .dark .ringwrap{filter:drop-shadow(0 8px 20px rgba(0,0,0,.5))}
 .ringlabel{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.ringlabel .sub{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-3);margin-top:.05rem}
 
 .checkrow{display:flex;align-items:center;gap:.65rem;padding:.6rem .15rem;border-bottom:1px solid var(--edge)}
 .checkrow:last-child{border-bottom:none}
@@ -1375,7 +1374,7 @@ en:{
   col_id:'National ID', col_status:'Status', col_century:'Century', col_birthdate:'Birth Date', col_weekday:'Weekday',
   col_age:'Age', col_totaldays:'Total Days', col_gender:'Gender', col_govcode:'Gov Code', col_gov:'Birth Gov', col_serial:'Serial',
   col_check:'Check', col_retireage:'Retire Age', col_retiredate:'Retire Date', col_yearstoretire:'Yrs to Retire',
-  col_career:'Retirement Progress %', col_flags:'Flags', col_error:'Error', ring_career_label:'Retirement Progress',
+  col_career:'Retirement Progress %', col_flags:'Flags', col_error:'Error',
   status_valid:'Plausible', status_error:'Error', status_null:'Null',
   upload_drop_title:'Drop a file or tap to browse', upload_drop_types:'.xlsx, .xls, or .csv',
   upload_col_label:'National ID column', upload_sheet_label:'Sheet', upload_header_row_label:'Header row', upload_file_default:'File: —', upload_rows:n=>`${n} rows`,
@@ -1522,7 +1521,7 @@ ar:{
   col_id:'الرقم القومي', col_status:'الحالة', col_century:'القرن', col_birthdate:'تاريخ الميلاد', col_weekday:'يوم الأسبوع',
   col_age:'العمر', col_totaldays:'إجمالي الأيام', col_gender:'النوع', col_govcode:'كود المحافظة', col_gov:'محافظة الميلاد', col_serial:'الرقم التسلسلي',
   col_check:'رقم التحقق', col_retireage:'سن المعاش', col_retiredate:'تاريخ المعاش', col_yearstoretire:'سنوات حتى المعاش',
-  col_career:'نسبة التقدم للمعاش', col_flags:'ملاحظات', col_error:'الخطأ', ring_career_label:'التقدم للمعاش',
+  col_career:'نسبة التقدم للمعاش', col_flags:'ملاحظات', col_error:'الخطأ',
   status_valid:'محتمل', status_error:'خطأ', status_null:'فارغ',
   upload_drop_title:'أفلت ملفًا هنا أو اضغط للاستعراض', upload_drop_types:'‎.xlsx أو ‎.xls أو ‎.csv',
   upload_col_label:'عمود الرقم القومي', upload_sheet_label:'الورقة', upload_header_row_label:'صف العناوين', upload_file_default:'الملف: —', upload_rows:n=>`${n} صفًا`,
@@ -7287,7 +7286,6 @@ function renderInspectorResult(res){
             ${progressRing(res.careerPercent,104,10)}
             <div class="ringlabel">
               <div class="disp num" id="career-pct-val" style="font-size:1.5rem;font-weight:700;line-height:1;">${res.careerPercent}%</div>
-              <div class="sub">${t('ring_career_label')}</div>
             </div>
           </div>
           <div class="stack" style="gap:.4rem;">
