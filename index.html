@@ -1375,7 +1375,7 @@ en:{
   col_id:'National ID', col_status:'Status', col_century:'Century', col_birthdate:'Birth Date', col_weekday:'Weekday',
   col_age:'Age', col_totaldays:'Total Days', col_gender:'Gender', col_govcode:'Gov Code', col_gov:'Birth Gov', col_serial:'Serial',
   col_check:'Check', col_retireage:'Retire Age', col_retiredate:'Retire Date', col_yearstoretire:'Yrs to Retire',
-  col_career:'Retirement Progress %', col_flags:'Flags', col_error:'Error',
+  col_career:'Retirement Progress %', col_flags:'Flags', col_error:'Error', ring_career_label:'Retirement Progress',
   status_valid:'Plausible', status_error:'Error', status_null:'Null',
   upload_drop_title:'Drop a file or tap to browse', upload_drop_types:'.xlsx, .xls, or .csv',
   upload_col_label:'National ID column', upload_sheet_label:'Sheet', upload_header_row_label:'Header row', upload_file_default:'File: —', upload_rows:n=>`${n} rows`,
@@ -1404,7 +1404,7 @@ en:{
   lbl_prayer_city:'City', ph_prayer_city_search:'Search a city\u2026', prayer_pick_city:'Search for a city to see its prayer times',
   prayer_calc_hint:'Calculated locally (Egyptian General Authority of Survey method, Shafi Asr) \u2014 not fetched from any server. Times are estimates; check your mosque for the exact call to prayer.',
   prayer_fajr:'Fajr', prayer_sunrise:'Sunrise', prayer_dhuhr:'Dhuhr', prayer_asr:'Asr', prayer_maghrib:'Maghrib', prayer_isha:'Isha\u2019',
-  prayer_next_label:'Next', prayer_time_to_next:'in', prayer_countdown_hm:(h,m)=>`${h}h ${m}m`, prayer_countdown_m:m=>`${m}m`,
+  prayer_next_label:'Next', prayer_time_to_next:'in', prayer_countdown_hm:(h,m)=>`${h}h ${m}m`, prayer_countdown_m:m=>`${m}m`, prayer_result_estimate_note:'Estimated — check your mosque for the exact call to prayer',
   calconvert_hijri:'Hijri (Islamic) date', calconvert_coptic:'Coptic date', calconvert_gregorian:'Gregorian date', dt_pick_calconvert:'Pick a date to convert',
   lbl_start_date:'Start date', lbl_end_date:'End date', lbl_working_days:'Working days',
   lbl_birth_date:'Birth date', lbl_asof:'As of (optional)', lbl_any_date:'Any date',
@@ -1522,7 +1522,7 @@ ar:{
   col_id:'الرقم القومي', col_status:'الحالة', col_century:'القرن', col_birthdate:'تاريخ الميلاد', col_weekday:'يوم الأسبوع',
   col_age:'العمر', col_totaldays:'إجمالي الأيام', col_gender:'النوع', col_govcode:'كود المحافظة', col_gov:'محافظة الميلاد', col_serial:'الرقم التسلسلي',
   col_check:'رقم التحقق', col_retireage:'سن المعاش', col_retiredate:'تاريخ المعاش', col_yearstoretire:'سنوات حتى المعاش',
-  col_career:'نسبة التقدم للمعاش', col_flags:'ملاحظات', col_error:'الخطأ',
+  col_career:'نسبة التقدم للمعاش', col_flags:'ملاحظات', col_error:'الخطأ', ring_career_label:'التقدم للمعاش',
   status_valid:'محتمل', status_error:'خطأ', status_null:'فارغ',
   upload_drop_title:'أفلت ملفًا هنا أو اضغط للاستعراض', upload_drop_types:'‎.xlsx أو ‎.xls أو ‎.csv',
   upload_col_label:'عمود الرقم القومي', upload_sheet_label:'الورقة', upload_header_row_label:'صف العناوين', upload_file_default:'الملف: —', upload_rows:n=>`${n} صفًا`,
@@ -1551,7 +1551,7 @@ ar:{
   lbl_prayer_city:'المدينة', ph_prayer_city_search:'ابحث عن مدينة\u2026', prayer_pick_city:'ابحث عن مدينة لعرض مواقيت الصلاة فيها',
   prayer_calc_hint:'مُحتسبة محليًا (طريقة الهيئة المصرية العامة للمساحة، مذهب الشافعي للعصر) — لا تُجلَب من أي خادم. الأوقات تقديرية؛ راجع مسجدك لمعرفة موعد الأذان الدقيق.',
   prayer_fajr:'الفجر', prayer_sunrise:'الشروق', prayer_dhuhr:'الظهر', prayer_asr:'العصر', prayer_maghrib:'المغرب', prayer_isha:'العشاء',
-  prayer_next_label:'التالية', prayer_time_to_next:'خلال', prayer_countdown_hm:(h,m)=>`${h} س ${m} د`, prayer_countdown_m:m=>`${m} د`,
+  prayer_next_label:'التالية', prayer_time_to_next:'خلال', prayer_countdown_hm:(h,m)=>`${h} س ${m} د`, prayer_countdown_m:m=>`${m} د`, prayer_result_estimate_note:'تقديرية — راجع مسجدك لمعرفة موعد الأذان الدقيق',
   calconvert_hijri:'التاريخ الهجري', calconvert_coptic:'التاريخ القبطي', calconvert_gregorian:'التاريخ الميلادي', dt_pick_calconvert:'اختر تاريخًا للتحويل',
   lbl_start_date:'تاريخ البداية', lbl_end_date:'تاريخ النهاية', lbl_working_days:'أيام العمل',
   lbl_birth_date:'تاريخ الميلاد', lbl_asof:'حتى تاريخ (اختياري)', lbl_any_date:'أي تاريخ',
@@ -6126,6 +6126,7 @@ function renderPrayerTimesResult(){
         ${nextInfo?`<span style="font-size:.78rem;color:var(--ink-3);">${t('prayer_time_to_next')} <b class="num" id="prayer-countdown-val" style="color:var(--amber-text);">${formatCountdown(nextInfo.date.getTime()-now.getTime())}</b></span>`:''}
       </div>
       <div class="stack" style="gap:.15rem;">${rows}</div>
+      <div style="font-size:.68rem;color:var(--ink-3);padding-top:.2rem;">${t('prayer_result_estimate_note')}</div>
     </div>`;
 }
 function startPrayerCountdown(){
@@ -7286,7 +7287,7 @@ function renderInspectorResult(res){
             ${progressRing(res.careerPercent,104,10)}
             <div class="ringlabel">
               <div class="disp num" id="career-pct-val" style="font-size:1.5rem;font-weight:700;line-height:1;">${res.careerPercent}%</div>
-              <div class="sub">${t('col_career')}</div>
+              <div class="sub">${t('ring_career_label')}</div>
             </div>
           </div>
           <div class="stack" style="gap:.4rem;">
