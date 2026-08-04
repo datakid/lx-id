@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lxid-shell-v1';
+const CACHE_NAME = 'lxid-shell-v2';
 const APP_SHELL = ['./id.html', './manifest.webmanifest'];
 const RUNTIME_HOSTS = ['cdn.sheetjs.com', 'fonts.googleapis.com', 'fonts.gstatic.com'];
 
