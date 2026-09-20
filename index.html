@@ -402,13 +402,14 @@ body{
 
 .batch-dropwrap{position:relative;display:inline-flex}
 .batch-dropmenu{
-  position:absolute;top:calc(100% + .6rem);inset-inline-end:0;z-index:60;width:16rem;
+  position:fixed;z-index:60;width:16rem;transform-origin:top center;
   background:var(--bg);background:color-mix(in srgb, var(--bg) 95%, transparent);border:1px solid var(--edge-strong);border-radius:var(--r3);isolation:isolate;
   backdrop-filter:blur(var(--blur-lg)) saturate(var(--glass-sat)) brightness(var(--glass-bright));
   -webkit-backdrop-filter:blur(var(--blur-lg)) saturate(var(--glass-sat)) brightness(var(--glass-bright));
   box-shadow:var(--sh-3);padding:.5rem;
   opacity:0;transform:translateY(-8px) scale(.96);pointer-events:none;transition:opacity .2s ease,transform .22s cubic-bezier(.16,1,.3,1);
 }
+.batch-dropmenu.open-up{transform-origin:bottom center}
 .batch-dropmenu.open{opacity:1;transform:translateY(0) scale(1);pointer-events:auto}
 .batch-dropmenu-head{margin-bottom:.35rem;padding-bottom:.6rem !important;border-bottom:1px solid var(--edge);border-radius:0 !important}
 .batch-dropmenu-headlabel{flex:1;font-size:.72rem;font-weight:700;letter-spacing:.02em;color:var(--ink-2);z-index:1}
@@ -7282,13 +7283,36 @@ function syncBatchMenus(){
   });
 }
 
+function positionBatchDropmenu(wrap,menu){
+  const r=wrap.getBoundingClientRect();
+  const margin=12;
+  const vw=window.innerWidth,vh=window.innerHeight;
+  const menuW=menu.offsetWidth||256;
+  const isRtl=document.documentElement.dir==='rtl';
+  let left=isRtl?r.left:(r.right-menuW);
+  if(left<margin) left=margin;
+  else if(left+menuW>vw-margin) left=Math.max(margin,vw-margin-menuW);
+  menu.style.left=left+'px';
+  const menuH=menu.offsetHeight||0;
+  const spaceBelow=vh-r.bottom,spaceAbove=r.top;
+  const openUp=spaceBelow<menuH+16&&spaceAbove>spaceBelow;
+  menu.classList.toggle('open-up',openUp);
+  menu.style.top=openUp?(r.top-menuH-8)+'px':(r.bottom+8)+'px';
+}
 function toggleBatchMenu(name){
   const el=document.getElementById('batch-menu-'+name);
   const caret=document.getElementById('caret-'+name);
   if(!el) return;
+  const wrap=el.closest('.batch-dropwrap')||el._anchorWrap;
   const wasOpen=el.classList.contains('open');
   closeBatchMenus();
-  if(!wasOpen){el.classList.add('open');if(caret) caret.classList.add('open');}
+  if(!wasOpen){
+    if(wrap&&el.parentElement!==document.body) document.body.appendChild(el);
+    el._anchorWrap=wrap;
+    el.classList.add('open');
+    if(caret) caret.classList.add('open');
+    if(wrap) positionBatchDropmenu(wrap,el);
+  }
 }
 function closeBatchMenus(){
   document.querySelectorAll('.batch-dropmenu.open').forEach(m=>m.classList.remove('open'));
@@ -7296,6 +7320,12 @@ function closeBatchMenus(){
 }
 document.addEventListener('click',()=>closeBatchMenus());
 document.addEventListener('keydown',(e)=>{if(e.key==='Escape') closeBatchMenus();});
+window.addEventListener('resize',()=>closeBatchMenus());
+window.addEventListener('scroll',()=>{
+  document.querySelectorAll('.batch-dropmenu.open').forEach(m=>{
+    if(m._anchorWrap) positionBatchDropmenu(m._anchorWrap,m);
+  });
+},true);
 
 function getSelectedBatchRows(){
   return batchResults.filter(r=>batchMenuSelection.has(catOf(r)));
