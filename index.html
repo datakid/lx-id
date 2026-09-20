@@ -40,6 +40,14 @@
   --sh-emboss:inset 0 1px 0 rgba(255,255,255,.5), inset 0 -1px 1px rgba(34,27,20,.05);
   --glass-hi:rgba(255,255,255,0.68); --glass-lo:rgba(34,27,20,0.055); --glass-sat:1.45; --glass-bright:1.035;
 }
+:root{color-scheme:light;accent-color:var(--amber)}
+.dark{color-scheme:dark}
+html{scrollbar-width:thin;scrollbar-color:var(--edge-strong) transparent}
+input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
+input:-webkit-autofill{-webkit-text-fill-color:var(--ink);-webkit-box-shadow:0 0 0 1000px var(--milk-strong) inset;caret-color:var(--ink);transition:background-color 9999s ease-out}
+input:-webkit-autofill:hover,input:-webkit-autofill:focus{-webkit-text-fill-color:var(--ink);-webkit-box-shadow:0 0 0 1000px var(--milk-strong) inset;caret-color:var(--ink)}
+select option{background:var(--bg);color:var(--ink)}
 [data-style="airy"]{
   --r1:32px; --r2:23px; --r3:16px; --r4:11px;
   --blur-sm:8px; --blur-md:10px; --blur-lg:11px; --blur-xl:13px;
@@ -169,6 +177,19 @@ body{
 .field-input:focus,.field-area:focus,.field-select:focus{border-color:var(--amber);box-shadow:0 0 0 4px var(--amber-soft),inset 0 1px 2px rgba(20,14,8,.04);background:var(--milk-strong)}
 .field-area{font-family:'JetBrains Mono',monospace;line-height:1.7;resize:vertical}
 .field-select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%239C8F78' stroke-width='2.4'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 0.85rem center;padding-inline-end:2.4rem}
+.xsel-wrap{position:relative}
+.xsel-trigger{display:flex;align-items:center;justify-content:space-between;gap:.5rem;cursor:pointer;text-align:start;font-family:inherit}
+.xsel-trigger:disabled{opacity:.5;cursor:not-allowed}
+.xsel-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.xsel-chevron{font-size:1.15rem;color:var(--ink-3);flex-shrink:0;transition:transform .18s ease}
+.xsel-trigger[aria-expanded="true"] .xsel-chevron{transform:rotate(180deg)}
+.xsel-native{position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none}
+.xsel-panel{position:fixed;z-index:80;background:var(--bg);border:1px solid var(--edge-strong);border-radius:var(--r3);box-shadow:var(--sh-2);padding:.35rem;max-height:16rem;overflow-y:auto;display:none}
+.xsel-panel.open{display:block}
+.xsel-opt{font-family:var(--font-body);font-size:.85rem;color:var(--ink);padding:.55rem .7rem;border-radius:8px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.xsel-opt:hover{background:var(--milk-strong)}
+.xsel-opt:focus-visible{outline:2px solid var(--amber);outline-offset:-2px}
+.xsel-opt.active{background:var(--amber-soft);color:var(--amber-text);font-weight:650}
 
 .date-field{position:relative}
 .dateinput{
@@ -217,30 +238,26 @@ body{
 .datecal-head{display:flex;align-items:center;justify-content:space-between;gap:.3rem;margin-bottom:.65rem}
 .datecal-title{font-family:var(--font-display);font-weight:650;font-size:.86rem;color:var(--ink)}
 .datecal-controls{display:flex;align-items:center;gap:.15rem;flex:1;min-width:0;justify-content:center}
-.datecal-month-select{
-  flex:1;min-width:0;appearance:none;-webkit-appearance:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
-  background:transparent;border:1px solid transparent;color:var(--ink);border-radius:var(--r4);text-align:center;
-  padding:.32rem .3rem;font-family:var(--font-display);font-weight:650;font-size:.86rem;
+.datecal-caption-btn{
+  flex:1;min-width:0;display:inline-flex;align-items:center;justify-content:center;gap:.3rem;
+  appearance:none;-webkit-appearance:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  background:transparent;border:1px solid transparent;color:var(--ink);border-radius:999px;text-align:center;
+  padding:.32rem .5rem;font-family:var(--font-display);font-weight:650;font-size:.86rem;
   cursor:pointer;transition:background .18s ease,color .18s ease,box-shadow .18s ease;
 }
-.datecal-month-select:hover{background:var(--milk-strong)}
-.datecal-month-select:focus{outline:none;background:var(--amber-soft);color:var(--amber-text);box-shadow:var(--sh-emboss)}
-.datecal-month-select:disabled{opacity:.45;cursor:not-allowed}
-.datecal-year-input{
-  width:3.6rem;flex-shrink:0;text-align:center;
-  font-family:var(--font-display);font-variant-numeric:tabular-nums;font-weight:650;font-size:.86rem;
-  background:transparent;border:1px solid transparent;color:var(--ink);border-radius:var(--r4);
-  padding:.32rem .2rem;outline:none;transition:background .18s ease,color .18s ease,box-shadow .18s ease;
-}
-.datecal-year-input:hover{background:var(--milk-strong)}
-.datecal-year-input:focus{background:var(--amber-soft);color:var(--amber-text);box-shadow:var(--sh-emboss)}
-.datecal-year-input:disabled{opacity:.45;cursor:not-allowed}
+.datecal-caption-btn:hover{background:var(--milk-strong)}
+.datecal-caption-btn:focus-visible{outline:none;background:var(--amber-soft);color:var(--amber-text);box-shadow:var(--sh-emboss)}
+.datecal-caption-btn:disabled{opacity:.45;cursor:not-allowed}
+.datecal-caption-chevron{font-size:1rem;flex-shrink:0;transition:transform .18s ease}
+.datecal-caption-btn[aria-expanded="true"] .datecal-caption-chevron{transform:rotate(180deg)}
 .datecal-navbtn{width:1.8rem;height:1.8rem;flex-shrink:0;border:none;background:transparent;color:var(--ink-2);border-radius:8px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transition:background .18s,color .18s}
 .datecal-navbtn:hover{background:var(--milk-strong);color:var(--ink)}
 .datecal-navbtn:disabled{opacity:.3;cursor:not-allowed;pointer-events:none}
 .datecal-navbtn .material-symbols-rounded{font-size:1.05rem}
 .datecal-row{display:contents}
 .datecal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;text-align:center}
+.datecal-grid.view-months{grid-template-columns:repeat(3,1fr);gap:4px}
+.datecal-grid.view-years{grid-template-columns:repeat(4,1fr);gap:4px}
 .datecal-dow{font-size:.6rem;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.03em;padding:.3rem 0}
 .datecal-day{font-family:'JetBrains Mono',monospace;font-size:.74rem;font-weight:600;color:var(--ink);background:transparent;border:none;border-radius:8px;padding:.44rem 0;cursor:pointer;transition:background .18s,color .18s,transform .15s}
 .datecal-day:hover{background:var(--milk-strong);transform:translateY(-1px)}
@@ -250,6 +267,15 @@ body{
 .datecal-day.disabled:hover{background:transparent;transform:none}
 .datecal-day.today{color:var(--amber-text);font-weight:750;box-shadow:inset 0 0 0 1.5px color-mix(in srgb, var(--amber) 55%, transparent)}
 .datecal-day.selected{background:linear-gradient(155deg,var(--amber),var(--amber-hi));color:#FBF3E8;box-shadow:0 3px 10px -4px rgba(138,75,38,.5)}
+.datecal-day.today.selected{box-shadow:0 3px 10px -4px rgba(138,75,38,.5),inset 0 0 0 1.5px rgba(255,255,255,.55)}
+.datecal-mcell{font-family:var(--font-display);font-size:.78rem;font-weight:640;color:var(--ink);background:transparent;border:none;border-radius:8px;padding:.6rem .3rem;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:background .18s,color .18s,transform .15s}
+.datecal-mcell:hover{background:var(--milk-strong);transform:translateY(-1px)}
+.datecal-mcell:focus-visible{outline:2px solid var(--amber);outline-offset:1px}
+.datecal-mcell.disabled{opacity:.28;cursor:not-allowed}
+.datecal-mcell.disabled:hover{background:transparent;transform:none}
+.datecal-mcell.today{color:var(--amber-text);font-weight:750;box-shadow:inset 0 0 0 1.5px color-mix(in srgb, var(--amber) 55%, transparent)}
+.datecal-mcell.selected{background:linear-gradient(155deg,var(--amber),var(--amber-hi));color:#FBF3E8;box-shadow:0 3px 10px -4px rgba(138,75,38,.5)}
+.datecal-mcell.today.selected{box-shadow:0 3px 10px -4px rgba(138,75,38,.5),inset 0 0 0 1.5px rgba(255,255,255,.55)}
 .datecal-foot{display:flex;justify-content:space-between;margin-top:.7rem;padding-top:.6rem;border-top:1px solid var(--edge)}
 .datecal-foot button{font-size:.7rem;font-weight:700;color:var(--ink-2);background:transparent;border:none;cursor:pointer;padding:.32rem .55rem;border-radius:8px;transition:background .18s,color .18s}
 .datecal-foot button:hover{background:var(--milk-strong);color:var(--ink)}
@@ -449,6 +475,7 @@ table.previewtable tbody tr:last-child td{border-bottom:none}
 table.previewtable th.col-active{color:var(--amber-text);background:var(--amber-soft)}
 table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);font-weight:600}
 .previewnote{font-size:.68rem;color:var(--ink-3);margin:0;font-weight:600}
+.result-summary{font-size:.8rem;color:var(--ink-2);font-weight:600;margin:0 0 .5rem;}
 
 #toasts{position:fixed;top:calc(1rem + env(safe-area-inset-top));left:50%;transform:translateX(-50%);z-index:100;display:flex;flex-direction:column;align-items:center;pointer-events:none;gap:.4rem}
 .toast{background:var(--ink);color:var(--bg);padding-block:.55rem;padding-inline:.55rem 1.1rem;border-radius:999px;box-shadow:var(--sh-3),0 1px 0 rgba(255,255,255,.06) inset;display:flex;align-items:center;gap:.55rem;font-size:.8rem;font-weight:640;
@@ -962,7 +989,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
         <div class="row" id="holiday-chip-summary" style="flex-wrap:wrap;gap:.4rem;"></div>
       </div>
     </div>
-    <div id="between-result" class="card pad"></div>
+    <div id="between-result" role="status" aria-live="polite" aria-atomic="true" class="card pad"></div>
   </div>
 
   <div id="datesub-age" class="datesubpanel grid2 hide">
@@ -970,14 +997,14 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
       <div><label class="eyebrow" data-i18n="lbl_birth_date" style="display:block;margin-bottom:.35rem;">Birth date</label><input type="date" id="dt-birth" class="field-input focusable" oninput="computeAge()"></div>
       <div><label class="eyebrow" data-i18n="lbl_asof" style="display:block;margin-bottom:.35rem;">As of (optional)</label><input type="date" id="dt-asof" class="field-input focusable" oninput="computeAge()"></div>
     </div>
-    <div id="age-result" class="card pad"></div>
+    <div id="age-result" role="status" aria-live="polite" aria-atomic="true" class="card pad"></div>
   </div>
 
   <div id="datesub-weekday" class="datesubpanel grid2 hide">
     <div class="card pad stack">
       <div><label class="eyebrow" data-i18n="lbl_any_date" style="display:block;margin-bottom:.35rem;">Any date</label><input type="date" id="dt-weekday" class="field-input focusable" oninput="computeWeekday()"></div>
     </div>
-    <div id="weekday-result" class="card pad"></div>
+    <div id="weekday-result" role="status" aria-live="polite" aria-atomic="true" class="card pad"></div>
   </div>
 
   <div id="datesub-leapyears" class="datesubpanel stack hide">
@@ -985,7 +1012,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
       <div class="card pad stack">
         <label class="eyebrow" data-i18n="lbl_single_year" style="display:block;margin-bottom:.35rem;">Single year</label>
         <input type="number" id="ly-year" placeholder="e.g. 2028" data-i18n-ph="ph_year_eg" class="field-input focusable" oninput="computeLeapSingle()">
-        <div id="leap-single-result"></div>
+        <div id="leap-single-result" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
       <div class="card pad stack">
         <label class="eyebrow" data-i18n="lbl_year_range" style="display:block;margin-bottom:.35rem;">Year range</label>
@@ -993,7 +1020,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
           <input type="number" id="ly-from" placeholder="2000" class="field-input focusable" oninput="computeLeapRange()">
           <input type="number" id="ly-to" placeholder="2050" class="field-input focusable" oninput="computeLeapRange()">
         </div>
-        <div id="leap-range-result"></div>
+        <div id="leap-range-result" role="status" aria-live="polite" aria-atomic="true"></div>
       </div>
     </div>
   </div>
@@ -1003,7 +1030,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
       <div><label class="eyebrow" data-i18n="lbl_any_date" style="display:block;margin-bottom:.35rem;">Any date</label><input type="date" id="dt-calconvert" class="field-input focusable" oninput="computeCalendarConvert()"></div>
       <p data-i18n="hijri_estimated_hint" style="font-size:.72rem;color:var(--ink-3);margin:0;">Calculated (tabular Islamic calendar) — the officially announced date can differ by a day or two</p>
     </div>
-    <div id="calconvert-result" class="card pad"></div>
+    <div id="calconvert-result" role="status" aria-live="polite" aria-atomic="true" class="card pad"></div>
   </div>
 
   <div id="datesub-prayer" class="datesubpanel stack hide">
@@ -1013,7 +1040,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
       <div id="prayer-city-results" class="hide stack" style="gap:.1rem;max-height:16rem;overflow:auto;"></div>
       <p style="font-size:.72rem;color:var(--ink-3);margin:0;" data-i18n="prayer_calc_hint">Calculated locally (Egyptian General Authority of Survey method, Shafi Asr) — not fetched from any server. Times are estimates; check your mosque for the exact call to prayer.</p>
     </div>
-    <div id="prayer-times-result"></div>
+    <div id="prayer-times-result" role="status" aria-live="polite" aria-atomic="true"></div>
   </div>
 </section>
 
@@ -1433,14 +1460,22 @@ en:{
   lbl_prayer_city:'City', ph_prayer_city_search:'Search a city\u2026', prayer_pick_city:'Search for a city to see its prayer times',
   prayer_calc_hint:'Calculated locally (Egyptian General Authority of Survey method, Shafi Asr) \u2014 not fetched from any server. Times are estimates; check your mosque for the exact call to prayer.',
   prayer_fajr:'Fajr', prayer_sunrise:'Sunrise', prayer_dhuhr:'Dhuhr', prayer_asr:'Asr', prayer_maghrib:'Maghrib', prayer_isha:'Isha\u2019',
-  prayer_next_label:'Next', prayer_time_to_next:'in', prayer_countdown_hm:(h,m)=>`${h}h ${m}m`, prayer_countdown_m:m=>`${m}m`, prayer_result_estimate_note:'Estimated — check your mosque for the exact call to prayer',
+  prayer_next_label:'Next', prayer_time_to_next:'in', prayer_countdown_hm:(h,m)=>`${h}h ${m}m`, prayer_countdown_m:m=>`${m}m`, prayer_result_estimate_note:'Estimated — check your mosque for the exact call to prayer', prayer_high_latitude_note:'Some times could not be determined for this location and date (extreme latitude) — shown as —',
   calconvert_hijri:'Hijri (Islamic) date', calconvert_coptic:'Coptic date', calconvert_gregorian:'Gregorian date', dt_pick_calconvert:'Pick a date to convert',
   lbl_start_date:'Start date', lbl_end_date:'End date', lbl_working_days:'Working days',
   lbl_birth_date:'Birth date', lbl_asof:'As of (optional)', lbl_any_date:'Any date',
   lbl_single_year:'Single year', lbl_year_range:'Year range', ph_year_eg:'e.g. 2028',
   dt_pick_start_end:'Pick a start and end date.', dt_total_days:'Total days', dt_reversed:' (reversed)', dt_calendar_span:'Calendar span',
-  dt_pick_birth:'Pick a birth date.', dt_exact_age:'Exact age', dt_total_days_lived:'Total days lived', dt_days_to_next_bday:'Days to next birthday', dt_born_on:'Born on',
-  dt_pick_date:'Pick a date.', dt_day_of_year:'Day of year', dt_week_number:'Week number', dt_leap_year:'Leap year', dt_leap_yes:'Yes — 366 days', dt_leap_no:'No — 365 days',
+  dt_pick_birth:'Pick a birth date.', dt_exact_age:'Exact age', dt_total_days_lived:'Total days lived', dt_days_to_next_bday:'Days to next birthday', dt_bday_today:'Today! 🎂', dt_born_on:'Born on',
+  dt_pick_date:'Pick a date.', dt_day_of_year:'Day of year', dt_week_number:'Week number (ISO)', dt_week_number_sunday:'Week number (Sun-start)', dt_leap_year:'Leap year', dt_leap_yes:'Yes — 366 days', dt_leap_no:'No — 365 days',
+  dt_summary_between:(days,workdays)=>`${days} days between the two dates, ${workdays} of them working days.`,
+  dt_summary_age:(a)=>`You are ${a} old.`,
+  dt_summary_weekday:(day)=>`This date falls on a ${day}.`,
+  dt_summary_leap_single:(year,isLeap)=>isLeap?`${year} is a leap year.`:`${year} is not a leap year.`,
+  dt_summary_leap_range:(count,from,to)=>`${count} leap years between ${from} and ${to}.`,
+  dt_summary_calconvert:(g,h,c)=>`Gregorian ${g} equals Hijri ${h} and Coptic ${c}.`,
+  dt_summary_prayer_next:(name,time)=>`Next prayer, ${name}, at ${time}.`,
+  dt_summary_prayer_none:'Prayer times for this location and date.',
   dt_enter_valid_year:'Enter a valid year.', dt_is_leap:n=>`${n} is a leap year`, dt_is_not_leap:n=>`${n} is not a leap year`,
   dt_div_rule:(y,r4,r100,r400)=>`${y} mod 4 = ${r4}, mod 100 = ${r100}, mod 400 = ${r400} — needs mod 4 = 0 to qualify; century years also need mod 400 = 0`,
   dt_enter_valid_years:'Enter valid years.', dt_range_too_large:'Range too large — keep it under 500 years.',
@@ -1581,14 +1616,22 @@ ar:{
   lbl_prayer_city:'المدينة', ph_prayer_city_search:'ابحث عن مدينة\u2026', prayer_pick_city:'ابحث عن مدينة لعرض مواقيت الصلاة فيها',
   prayer_calc_hint:'مُحتسبة محليًا (طريقة الهيئة المصرية العامة للمساحة، مذهب الشافعي للعصر) — لا تُجلَب من أي خادم. الأوقات تقديرية؛ راجع مسجدك لمعرفة موعد الأذان الدقيق.',
   prayer_fajr:'الفجر', prayer_sunrise:'الشروق', prayer_dhuhr:'الظهر', prayer_asr:'العصر', prayer_maghrib:'المغرب', prayer_isha:'العشاء',
-  prayer_next_label:'التالية', prayer_time_to_next:'خلال', prayer_countdown_hm:(h,m)=>`${h} س ${m} د`, prayer_countdown_m:m=>`${m} د`, prayer_result_estimate_note:'تقديرية — راجع مسجدك لمعرفة موعد الأذان الدقيق',
+  prayer_next_label:'التالية', prayer_time_to_next:'خلال', prayer_countdown_hm:(h,m)=>`${h} س ${m} د`, prayer_countdown_m:m=>`${m} د`, prayer_result_estimate_note:'تقديرية — راجع مسجدك لمعرفة موعد الأذان الدقيق', prayer_high_latitude_note:'تعذّر تحديد بعض الأوقات لهذا الموقع والتاريخ (خط عرض مرتفع) — تظهر كـ —',
   calconvert_hijri:'التاريخ الهجري', calconvert_coptic:'التاريخ القبطي', calconvert_gregorian:'التاريخ الميلادي', dt_pick_calconvert:'اختر تاريخًا للتحويل',
   lbl_start_date:'تاريخ البداية', lbl_end_date:'تاريخ النهاية', lbl_working_days:'أيام العمل',
   lbl_birth_date:'تاريخ الميلاد', lbl_asof:'حتى تاريخ (اختياري)', lbl_any_date:'أي تاريخ',
   lbl_single_year:'سنة واحدة', lbl_year_range:'نطاق سنوات', ph_year_eg:'مثال: 2028',
   dt_pick_start_end:'اختر تاريخ البداية والنهاية.', dt_total_days:'إجمالي الأيام', dt_reversed:' (معكوس)', dt_calendar_span:'الفارق التقويمي',
-  dt_pick_birth:'اختر تاريخ الميلاد.', dt_exact_age:'العمر الدقيق', dt_total_days_lived:'إجمالي أيام العمر', dt_days_to_next_bday:'أيام حتى عيد الميلاد القادم', dt_born_on:'وُلد في',
-  dt_pick_date:'اختر تاريخًا.', dt_day_of_year:'اليوم في السنة', dt_week_number:'رقم الأسبوع', dt_leap_year:'سنة كبيسة', dt_leap_yes:'نعم — 366 يومًا', dt_leap_no:'لا — 365 يومًا',
+  dt_pick_birth:'اختر تاريخ الميلاد.', dt_exact_age:'العمر الدقيق', dt_total_days_lived:'إجمالي أيام العمر', dt_days_to_next_bday:'أيام حتى عيد الميلاد القادم', dt_bday_today:'اليوم! 🎂', dt_born_on:'وُلد في',
+  dt_pick_date:'اختر تاريخًا.', dt_day_of_year:'اليوم في السنة', dt_week_number:'رقم الأسبوع (ISO)', dt_week_number_sunday:'رقم الأسبوع (بداية الأحد)', dt_leap_year:'سنة كبيسة', dt_leap_yes:'نعم — 366 يومًا', dt_leap_no:'لا — 365 يومًا',
+  dt_summary_between:(days,workdays)=>`${days} يومًا بين التاريخين، منها ${workdays} يوم عمل.`,
+  dt_summary_age:(a)=>`عمرك ${a}.`,
+  dt_summary_weekday:(day)=>`هذا التاريخ يوافق يوم ${day}.`,
+  dt_summary_leap_single:(year,isLeap)=>isLeap?`${year} سنة كبيسة.`:`${year} ليست سنة كبيسة.`,
+  dt_summary_leap_range:(count,from,to)=>`${count} سنة كبيسة بين ${from} و${to}.`,
+  dt_summary_calconvert:(g,h,c)=>`الميلادي ${g} يوافق الهجري ${h} والقبطي ${c}.`,
+  dt_summary_prayer_next:(name,time)=>`الصلاة القادمة، ${name}، الساعة ${time}.`,
+  dt_summary_prayer_none:'مواقيت الصلاة لهذا الموقع والتاريخ.',
   dt_enter_valid_year:'أدخل سنة صحيحة.', dt_is_leap:n=>`${n} سنة كبيسة`, dt_is_not_leap:n=>`${n} ليست سنة كبيسة`,
   dt_div_rule:(y,r4,r100,r400)=>`${y} باقي القسمة على 4 = ${r4}، على 100 = ${r100}، على 400 = ${r400} — يلزم أن يكون الباقي على 4 صفرًا؛ وسنوات القرن يلزم أيضًا أن يكون الباقي على 400 صفرًا`,
   dt_enter_valid_years:'أدخل سنوات صحيحة.', dt_range_too_large:'النطاق كبير جدًا — اجعله أقل من 500 عام.',
@@ -1774,6 +1817,7 @@ let processedUploadResults=[];
 let uploadAutoRenameDupes=true;
 let formulaMode='table';
 let saveTimer=null;
+let pendingPatch=null;
 let workDaySet=new Set([0,1,2,3,4]);
 let holidayMap=new Map();
 let holidayIssues=[];
@@ -1813,7 +1857,10 @@ function saveState(patch){
     return false;
   }
 }
-function saveStateDebounced(patch){clearTimeout(saveTimer);saveTimer=setTimeout(()=>saveState(patch),350);}
+function flushPendingSave(){if(pendingPatch){clearTimeout(saveTimer);saveTimer=null;const p=pendingPatch;pendingPatch=null;saveState(p);}}
+function saveStateDebounced(patch){pendingPatch=Object.assign(pendingPatch||{},patch);clearTimeout(saveTimer);saveTimer=setTimeout(flushPendingSave,350);}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flushPendingSave();});
+window.addEventListener('pagehide',flushPendingSave);
 function clearAllCache(){
   const localSnapshot=loadLocalBlob();
   const sessionSnapshot=loadSessionBlob();
@@ -2096,8 +2143,6 @@ function buildDateField(nativeInput){
   const maxDateBase=originalMax?isoToLocalDate(originalMax):null;
   const minDateVal=minDateBase?stripTime(minDateBase):null;
   const maxDateVal=maxDateBase?stripTime(maxDateBase):null;
-  const minYear=minDateVal?minDateVal.getFullYear():1900;
-  const maxYear=maxDateVal?maxDateVal.getFullYear():2100;
 
   function mkSeg(kind,ph,maxLen){
     const el=document.createElement('input');
@@ -2150,12 +2195,13 @@ function buildDateField(nativeInput){
   popover.setAttribute('aria-modal','false');
   popover.setAttribute('aria-labelledby',headingId);
   document.body.appendChild(popover);
-  let calYear=null,calMonth=null;
+  let calYear=null,calMonth=null,calView='days',calYearPage=null;
 
   function setNativeValue(value){
     if(nativeInput.value===value) return;
     nativeInput.value=value;
     nativeInput.dispatchEvent(new Event('input',{bubbles:true}));
+    nativeInput.dispatchEvent(new Event('change',{bubbles:true}));
   }
 
   function commit(){
@@ -2248,14 +2294,36 @@ function buildDateField(nativeInput){
     });
   });
 
+  box.addEventListener('paste',(e)=>{
+    const target=e.target;
+    if(!target||!target.classList||!target.classList.contains('dateseg')) return;
+    const text=(e.clipboardData||window.clipboardData).getData('text');
+    if(!text) return;
+    const groups=normalizeDigitsToAscii(text).match(/\d+/g);
+    if(!groups||!groups.length) return;
+    let d=null,m=null,y=null;
+    if(groups.length===1&&groups[0].length===8){
+      d=groups[0].slice(0,2);m=groups[0].slice(2,4);y=groups[0].slice(4,8);
+    }else if(groups.length>=3){
+      if(groups[0].length===4){y=groups[0];m=groups[1];d=groups[2];}
+      else{d=groups[0];m=groups[1];y=groups[2];}
+    }else return;
+    e.preventDefault();
+    segD.value=pad2(clampInt(+d,1,31));
+    segM.value=pad2(clampInt(+m,1,12));
+    segY.value=y.padStart(4,'0').slice(-4);
+    commit();
+  });
+
   todayShortcutBtn.addEventListener('click',()=>{
     const d=new Date();
     segD.value=pad2(d.getDate());segM.value=pad2(d.getMonth()+1);segY.value=String(d.getFullYear());
     commit();
   });
 
+  function cellSelector(){return calView==='days'?'.datecal-day':'.datecal-mcell';}
   function pickRovingTarget(){
-    const cells=[...popover.querySelectorAll('.datecal-day')];
+    const cells=[...popover.querySelectorAll(cellSelector())];
     if(!cells.length) return null;
     return cells.find(c=>c.classList.contains('selected')&&c.getAttribute('aria-disabled')!=='true')
       ||cells.find(c=>c.classList.contains('today')&&c.getAttribute('aria-disabled')!=='true')
@@ -2263,36 +2331,39 @@ function buildDateField(nativeInput){
       ||cells[0];
   }
   function applyRovingTabindex(){
-    const cells=[...popover.querySelectorAll('.datecal-day')];
+    const cells=[...popover.querySelectorAll(cellSelector())];
     const target=pickRovingTarget();
     cells.forEach(c=>{c.tabIndex=(c===target?0:-1);});
     return target;
   }
-  function focusDate(iso){
-    const cells=[...popover.querySelectorAll('.datecal-day')];
-    let el=iso?cells.find(c=>c.dataset.date===iso&&c.getAttribute('aria-disabled')!=='true'):null;
+  function focusCellByKey(key,val){
+    const cells=[...popover.querySelectorAll(cellSelector())];
+    let el=(key&&val!=null)?cells.find(c=>c.dataset[key]===String(val)&&c.getAttribute('aria-disabled')!=='true'):null;
     if(!el) el=pickRovingTarget();
     if(el){cells.forEach(c=>{c.tabIndex=(c===el?0:-1);});el.focus();}
     return el;
   }
+  function focusDate(iso){return focusCellByKey('date',iso);}
 
   function getFocusDescriptor(){
     const active=popover.contains(document.activeElement)?document.activeElement:null;
     if(!active) return null;
-    if(active.classList.contains('datecal-month-select')) return {type:'month'};
-    if(active.classList.contains('datecal-year-input')) return {type:'year'};
+    if(active.classList.contains('datecal-caption-btn')) return {type:'caption'};
     if(active.classList.contains('datecal-navbtn')) return {type:'nav',dir:active.dataset.nav};
     if(active.classList.contains('datecal-day')) return {type:'day',date:active.dataset.date};
+    if(active.classList.contains('datecal-mcell')&&active.dataset.month!==undefined) return {type:'monthcell',month:active.dataset.month};
+    if(active.classList.contains('datecal-mcell')&&active.dataset.year!==undefined) return {type:'yearcell',year:active.dataset.year};
     return {type:'other'};
   }
   function restoreFocus(desc){
     if(!desc) return;
-    if(desc.type==='month'){const el=popover.querySelector('.datecal-month-select');if(el) el.focus();}
-    else if(desc.type==='year'){const el=popover.querySelector('.datecal-year-input');if(el){el.focus();el.select();}}
+    if(desc.type==='caption'){const el=popover.querySelector('.datecal-caption-btn');if(el) el.focus();}
     else if(desc.type==='nav'){
       const el=popover.querySelector(`.datecal-navbtn[data-nav="${desc.dir}"]`);
-      if(el&&!el.disabled) el.focus(); else focusDate(null);
-    }else if(desc.type==='day') focusDate(desc.date);
+      if(el&&!el.disabled) el.focus(); else focusCellByKey(null,null);
+    }else if(desc.type==='day') focusCellByKey('date',desc.date);
+    else if(desc.type==='monthcell') focusCellByKey('month',desc.month);
+    else if(desc.type==='yearcell') focusCellByKey('year',desc.year);
   }
 
   function positionCalendarPopover(){
@@ -2300,7 +2371,8 @@ function buildDateField(nativeInput){
     const popRect=popover.getBoundingClientRect();
     const margin=12,gap=10;
     const vw=window.innerWidth,vh=window.innerHeight;
-    let left=wrapRect.left;
+    const isRtl=document.documentElement.dir==='rtl';
+    let left=isRtl?(wrapRect.right-popRect.width):wrapRect.left;
     const naturalRight=left+popRect.width;
     if(left<margin) left=margin;
     else if(naturalRight>vw-margin) left=Math.max(margin,vw-margin-popRect.width);
@@ -2334,136 +2406,190 @@ function buildDateField(nativeInput){
       const b=baseDate||new Date();
       calYear=b.getFullYear();calMonth=b.getMonth();
     }
-    const first=new Date(calYear,calMonth,1);
-    const startOffset=first.getDay();
-    const totalDays=daysInMonth(calYear,calMonth);
-    const prevMonthYear=calMonth===0?calYear-1:calYear, prevMonthIdx=(calMonth+11)%12;
-    const prevTotalDays=daysInMonth(prevMonthYear,prevMonthIdx);
-    const nextMonthYear=calMonth===11?calYear+1:calYear, nextMonthIdx=(calMonth+1)%12;
     const today=stripTime(new Date());
     const selected=baseDate?stripTime(baseDate):null;
+    const disabledAttr=originalDisabled?' disabled':'';
+    const monthNames=currentLang==='ar'?MONTH_NAMES_AR:MONTH_NAMES;
+    const capDir=currentLang==='ar'?'rtl':'ltr';
+    let headingText,gridHtml,gridCls,prevNavDisabled,nextNavDisabled,prevLabel,nextLabel,captionText;
 
-    function dayCellHtml(y,m,d,muted){
-      const cellDate=new Date(y,m,d);
-      const iso=`${y}-${pad2(m+1)}-${pad2(d)}`;
-      const isToday=stripTime(cellDate).getTime()===today.getTime();
-      const isSel=selected&&stripTime(cellDate).getTime()===selected.getTime();
-      const outOfRange=(minDateVal&&stripTime(cellDate)<minDateVal)||(maxDateVal&&stripTime(cellDate)>maxDateVal);
-      const cls=['datecal-day'];
-      if(muted) cls.push('muted');
-      if(isToday) cls.push('today');
-      if(isSel) cls.push('selected');
-      if(outOfRange) cls.push('disabled');
-      const label=formatCaption(cellDate);
-      return `<button type="button" class="${cls.join(' ')}" role="gridcell" data-date="${iso}" tabindex="-1"${outOfRange?' aria-disabled="true"':''}${isSel?' aria-selected="true"':''} aria-label="${escapeHtml(label)}">${d}</button>`;
+    if(calView==='days'){
+      const first=new Date(calYear,calMonth,1);
+      const startOffset=first.getDay();
+      const totalDays=daysInMonth(calYear,calMonth);
+      const prevMonthYear=calMonth===0?calYear-1:calYear, prevMonthIdx=(calMonth+11)%12;
+      const prevTotalDays=daysInMonth(prevMonthYear,prevMonthIdx);
+      const nextMonthYear=calMonth===11?calYear+1:calYear, nextMonthIdx=(calMonth+1)%12;
+
+      function dayCellHtml(y,m,d,muted){
+        const cellDate=new Date(y,m,d);
+        const iso=`${y}-${pad2(m+1)}-${pad2(d)}`;
+        const isToday=stripTime(cellDate).getTime()===today.getTime();
+        const isSel=selected&&stripTime(cellDate).getTime()===selected.getTime();
+        const outOfRange=(minDateVal&&stripTime(cellDate)<minDateVal)||(maxDateVal&&stripTime(cellDate)>maxDateVal);
+        const cls=['datecal-day'];
+        if(muted) cls.push('muted');
+        if(isToday) cls.push('today');
+        if(isSel) cls.push('selected');
+        if(outOfRange) cls.push('disabled');
+        const label=formatCaption(cellDate);
+        return `<button type="button" class="${cls.join(' ')}" role="gridcell" data-date="${iso}" tabindex="-1"${outOfRange?' aria-disabled="true"':''}${isSel?' aria-selected="true"':''} aria-label="${escapeHtml(label)}">${d}</button>`;
+      }
+
+      const leadCells=[];
+      for(let i=0;i<startOffset;i++) leadCells.push(dayCellHtml(prevMonthYear,prevMonthIdx,prevTotalDays-startOffset+1+i,true));
+      const midCells=[];
+      for(let d=1;d<=totalDays;d++) midCells.push(dayCellHtml(calYear,calMonth,d,false));
+      const trailing=(7-((startOffset+totalDays)%7))%7;
+      const trailCells=[];
+      for(let i=1;i<=trailing;i++) trailCells.push(dayCellHtml(nextMonthYear,nextMonthIdx,i,true));
+      const allCells=[...leadCells,...midCells,...trailCells];
+
+      const dow=currentLang==='ar'?DOW_SHORT_AR:['Su','Mo','Tu','We','Th','Fr','Sa'];
+      let rowsHtml=`<div class="datecal-row" role="row">${dow.map(x=>`<div class="datecal-dow" role="columnheader">${x}</div>`).join('')}</div>`;
+      for(let i=0;i<allCells.length;i+=7) rowsHtml+=`<div class="datecal-row" role="row">${allCells.slice(i,i+7).join('')}</div>`;
+      gridHtml=rowsHtml;gridCls='';
+
+      const curKey=calYear*12+calMonth;
+      const minKey=minDateVal?minDateVal.getFullYear()*12+minDateVal.getMonth():-Infinity;
+      const maxKey=maxDateVal?maxDateVal.getFullYear()*12+maxDateVal.getMonth():Infinity;
+      prevNavDisabled=originalDisabled||curKey<=minKey;nextNavDisabled=originalDisabled||curKey>=maxKey;
+      prevLabel=t('date_prev_month');nextLabel=t('date_next_month');
+      captionText=monthNames[calMonth]+' '+calYear;
+      headingText=captionText;
+    }else if(calView==='months'){
+      const cellsHtml=monthNames.map((name,i)=>{
+        const isToday=calYear===today.getFullYear()&&i===today.getMonth();
+        const isSel=selected&&calYear===selected.getFullYear()&&i===selected.getMonth();
+        const outOfRange=(minDateVal&&(calYear<minDateVal.getFullYear()||(calYear===minDateVal.getFullYear()&&i<minDateVal.getMonth())))||(maxDateVal&&(calYear>maxDateVal.getFullYear()||(calYear===maxDateVal.getFullYear()&&i>maxDateVal.getMonth())));
+        const cls=['datecal-mcell'];
+        if(isToday) cls.push('today');
+        if(isSel) cls.push('selected');
+        if(outOfRange) cls.push('disabled');
+        return `<button type="button" class="${cls.join(' ')}" role="gridcell" data-month="${i}" tabindex="-1"${outOfRange?' aria-disabled="true"':''}${isSel?' aria-selected="true"':''} aria-label="${escapeHtml(name)}">${escapeHtml(name)}</button>`;
+      }).join('');
+      gridHtml=`<div class="datecal-row" role="row">${cellsHtml}</div>`;gridCls='view-months';
+      prevNavDisabled=originalDisabled||(minDateVal&&calYear<=minDateVal.getFullYear());
+      nextNavDisabled=originalDisabled||(maxDateVal&&calYear>=maxDateVal.getFullYear());
+      prevLabel=t('date_prev_month');nextLabel=t('date_next_month');
+      captionText=String(calYear);
+      headingText=String(calYear);
+    }else{
+      if(calYearPage===null) calYearPage=Math.floor(calYear/12)*12;
+      const years=Array.from({length:12},(_,i)=>calYearPage+i);
+      const cellsHtml=years.map(y=>{
+        const isToday=y===today.getFullYear();
+        const isSel=selected&&y===selected.getFullYear();
+        const outOfRange=(minDateVal&&y<minDateVal.getFullYear())||(maxDateVal&&y>maxDateVal.getFullYear());
+        const cls=['datecal-mcell'];
+        if(isToday) cls.push('today');
+        if(isSel) cls.push('selected');
+        if(outOfRange) cls.push('disabled');
+        return `<button type="button" class="${cls.join(' ')}" role="gridcell" data-year="${y}" tabindex="-1"${outOfRange?' aria-disabled="true"':''}${isSel?' aria-selected="true"':''} aria-label="${y}">${y}</button>`;
+      }).join('');
+      gridHtml=`<div class="datecal-row" role="row">${cellsHtml}</div>`;gridCls='view-years';
+      prevNavDisabled=originalDisabled||(minDateVal&&(calYearPage-1)<minDateVal.getFullYear());
+      nextNavDisabled=originalDisabled||(maxDateVal&&(calYearPage+12)>maxDateVal.getFullYear());
+      prevLabel=t('date_prev_month');nextLabel=t('date_next_month');
+      captionText=`${calYearPage}\u2013${calYearPage+11}`;
+      headingText=captionText;
     }
 
-    const leadCells=[];
-    for(let i=0;i<startOffset;i++) leadCells.push(dayCellHtml(prevMonthYear,prevMonthIdx,prevTotalDays-startOffset+1+i,true));
-    const midCells=[];
-    for(let d=1;d<=totalDays;d++) midCells.push(dayCellHtml(calYear,calMonth,d,false));
-    const trailing=(7-((startOffset+totalDays)%7))%7;
-    const trailCells=[];
-    for(let i=1;i<=trailing;i++) trailCells.push(dayCellHtml(nextMonthYear,nextMonthIdx,i,true));
-    const allCells=[...leadCells,...midCells,...trailCells];
-
-    const dow=currentLang==='ar'?DOW_SHORT_AR:['Su','Mo','Tu','We','Th','Fr','Sa'];
-    let rowsHtml=`<div class="datecal-row" role="row">${dow.map(x=>`<div class="datecal-dow" role="columnheader">${x}</div>`).join('')}</div>`;
-    for(let i=0;i<allCells.length;i+=7) rowsHtml+=`<div class="datecal-row" role="row">${allCells.slice(i,i+7).join('')}</div>`;
-
-    const curKey=calYear*12+calMonth;
-    const minKey=minDateVal?minDateVal.getFullYear()*12+minDateVal.getMonth():-Infinity;
-    const maxKey=maxDateVal?maxDateVal.getFullYear()*12+maxDateVal.getMonth():Infinity;
-    const prevNavDisabled=originalDisabled||curKey<=minKey, nextNavDisabled=originalDisabled||curKey>=maxKey;
-
-    const monthNames=currentLang==='ar'?MONTH_NAMES_AR:MONTH_NAMES;
-    const monthOptions=monthNames.map((name,i)=>`<option value="${i}"${i===calMonth?' selected':''}>${escapeHtml(name)}</option>`).join('');
-    const disabledAttr=originalDisabled?' disabled':'';
-
     popover.innerHTML=`
-      <span class="sr-only" id="${headingId}">${escapeHtml(monthName(calMonth)+' '+calYear)}</span>
+      <span class="sr-only" id="${headingId}">${escapeHtml(headingText)}</span>
       <div class="datecal-head">
-        <button type="button" class="datecal-navbtn" data-nav="-1" aria-label="${t('date_prev_month')}"${prevNavDisabled?' disabled':''}><span class="material-symbols-rounded" style="transform:rotate(180deg);">arrow_forward</span></button>
+        <button type="button" class="datecal-navbtn" data-nav="-1" aria-label="${prevLabel}"${prevNavDisabled?' disabled':''}><span class="material-symbols-rounded" style="transform:rotate(180deg);">arrow_forward</span></button>
         <div class="datecal-controls">
-          <select class="datecal-month-select" aria-label="${t('date_seg_month')}"${disabledAttr}>${monthOptions}</select>
-          <input type="text" inputmode="numeric" class="datecal-year-input" aria-label="${t('date_seg_year')}" maxlength="4" value="${calYear}"${disabledAttr}>
+          <button type="button" class="datecal-caption-btn" aria-expanded="${calView!=='days'}" style="direction:${capDir};"${disabledAttr}>${escapeHtml(captionText)}<span class="material-symbols-rounded datecal-caption-chevron">expand_more</span></button>
         </div>
-        <button type="button" class="datecal-navbtn" data-nav="1" aria-label="${t('date_next_month')}"${nextNavDisabled?' disabled':''}><span class="material-symbols-rounded">arrow_forward</span></button>
+        <button type="button" class="datecal-navbtn" data-nav="1" aria-label="${nextLabel}"${nextNavDisabled?' disabled':''}><span class="material-symbols-rounded">arrow_forward</span></button>
       </div>
-      <div class="datecal-grid" role="grid" aria-labelledby="${headingId}">${rowsHtml}</div>
+      <div class="datecal-grid ${gridCls}" role="grid" aria-labelledby="${headingId}">${gridHtml}</div>
       <div class="datecal-foot"><button type="button" data-act="today"${disabledAttr}>${t('date_today')}</button><button type="button" data-act="clear"${disabledAttr}>${t('date_clear')}</button></div>`;
     applyRovingTabindex();
   }
 
-  function commitYearInput(yi){
-    const raw=normalizeDigitsToAscii(yi.value).replace(/\D/g,'').slice(0,4);
-    const n=parseInt(raw,10);
-    if(raw.length===4&&Number.isFinite(n)&&n>=minYear&&n<=maxYear) calYear=n;
-    rerenderPreservingFocus();
-  }
-
-  popover.addEventListener('input',(e)=>{
-    const yi=e.target.closest('.datecal-year-input');
-    if(!yi) return;
-    const raw=normalizeDigitsToAscii(yi.value).replace(/\D/g,'').slice(0,4);
-    yi.value=raw;
-    if(raw.length===4){
-      const n=parseInt(raw,10);
-      if(n>=minYear&&n<=maxYear&&n!==calYear){calYear=n;rerenderPreservingFocus();}
-    }
-  });
-  popover.addEventListener('focusin',(e)=>{
-    const yi=e.target.closest('.datecal-year-input');
-    if(yi) yi.select();
-  });
-  popover.addEventListener('focusout',(e)=>{
-    const yi=e.target.closest('.datecal-year-input');
-    if(yi) commitYearInput(yi);
-  });
-  popover.addEventListener('change',(e)=>{
-    const ms=e.target.closest('.datecal-month-select');
-    if(ms){calMonth=parseInt(ms.value,10);rerenderPreservingFocus();}
-  });
   popover.addEventListener('keydown',(e)=>{
-    const yi=e.target.closest('.datecal-year-input');
-    if(yi){
-      if(e.key==='Enter'){e.preventDefault();commitYearInput(yi);}
-      return;
-    }
-    if(e.target.closest('.datecal-month-select')) return;
-    const dayBtn=e.target.closest('.datecal-day');
-    if(!dayBtn) return;
-    const cur=isoToLocalDate(dayBtn.dataset.date);
-    if(!cur) return;
-    let next=null;
-    if(e.key==='ArrowLeft'){next=new Date(cur);next.setDate(cur.getDate()-1);}
-    else if(e.key==='ArrowRight'){next=new Date(cur);next.setDate(cur.getDate()+1);}
-    else if(e.key==='ArrowUp'){next=new Date(cur);next.setDate(cur.getDate()-7);}
-    else if(e.key==='ArrowDown'){next=new Date(cur);next.setDate(cur.getDate()+7);}
-    else if(e.key==='Home'){next=new Date(cur);next.setDate(cur.getDate()-cur.getDay());}
-    else if(e.key==='End'){next=new Date(cur);next.setDate(cur.getDate()+(6-cur.getDay()));}
-    else if(e.key==='PageUp'){next=e.shiftKey?addYearsSameMonth(cur,-1):addMonthsClamped(cur,-1);}
-    else if(e.key==='PageDown'){next=e.shiftKey?addYearsSameMonth(cur,1):addMonthsClamped(cur,1);}
-    else if(e.key==='Enter'||e.key===' '){
+    if(e.target.closest('.datecal-caption-btn')||e.target.closest('.datecal-navbtn')) return;
+    if(calView==='days'){
+      const dayBtn=e.target.closest('.datecal-day');
+      if(!dayBtn) return;
+      const cur=isoToLocalDate(dayBtn.dataset.date);
+      if(!cur) return;
+      let next=null;
+      if(e.key==='ArrowLeft'){next=new Date(cur);next.setDate(cur.getDate()-1);}
+      else if(e.key==='ArrowRight'){next=new Date(cur);next.setDate(cur.getDate()+1);}
+      else if(e.key==='ArrowUp'){next=new Date(cur);next.setDate(cur.getDate()-7);}
+      else if(e.key==='ArrowDown'){next=new Date(cur);next.setDate(cur.getDate()+7);}
+      else if(e.key==='Home'){next=new Date(cur);next.setDate(cur.getDate()-cur.getDay());}
+      else if(e.key==='End'){next=new Date(cur);next.setDate(cur.getDate()+(6-cur.getDay()));}
+      else if(e.key==='PageUp'){next=e.shiftKey?addYearsSameMonth(cur,-1):addMonthsClamped(cur,-1);}
+      else if(e.key==='PageDown'){next=e.shiftKey?addYearsSameMonth(cur,1):addMonthsClamped(cur,1);}
+      else if(e.key==='Enter'||e.key===' '){
+        e.preventDefault();
+        if(dayBtn.getAttribute('aria-disabled')!=='true'){
+          segD.value=pad2(cur.getDate());segM.value=pad2(cur.getMonth()+1);segY.value=String(cur.getFullYear());
+          commit();
+          closePopover();
+        }
+        return;
+      }else return;
       e.preventDefault();
-      if(dayBtn.getAttribute('aria-disabled')!=='true'){
-        segD.value=pad2(cur.getDate());segM.value=pad2(cur.getMonth()+1);segY.value=String(cur.getFullYear());
-        commit();
-        closePopover();
+      if(minDateVal&&stripTime(next)<minDateVal) next=new Date(minDateVal);
+      if(maxDateVal&&stripTime(next)>maxDateVal) next=new Date(maxDateVal);
+      calYear=next.getFullYear();calMonth=next.getMonth();
+      const targetIso=`${calYear}-${pad2(calMonth+1)}-${pad2(next.getDate())}`;
+      renderCalendar();
+      focusDate(targetIso);
+      positionCalendarPopover();
+    }else{
+      const cell=e.target.closest('.datecal-mcell');
+      if(!cell) return;
+      if(e.key==='Enter'||e.key===' '){
+        e.preventDefault();
+        if(cell.getAttribute('aria-disabled')!=='true') cell.click();
+        return;
       }
-      return;
-    }else return;
-    e.preventDefault();
-    if(minDateVal&&stripTime(next)<minDateVal) next=new Date(minDateVal);
-    if(maxDateVal&&stripTime(next)>maxDateVal) next=new Date(maxDateVal);
-    calYear=next.getFullYear();calMonth=next.getMonth();
-    const targetIso=`${calYear}-${pad2(calMonth+1)}-${pad2(next.getDate())}`;
-    renderCalendar();
-    focusDate(targetIso);
-    positionCalendarPopover();
+      if(e.key==='PageUp'){
+        e.preventDefault();
+        if(calView==='months') calYear--; else calYearPage-=12;
+        rerenderPreservingFocus();
+        return;
+      }
+      if(e.key==='PageDown'){
+        e.preventDefault();
+        if(calView==='months') calYear++; else calYearPage+=12;
+        rerenderPreservingFocus();
+        return;
+      }
+      const cols=calView==='months'?3:4;
+      const cells=[...popover.querySelectorAll('.datecal-mcell')];
+      const idx=cells.indexOf(cell);
+      let nextIdx=null;
+      if(e.key==='ArrowLeft') nextIdx=idx-1;
+      else if(e.key==='ArrowRight') nextIdx=idx+1;
+      else if(e.key==='ArrowUp') nextIdx=idx-cols;
+      else if(e.key==='ArrowDown') nextIdx=idx+cols;
+      else if(e.key==='Home') nextIdx=Math.floor(idx/cols)*cols;
+      else if(e.key==='End') nextIdx=Math.floor(idx/cols)*cols+cols-1;
+      else return;
+      e.preventDefault();
+      if(nextIdx<0||nextIdx>=cells.length) return;
+      cells.forEach(c=>c.tabIndex=-1);
+      cells[nextIdx].tabIndex=0;
+      cells[nextIdx].focus();
+    }
   });
   popover.addEventListener('click',(e)=>{
     e.stopPropagation();
+    const capBtn=e.target.closest('.datecal-caption-btn');
+    if(capBtn&&!capBtn.disabled){
+      if(calView==='days') calView='months';
+      else if(calView==='months'){calYearPage=Math.floor(calYear/12)*12;calView='years';}
+      else calView='months';
+      rerenderPreservingFocus();
+      return;
+    }
     const dayBtn=e.target.closest('.datecal-day');
     if(dayBtn){
       if(dayBtn.getAttribute('aria-disabled')==='true') return;
@@ -2475,10 +2601,33 @@ function buildDateField(nativeInput){
       closePopover();
       return;
     }
+    const monthCell=e.target.closest('.datecal-mcell[data-month]');
+    if(monthCell){
+      if(monthCell.getAttribute('aria-disabled')==='true') return;
+      calMonth=parseInt(monthCell.dataset.month,10);
+      calView='days';
+      rerenderPreservingFocus();
+      return;
+    }
+    const yearCell=e.target.closest('.datecal-mcell[data-year]');
+    if(yearCell){
+      if(yearCell.getAttribute('aria-disabled')==='true') return;
+      calYear=parseInt(yearCell.dataset.year,10);
+      calView='months';
+      rerenderPreservingFocus();
+      return;
+    }
     const navBtn=e.target.closest('.datecal-navbtn');
     if(navBtn&&!navBtn.disabled){
-      calMonth+=(+navBtn.dataset.nav);
-      if(calMonth<0){calMonth=11;calYear--;} if(calMonth>11){calMonth=0;calYear++;}
+      const dir=+navBtn.dataset.nav;
+      if(calView==='days'){
+        calMonth+=dir;
+        if(calMonth<0){calMonth=11;calYear--;} if(calMonth>11){calMonth=0;calYear++;}
+      }else if(calView==='months'){
+        calYear+=dir;
+      }else{
+        calYearPage+=dir*12;
+      }
       rerenderPreservingFocus();
       return;
     }
@@ -2502,7 +2651,7 @@ function buildDateField(nativeInput){
     const willOpen=!popover.classList.contains('open');
     closeAllDateCalendars(popover);
     if(willOpen){
-      calYear=null;calMonth=null;
+      calYear=null;calMonth=null;calView='days';calYearPage=null;
       renderCalendar();
       popover.classList.add('open');
       calBtn.setAttribute('aria-expanded','true');
@@ -2538,6 +2687,111 @@ function buildDateField(nativeInput){
 }
 function buildAllDateFields(){document.querySelectorAll('input[type="date"].field-input').forEach(buildDateField);}
 function refreshAllDateFields(){document.querySelectorAll('input[data-date-enhanced="1"]').forEach(inp=>{if(typeof inp.syncDateLabels==='function') inp.syncDateLabels();else if(typeof inp.syncDateDisplay==='function') inp.syncDateDisplay();});}
+
+function enhanceSelect(selectEl){
+  if(selectEl.dataset.selectEnhanced) return;
+  selectEl.dataset.selectEnhanced='1';
+  const wrap=document.createElement('div');
+  wrap.className='xsel-wrap';
+  selectEl.parentNode.insertBefore(wrap,selectEl);
+  wrap.appendChild(selectEl);
+  selectEl.classList.add('xsel-native');
+  selectEl.tabIndex=-1;
+  selectEl.setAttribute('aria-hidden','true');
+
+  const trigger=document.createElement('button');
+  trigger.type='button';
+  trigger.className='field-input xsel-trigger focusable';
+  trigger.setAttribute('aria-haspopup','listbox');
+  trigger.setAttribute('aria-expanded','false');
+  const ariaLabel=selectEl.getAttribute('aria-label');
+  if(ariaLabel) trigger.setAttribute('aria-label',ariaLabel);
+  trigger.innerHTML='<span class="xsel-label"></span><span class="material-symbols-rounded xsel-chevron">expand_more</span>';
+  wrap.appendChild(trigger);
+
+  const panel=document.createElement('div');
+  panel.className='xsel-panel';
+  panel.setAttribute('role','listbox');
+  document.body.appendChild(panel);
+  const labelEl=trigger.querySelector('.xsel-label');
+
+  function syncLabel(){
+    const opt=selectEl.options[selectEl.selectedIndex];
+    labelEl.textContent=opt?opt.textContent:'';
+    trigger.disabled=selectEl.disabled;
+  }
+  function buildPanel(){
+    panel.innerHTML=[...selectEl.options].map((o,i)=>{
+      const isActive=i===selectEl.selectedIndex;
+      return `<div class="xsel-opt${isActive?' active':''}" role="option" tabindex="${isActive?0:-1}" data-idx="${i}"${isActive?' aria-selected="true"':''}>${escapeHtml(o.textContent)}</div>`;
+    }).join('');
+  }
+  function position(){
+    const r=wrap.getBoundingClientRect();
+    const margin=12;
+    const vw=window.innerWidth,vh=window.innerHeight;
+    panel.style.minWidth=r.width+'px';
+    let left=r.left;
+    const w=panel.offsetWidth||r.width;
+    if(left+w>vw-margin) left=Math.max(margin,vw-margin-w);
+    panel.style.left=left+'px';
+    const spaceBelow=vh-r.bottom;
+    const openUp=spaceBelow<Math.min(260,panel.scrollHeight+20)&&r.top>spaceBelow;
+    panel.style.top=openUp?(r.top-panel.offsetHeight-6)+'px':(r.bottom+6)+'px';
+  }
+  function close(){
+    panel.classList.remove('open');
+    trigger.setAttribute('aria-expanded','false');
+  }
+  function open(){
+    if(trigger.disabled) return;
+    document.querySelectorAll('.xsel-panel.open').forEach(p=>{if(p!==panel) p.classList.remove('open');});
+    buildPanel();
+    panel.classList.add('open');
+    trigger.setAttribute('aria-expanded','true');
+    position();
+    const active=panel.querySelector('.xsel-opt.active')||panel.querySelector('.xsel-opt');
+    if(active) active.focus();
+  }
+  trigger.addEventListener('click',(e)=>{
+    e.stopPropagation();
+    if(panel.classList.contains('open')) close(); else open();
+  });
+  panel.addEventListener('click',(e)=>{
+    const opt=e.target.closest('.xsel-opt');
+    if(!opt) return;
+    selectEl.selectedIndex=parseInt(opt.dataset.idx,10);
+    syncLabel();
+    close();
+    trigger.focus();
+    selectEl.dispatchEvent(new Event('change',{bubbles:true}));
+  });
+  panel.addEventListener('keydown',(e)=>{
+    const opts=[...panel.querySelectorAll('.xsel-opt')];
+    if(!opts.length) return;
+    const cur=e.target.closest('.xsel-opt');
+    const idx=cur?opts.indexOf(cur):-1;
+    if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+      e.preventDefault();
+      let n=idx+(e.key==='ArrowDown'?1:-1);
+      n=Math.max(0,Math.min(opts.length-1,n));
+      opts.forEach(o=>o.tabIndex=-1);
+      opts[n].tabIndex=0;opts[n].focus();
+    }else if(e.key==='Home'){e.preventDefault();opts.forEach(o=>o.tabIndex=-1);opts[0].tabIndex=0;opts[0].focus();}
+    else if(e.key==='End'){e.preventDefault();opts.forEach(o=>o.tabIndex=-1);opts[opts.length-1].tabIndex=0;opts[opts.length-1].focus();}
+    else if(e.key==='Enter'||e.key===' '){e.preventDefault();if(cur) cur.click();}
+    else if(e.key==='Escape'){e.preventDefault();close();trigger.focus();}
+    else if(e.key==='Tab') close();
+  });
+  document.addEventListener('click',(e)=>{
+    if(!panel.contains(e.target)&&!trigger.contains(e.target)) close();
+  });
+  window.addEventListener('scroll',()=>{if(panel.classList.contains('open')) position();},true);
+  window.addEventListener('resize',()=>{if(panel.classList.contains('open')) close();});
+  new MutationObserver(()=>{syncLabel();if(panel.classList.contains('open')) buildPanel();}).observe(selectEl,{childList:true});
+  syncLabel();
+}
+function enhanceAllSelects(){document.querySelectorAll('select.field-select').forEach(enhanceSelect);}
 
 async function copyText(text,btnEl,label){
   let ok=true;
@@ -6423,13 +6677,17 @@ function renderPrayerTimesResult(){
   }).join('');
   const cityLabel=currentLang==='ar'&&city.ar?city.ar:city.en;
   const countryLabel=currentLang==='ar'?city.countryAr:city.countryEn;
+  const hasMissingTime=['fajr','sunrise','dhuhr','asr','maghrib','isha'].some(key=>!times[key]);
+  const summaryText=nextInfo?t('dt_summary_prayer_next',t('prayer_'+nextInfo.key),formatLocalTime(nextInfo.date,tz)):t('dt_summary_prayer_none');
   box.innerHTML=`
     <div class="card pad stack">
+      <p class="result-summary" style="margin:0;">${summaryText}</p>
       <div class="row-between">
         <h4 class="cardtitle" style="margin:0;">${cityLabel}<span style="font-size:.72rem;color:var(--ink-3);font-weight:500;margin-inline-start:.4rem;">${countryLabel}</span></h4>
         ${nextInfo?`<span style="font-size:.78rem;color:var(--ink-3);">${t('prayer_time_to_next')} <b class="num" id="prayer-countdown-val" style="color:var(--amber-text);">${formatCountdown(nextInfo.date.getTime()-now.getTime())}</b></span>`:''}
       </div>
       <div class="stack" style="gap:.15rem;">${rows}</div>
+      ${hasMissingTime?`<div style="font-size:.68rem;color:var(--amber-text);padding-top:.2rem;">${t('prayer_high_latitude_note')}</div>`:''}
       <div style="font-size:.68rem;color:var(--ink-3);padding-top:.2rem;">${t('prayer_result_estimate_note')}</div>
     </div>`;
 }
@@ -6517,14 +6775,24 @@ function moveTopIndicator(){
 function switchSubTab(name){
   document.querySelectorAll('.subtabpanel').forEach(el=>el.classList.add('hide'));
   document.getElementById('subtab-'+name).classList.remove('hide');
-  document.querySelectorAll('.pill[data-subtab]').forEach(b=>b.classList.toggle('active',b.dataset.subtab===name));
+  document.querySelectorAll('.pill[data-subtab]').forEach(b=>{
+    const active=b.dataset.subtab===name;
+    b.classList.toggle('active',active);
+    b.setAttribute('aria-selected',active?'true':'false');
+    b.tabIndex=active?0:-1;
+  });
   saveState({activeSubtab:name});
 }
 
 function switchDateSub(name){
   document.querySelectorAll('.datesubpanel').forEach(el=>el.classList.add('hide'));
   document.getElementById('datesub-'+name).classList.remove('hide');
-  document.querySelectorAll('.pill[data-datesub]').forEach(b=>b.classList.toggle('active',b.dataset.datesub===name));
+  document.querySelectorAll('.pill[data-datesub]').forEach(b=>{
+    const active=b.dataset.datesub===name;
+    b.classList.toggle('active',active);
+    b.setAttribute('aria-selected',active?'true':'false');
+    b.tabIndex=active?0:-1;
+  });
   saveState({activeDateSub:name});
   if(name==='prayer') startPrayerCountdown(); else stopPrayerCountdown();
 }
@@ -6532,8 +6800,54 @@ function switchDateSub(name){
 function switchRefSub(name){
   document.querySelectorAll('.refsubpanel').forEach(el=>el.classList.add('hide'));
   document.getElementById('refsub-'+name).classList.remove('hide');
-  document.querySelectorAll('.pill[data-refsub]').forEach(b=>b.classList.toggle('active',b.dataset.refsub===name));
+  document.querySelectorAll('.pill[data-refsub]').forEach(b=>{
+    const active=b.dataset.refsub===name;
+    b.classList.toggle('active',active);
+    b.setAttribute('aria-selected',active?'true':'false');
+    b.tabIndex=active?0:-1;
+  });
   saveState({activeRefSub:name});
+}
+
+function initTablistPillrow(attr,idPrefix,switchFn){
+  const pills=[...document.querySelectorAll(`.pill[data-${attr}]`)];
+  if(!pills.length) return;
+  const pillrow=pills[0].closest('.pillrow');
+  if(pillrow) pillrow.setAttribute('role','tablist');
+  pills.forEach(p=>{
+    const name=p.dataset[attr];
+    const isActive=p.classList.contains('active');
+    p.setAttribute('role','tab');
+    p.setAttribute('aria-selected',isActive?'true':'false');
+    p.id=`tab-${idPrefix}-${name}`;
+    p.setAttribute('aria-controls',`${idPrefix}-${name}`);
+    p.tabIndex=isActive?0:-1;
+    const panel=document.getElementById(`${idPrefix}-${name}`);
+    if(panel){
+      panel.setAttribute('role','tabpanel');
+      panel.setAttribute('aria-labelledby',p.id);
+      panel.tabIndex=0;
+    }
+  });
+  if(!pillrow) return;
+  pillrow.addEventListener('keydown',(e)=>{
+    if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key)) return;
+    const cur=e.target.closest('.pill[role="tab"]');
+    if(!cur) return;
+    e.preventDefault();
+    let idx=pills.indexOf(cur);
+    if(e.key==='ArrowRight') idx=(idx+1)%pills.length;
+    else if(e.key==='ArrowLeft') idx=(idx-1+pills.length)%pills.length;
+    else if(e.key==='Home') idx=0;
+    else if(e.key==='End') idx=pills.length-1;
+    pills[idx].focus();
+    switchFn(pills[idx].dataset[attr]);
+  });
+}
+function initAllTablistPillrows(){
+  initTablistPillrow('subtab','subtab',switchSubTab);
+  initTablistPillrow('datesub','datesub',switchDateSub);
+  initTablistPillrow('refsub','refsub',switchRefSub);
 }
 
 function splitBatchLines(raw){
@@ -7887,11 +8201,8 @@ function computeBetweenDates(){
   let workdays=0;
   const cursor=new Date(lo);
   while(cursor<hi){if(workDaySet.has(cursor.getDay())) workdays++;cursor.setDate(cursor.getDate()+1);}
-  let years=hi.getFullYear()-lo.getFullYear();
-  let months=hi.getMonth()-lo.getMonth();
-  let days=hi.getDate()-lo.getDate();
-  if(days<0){months--;days+=daysInMonth(hi.getMonth()===0?hi.getFullYear()-1:hi.getFullYear(),(hi.getMonth()+11)%12);}
-  if(months<0){years--;months+=12;}
+  const span=calcAge(lo,hi);
+  const years=span.years,months=span.months,days=span.days;
   let holidaysInRange=0;
   if(holidayMap.size){
     const hcursor=new Date(lo);
@@ -7903,6 +8214,7 @@ function computeBetweenDates(){
   const netWorkdays=workdays-holidaysInRange;
   box.innerHTML=`
     <div class="stack">
+      <p class="result-summary">${t('dt_summary_between',totalDays,workdays)}</p>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;">
         <div class="kpi"><div class="lbl">${t('dt_total_days')}</div><div class="num disp">${totalDays}${reversed?t('dt_reversed'):''}</div></div>
         <div class="kpi"><div class="lbl">${t('lbl_working_days')}</div><div class="num disp" style="color:var(--amber-text);">${workdays}</div></div>
@@ -8109,21 +8421,38 @@ function computeAge(){
   saveStateDebounced({dtBirth:document.getElementById('dt-birth').value,dtAsof:asofVal});
   if(!birth){box.innerHTML=`<div style="text-align:center;padding:2rem 1rem;color:var(--ink-3);">${t('dt_pick_birth')}</div>`;return;}
   const age=calcAge(birth,asof);
-  let cursorYears=age.years;
+  const cursorYears=age.years;
   let bday=addYears(birth,cursorYears);
-  if(stripTime(bday)<=stripTime(asof)) bday=addYears(birth,cursorYears+1);
+  if(stripTime(bday)<stripTime(asof)) bday=addYears(birth,cursorYears+1);
   const daysToNext=daysBetween(stripTime(asof),stripTime(bday));
   box.innerHTML=`
     <div class="stack">
+      <p class="result-summary">${t('dt_summary_age',t('age_ymd',age.years,age.months,age.days))}</p>
       <div class="kpi"><div class="lbl">${t('dt_exact_age')}</div><div style="font-size:1.3rem;font-weight:650;" class="disp">${t('age_ymd',age.years,age.months,age.days)}</div></div>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;">
         <div class="kpi"><div class="lbl">${t('dt_total_days_lived')}</div><div class="num disp">${age.totalDays}</div></div>
-        <div class="kpi"><div class="lbl">${t('dt_days_to_next_bday')}</div><div class="num disp" style="color:var(--amber-text);">${daysToNext}</div></div>
+        <div class="kpi"><div class="lbl">${t('dt_days_to_next_bday')}</div><div class="num disp" style="color:var(--amber-text);">${daysToNext===0?t('dt_bday_today'):daysToNext}</div></div>
       </div>
       <div class="kpi"><div class="lbl">${t('dt_born_on')}</div><div style="font-weight:650;">${dayName(birth.getDay())}, ${monthName(birth.getMonth())} ${birth.getDate()}, ${birth.getFullYear()}</div></div>
     </div>`;
 }
 
+function isoWeekInfo(date){
+  const d=new Date(Date.UTC(date.getFullYear(),date.getMonth(),date.getDate()));
+  const dayNum=(d.getUTCDay()+6)%7;
+  d.setUTCDate(d.getUTCDate()-dayNum+3);
+  const isoYear=d.getUTCFullYear();
+  const jan4=new Date(Date.UTC(isoYear,0,4));
+  const jan4DayNum=(jan4.getUTCDay()+6)%7;
+  const week1Mon=new Date(jan4);
+  week1Mon.setUTCDate(jan4.getUTCDate()-jan4DayNum);
+  const isoWeek=Math.round((d-week1Mon)/(7*86400000))+1;
+  return {isoWeek,isoYear};
+}
+function sundayWeekNumber(date,dayOfYear){
+  const jan1=new Date(date.getFullYear(),0,1);
+  return Math.ceil((dayOfYear+jan1.getDay())/7);
+}
 function computeWeekday(){
   const date=parseDateInput('dt-weekday');
   const box=document.getElementById('weekday-result');
@@ -8131,15 +8460,18 @@ function computeWeekday(){
   if(!date){box.innerHTML=`<div style="text-align:center;padding:2rem 1rem;color:var(--ink-3);">${t('dt_pick_date')}</div>`;return;}
   const dow=date.getDay();
   const dayOfYear=daysBetween(new Date(date.getFullYear(),0,1),date)+1;
-  const weekNum=Math.ceil((dayOfYear+new Date(date.getFullYear(),0,1).getDay())/7);
+  const {isoWeek}=isoWeekInfo(date);
+  const sundayWeek=sundayWeekNumber(date,dayOfYear);
   box.innerHTML=`
     <div class="stack">
+      <p class="result-summary">${t('dt_summary_weekday',dayName(dow))}</p>
       <div class="kpi"><div class="lbl">${t('weekday_label')}</div><div style="font-size:1.3rem;font-weight:650;" class="disp">${dayName(dow)}</div></div>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;">
         <div class="kpi"><div class="lbl">${t('dt_day_of_year')}</div><div class="num disp">${dayOfYear}</div></div>
-        <div class="kpi"><div class="lbl">${t('dt_week_number')}</div><div class="num disp">${weekNum}</div></div>
+        <div class="kpi"><div class="lbl">${t('dt_week_number')}</div><div class="num disp">${isoWeek}</div></div>
+        <div class="kpi"><div class="lbl">${t('dt_week_number_sunday')}</div><div class="num disp">${sundayWeek}</div></div>
+        <div class="kpi"><div class="lbl">${t('dt_leap_year')}</div><div style="font-weight:650;">${isLeapYear(date.getFullYear())?t('dt_leap_yes'):t('dt_leap_no')}</div></div>
       </div>
-      <div class="kpi"><div class="lbl">${t('dt_leap_year')}</div><div style="font-weight:650;">${isLeapYear(date.getFullYear())?t('dt_leap_yes'):t('dt_leap_no')}</div></div>
     </div>`;
 }
 
@@ -8151,6 +8483,7 @@ function computeCalendarConvert(){
   const hijri=gregorianToHijri(date),coptic=gregorianToCoptic(date);
   box.innerHTML=`
     <div class="stack">
+      <p class="result-summary">${t('dt_summary_calconvert',`${dayName(date.getDay())}, ${monthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}`,formatHijri(hijri),formatCoptic(coptic))}</p>
       <div class="kpi"><div class="lbl">${t('calconvert_gregorian')}</div><div style="font-weight:650;">${dayName(date.getDay())}, ${monthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}</div></div>
       <div class="kpi"><div class="lbl">${t('calconvert_hijri')}</div><div style="font-size:1.15rem;font-weight:650;" class="disp">${formatHijri(hijri)}</div></div>
       <div class="kpi"><div class="lbl">${t('calconvert_coptic')}</div><div style="font-size:1.15rem;font-weight:650;" class="disp">${formatCoptic(coptic)}</div></div>
@@ -8165,7 +8498,8 @@ function computeLeapSingle(){
   const y=parseInt(raw,10);
   if(!Number.isFinite(y)){box.innerHTML=`<p style="color:var(--scarlet);font-size:.8rem;">${t('dt_enter_valid_year')}</p>`;return;}
   const leap=isLeapYear(y);
-  box.innerHTML=`<div class="kpi" style="margin-top:.7rem;">
+  box.innerHTML=`<p class="result-summary" style="margin-top:.7rem;">${t('dt_summary_leap_single',y,leap)}</p>
+  <div class="kpi">
     <div class="row" style="gap:.5rem;">
       <span class="material-symbols-rounded" style="color:${leap?'var(--mint)':'var(--scarlet)'};">${leap?'check_circle':'cancel'}</span>
       <div style="font-weight:650;">${leap?t('dt_is_leap',y):t('dt_is_not_leap',y)}</div>
@@ -8187,7 +8521,8 @@ function computeLeapRange(){
   const leaps=[];
   for(let y=from;y<=to;y++){if(isLeapYear(y)) leaps.push(y);}
   box.innerHTML=`
-    <div class="kpi" style="margin-top:.7rem;">
+    <p class="result-summary" style="margin-top:.7rem;">${t('dt_summary_leap_range',leaps.length,from,to)}</p>
+    <div class="kpi">
       <div class="lbl">${t('dt_leap_years_found')}</div>
       <div class="num disp" style="color:var(--amber-text);">${leaps.length}</div>
     </div>
@@ -8400,7 +8735,7 @@ function restoreCachedState(){
   }
   recomputeDestinations();
   if(state.inspectorValue) document.getElementById('inspector-input').value=state.inspectorValue;
-  if(Array.isArray(state.workDays)&&state.workDays.length) workDaySet=new Set(state.workDays);
+  if(Array.isArray(state.workDays)) workDaySet=new Set(state.workDays);
   if(Array.isArray(state.holidays)&&state.holidays.length) holidayMap=new Map(state.holidays.map(h=>[h.date,h.label||'']));
   if(state.dtStart) document.getElementById('dt-start').value=state.dtStart;
   if(state.dtEnd) document.getElementById('dt-end').value=state.dtEnd;
@@ -8438,6 +8773,8 @@ window.onload=function(){
   initAppearance();
   applyLangFont();
   buildAllDateFields();
+  enhanceAllSelects();
+  initAllTablistPillrows();
   const topbarEl=document.querySelector('.topbar');
   if(topbarEl){
     window.addEventListener('scroll',()=>{topbarEl.classList.toggle('scrolled',window.scrollY>4);},{passive:true});
@@ -8473,6 +8810,7 @@ window.onload=function(){
   computeWeekday();
   computeLeapSingle();
   computeLeapRange();
+  computeCalendarConvert();
   refreshAllDateFields();
   renderGovTable();
   renderLawTable();
@@ -8488,6 +8826,10 @@ window.onload=function(){
     }
   });
   dropZone.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();document.getElementById('file-input').click();}});
+  document.addEventListener('wheel',e=>{
+    const active=document.activeElement;
+    if(active&&active.tagName==='INPUT'&&active.type==='number')active.blur();
+  },{passive:true});
   if(document.getElementById('inspector-input').value.trim()) inspectID();
 };
 window.addEventListener('resize',moveTopIndicator);
