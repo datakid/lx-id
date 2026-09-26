@@ -5,11 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#0E0C0A">
 <title>LX ID — Egyptian National ID & Retirement Toolkit</title>
-<link rel="icon" href="favicon.ico" sizes="any">
-<link rel="icon" href="icon-32.png" type="image/png" sizes="32x32">
-<link rel="icon" href="icon-192.png" type="image/png" sizes="192x192">
-<link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="manifest" href="manifest.webmanifest">
+<meta name="description" content="Decode Egyptian national IDs, compute retirement dates under Law 148/2019, and work with dates, Hijri/Coptic calendars and prayer times — all privately in your browser.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='b' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%232E2318'/%3E%3Cstop offset='1' stop-color='%230A0705'/%3E%3C/linearGradient%3E%3ClinearGradient id='a' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23F6CFA3'/%3E%3Cstop offset='1' stop-color='%23C6733F'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='15' fill='url(%23b)'/%3E%3Cg fill='none' stroke='url(%23a)' stroke-linecap='round'%3E%3Ccircle cx='32' cy='32' r='20' stroke-width='4.2' stroke-dasharray='88 38' transform='rotate(-50 32 32)'/%3E%3Ccircle cx='32' cy='32' r='13' stroke-width='3.8' stroke-dasharray='56 26' transform='rotate(40 32 32)' opacity='.85'/%3E%3Ccircle cx='32' cy='32' r='6.5' stroke-width='3.4' stroke-dasharray='27 14' transform='rotate(130 32 32)' opacity='.7'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='2.4' fill='%23F6EAD8'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" id="apple-touch-icon" href="">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -17,7 +16,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650;9..144,760&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" defer crossorigin="anonymous"></script>
 <style>
 :root{
   --bg:#F7F3EC; --bg-deep:#EFE9DD;
@@ -327,8 +325,10 @@ body{
   border:1px solid rgba(255,250,240,0.1);box-shadow:inset 0 1px 0 rgba(255,255,255,0.1), inset 0 -11px 18px -10px rgba(0,0,0,0.6), 0 12px 26px -12px rgba(20,14,8,0.6)}
 .brandmark::before{content:'';position:absolute;inset:0;background:radial-gradient(circle at 26% 16%,rgba(255,250,240,0.24),transparent 58%)}
 .brandmark::after{content:'';position:absolute;inset:-10px;border-radius:20px;background:radial-gradient(circle,var(--amber-soft),transparent 72%);z-index:-1;opacity:.72}
-.brandmark svg{position:relative;z-index:1;width:1.2rem;height:1.2rem;overflow:visible;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
-.brandmark svg circle{fill:none;stroke:#F1E7D6;stroke-linecap:round}
+.brandmark svg{position:relative;z-index:1;width:1.45rem;height:1.45rem;overflow:visible;filter:drop-shadow(0 1px 1px rgba(0,0,0,.35))}
+.brandmark svg .bm-rings circle{fill:none;stroke-linecap:round}
+.brandmark .bm-rings{transform-origin:12px 12px;transition:transform .9s cubic-bezier(.16,1,.3,1)}
+.brandmark:hover .bm-rings{transform:rotate(60deg)}
 
 .bottomnav{position:fixed;left:0;right:0;bottom:0;z-index:50;padding:.6rem .75rem calc(.6rem + env(safe-area-inset-bottom));
   background:var(--bg);background:color-mix(in srgb, var(--bg) 82%, transparent);backdrop-filter:blur(var(--blur-md)) saturate(1.3);-webkit-backdrop-filter:blur(var(--blur-md)) saturate(1.3);
@@ -687,6 +687,127 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
 @media(min-width:1024px){
   .mobile-only{display:none !important}
 }
+/* ═════ v2 polish layer ═════ */
+.idmeter{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin-top:.15rem}
+.idmeter i{height:5px;border-radius:3px;background:var(--edge-strong);transition:background .25s ease,transform .25s cubic-bezier(.34,1.56,.64,1),opacity .2s}
+.idmeter i.on{transform:scaleY(1.25)}
+.idmeter i.on.s-date{background:var(--amber)}
+.idmeter i.on.s-loc{background:var(--azure)}
+.idmeter i.on.s-gen{background:var(--rose)}
+.idmeter i.on.s-chk{background:var(--ink-2)}
+.idmeter.over i{background:var(--scarlet)!important}
+.idmeter.done i.on{box-shadow:0 0 8px -2px currentColor}
+.idmeter i:nth-child(1),.idmeter i:nth-child(7),.idmeter i:nth-child(9),.idmeter i:nth-child(13){margin-inline-end:3px}
+.idmeter-caption{display:flex;justify-content:space-between;gap:.75rem;font-size:.68rem;color:var(--ink-3);font-weight:600;margin-top:-.35rem}
+.idmeter-count{font-weight:700;color:var(--ink-2)}
+.idmeter-count.ok{color:var(--mint)}.idmeter-count.over{color:var(--scarlet)}
+
+.partial-card{display:flex;flex-wrap:wrap;gap:.5rem;align-items:center}
+.partial-chip{display:inline-flex;align-items:center;gap:.4rem;padding:.45rem .75rem;border-radius:12px;background:var(--milk);border:1px solid var(--edge);font-size:.76rem;font-weight:650;color:var(--ink)}
+.partial-chip .k{font-size:.6rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:700}
+.partial-chip.bad{border-color:color-mix(in srgb,var(--scarlet) 45%,transparent);background:var(--scarlet-soft);color:var(--scarlet)}
+.partial-chip.pending{opacity:.55;border-style:dashed}
+
+.quickchips{display:flex;flex-wrap:wrap;gap:.35rem}
+.qchip{font-family:inherit;font-size:.7rem;font-weight:650;color:var(--ink-2);background:var(--milk);border:1px solid var(--edge);border-radius:999px;padding:.34rem .7rem;cursor:pointer;transition:background .18s,color .18s,border-color .18s,transform .15s}
+.qchip:hover{background:var(--amber-soft);color:var(--amber-text);border-color:transparent}
+.qchip:active{transform:scale(.95)}
+
+.as-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:.55rem}
+.as-grid .eyebrow{display:block;margin-bottom:.3rem}
+.as-grid.business .as-cal{display:none}
+.as-grid.business{grid-template-columns:1fr}
+@media(max-width:480px){.as-grid{grid-template-columns:repeat(2,1fr)}}
+.alt-date-grid{display:grid;grid-template-columns:5rem 1fr 6.5rem;gap:.55rem}
+.alt-date-grid .eyebrow{display:block;margin-bottom:.3rem}
+
+.hero-date{position:relative;overflow:hidden;border-radius:var(--r2);padding:1.1rem 1.2rem;background:linear-gradient(155deg,var(--amber-soft),color-mix(in srgb,var(--amber-soft) 55%,transparent));border:1px solid color-mix(in srgb,var(--amber) 22%,transparent)}
+.hero-date .lbl{font-size:var(--fs-xs);text-transform:uppercase;letter-spacing:.07em;font-weight:700;color:var(--amber-text);opacity:.85}
+.hero-date .big{font-family:var(--font-display);font-size:clamp(1.35rem,4.6vw,1.9rem);font-weight:680;line-height:1.15;color:var(--ink);margin-top:.25rem;letter-spacing:-.02em}
+.hero-date .sub{font-size:.78rem;color:var(--ink-2);margin-top:.3rem;font-weight:600}
+.hero-date .hero-copy{position:absolute;top:.6rem;inset-inline-end:.6rem}
+.kpi-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem}
+.kpi-grid.c3{grid-template-columns:repeat(3,1fr)}
+@media(max-width:480px){.kpi-grid.c3{grid-template-columns:repeat(2,1fr)}}
+.kpi .sub{font-size:.68rem;color:var(--ink-3);font-weight:600;margin-top:.3rem}
+.result-empty{text-align:center;padding:2.2rem 1rem;color:var(--ink-3);font-size:.84rem;display:flex;flex-direction:column;align-items:center;gap:.6rem}
+.result-empty .material-symbols-rounded{font-size:1.6rem;color:var(--amber-text);opacity:.7;width:3rem;height:3rem;border-radius:999px;background:var(--milk-strong);box-shadow:var(--sh-1)}
+
+.bdlist{display:flex;flex-direction:column;gap:.1rem}
+.bdrow{display:flex;justify-content:space-between;gap:1rem;padding:.5rem .1rem;border-bottom:1px dashed var(--edge);font-size:.8rem}
+.bdrow:last-child{border-bottom:none}
+.bdrow .k{color:var(--ink-2);font-weight:600}
+.bdrow .v{font-weight:700;color:var(--ink);font-variant-numeric:tabular-nums;text-align:end}
+
+.timeline{position:relative;height:.55rem;border-radius:999px;background:var(--glass-lo);overflow:visible;margin:.9rem 0 1.7rem}
+.timeline-fill{position:absolute;inset-block:0;inset-inline-start:0;border-radius:inherit;background:linear-gradient(90deg,var(--amber),var(--amber-hi));box-shadow:0 0 12px -3px var(--amber);transition:width 1.1s cubic-bezier(.16,1,.3,1)}
+.timeline-mark{position:absolute;top:50%;width:.85rem;height:.85rem;border-radius:50%;transform:translate(-50%,-50%);background:var(--bg);border:2.5px solid var(--amber);box-shadow:0 2px 6px -1px rgba(0,0,0,.25)}
+[dir="rtl"] .timeline-mark{transform:translate(50%,-50%)}
+.timeline-lbl{position:absolute;top:1.05rem;font-size:.62rem;font-weight:700;color:var(--ink-3);white-space:nowrap;transform:translateX(-50%)}
+[dir="rtl"] .timeline-lbl{transform:translateX(50%)}
+.timeline-lbl.start{transform:none}.timeline-lbl.end{transform:none}
+
+.cd-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.5rem}
+.cd-tile{border-radius:14px;background:var(--glass-lo);padding:.6rem .7rem;text-align:center}
+.cd-tile .n{font-family:var(--font-display);font-weight:700;font-size:1.3rem;line-height:1.1;font-variant-numeric:tabular-nums;color:var(--ink)}
+.cd-tile .u{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);margin-top:.15rem}
+
+.insights{display:grid;grid-template-columns:1fr;gap:.9rem}
+@media(min-width:768px){.insights{grid-template-columns:repeat(3,1fr)}}
+.insight{border-radius:var(--r2);background:var(--milk);border:1px solid var(--edge);padding:.9rem 1rem}
+.insight h5{margin:0 0 .6rem;font-size:.66rem;text-transform:uppercase;letter-spacing:.07em;color:var(--ink-3);font-weight:700;display:flex;align-items:center;gap:.4rem}
+.insight h5 .material-symbols-rounded{font-size:.95rem}
+.bar-row{display:grid;grid-template-columns:minmax(4.5rem,auto) 1fr 2.2rem;align-items:center;gap:.5rem;font-size:.72rem;padding:.18rem 0}
+.bar-row .bl{color:var(--ink-2);font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-row .bt{height:.5rem;border-radius:999px;background:var(--glass-lo);overflow:hidden}
+.bar-row .bf{height:100%;border-radius:inherit;background:linear-gradient(90deg,var(--amber),var(--amber-hi));transform-origin:left;animation:barGrow .8s cubic-bezier(.16,1,.3,1) both}
+[dir="rtl"] .bar-row .bf{transform-origin:right}
+.bar-row .bf.m{background:linear-gradient(90deg,var(--azure),color-mix(in srgb,var(--azure) 70%,white))}
+.bar-row .bf.f{background:linear-gradient(90deg,var(--rose),color-mix(in srgb,var(--rose) 70%,white))}
+.bar-row .bv{text-align:end;font-weight:700;font-variant-numeric:tabular-nums;color:var(--ink)}
+@keyframes barGrow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.gender-split{display:flex;height:.7rem;border-radius:999px;overflow:hidden;background:var(--glass-lo);margin:.2rem 0 .55rem}
+.gender-split span{display:block;height:100%}
+.gender-split .m{background:var(--azure)}.gender-split .f{background:var(--rose)}
+
+.prayer-hero{display:flex;align-items:center;justify-content:space-between;gap:1rem;border-radius:var(--r2);padding:1rem 1.1rem;background:linear-gradient(155deg,var(--amber-soft),color-mix(in srgb,var(--amber-soft) 50%,transparent));border:1px solid color-mix(in srgb,var(--amber) 22%,transparent)}
+.prayer-hero .nm{font-family:var(--font-display);font-size:1.35rem;font-weight:680;color:var(--ink)}
+.prayer-hero .tm{font-size:.78rem;color:var(--amber-text);font-weight:700}
+.prayer-hero .cd{font-family:var(--font-display);font-size:1.5rem;font-weight:700;color:var(--amber-text);font-variant-numeric:tabular-nums;text-align:end}
+.prayer-row{display:flex;align-items:center;gap:.75rem;padding:.6rem .7rem;border-radius:12px;transition:background .18s}
+.prayer-row.past{opacity:.5}
+.prayer-row.next{background:var(--amber-soft)}
+.prayer-row .pn{flex:1;font-size:.86rem;font-weight:650}
+.prayer-row .pt{font-size:.95rem;font-weight:700;font-variant-numeric:tabular-nums}
+.prayer-row.next .pt{color:var(--amber-text)}
+.cmdk-item.kbd-active,.cmdk-item:focus-visible{background:var(--milk-strong);outline:none}
+
+.shortcut-hint{display:inline-flex;align-items:center;gap:.25rem;font-size:.62rem;color:var(--ink-3);font-weight:650}
+.shortcut-hint kbd{font-family:'JetBrains Mono',monospace;background:var(--milk-strong);border:1px solid var(--edge);border-radius:5px;padding:0 .32rem;font-size:.6rem}
+
+.inline-link{background:none;border:none;padding:0;color:var(--amber-text);font:inherit;font-weight:700;cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:2px}
+
+:where(button,[role="button"],a,input,select,textarea):focus-visible{outline:2px solid color-mix(in srgb,var(--amber) 70%,transparent);outline-offset:2px}
+.field-input:focus-visible,.field-area:focus-visible,.dateseg:focus-visible,.cmdk-input:focus-visible{outline:none}
+
+/* Phones: ID segments wrap instead of hiding behind a horizontal scroll */
+@media(max-width:640px){
+  .idseg-row{flex-wrap:wrap;overflow:visible!important;gap:.4rem!important;justify-content:flex-start}
+  .idseg-row .idseg-divider{display:none}
+  .idseg-row .idseg-group{gap:.25rem;padding:.22rem}
+  .idseg-row .idseg{min-width:2.55rem;padding:.5rem .35rem .45rem;font-size:1.12rem;border-radius:11px}
+  .idseg-row .idseg-compound{min-width:3.6rem}
+  .idseg-row .idseg .tag{font-size:.5rem}
+}
+/* Performance: backdrop blur is the most expensive thing on phones — keep it for chrome, drop it for content cards */
+@media(max-width:768px){
+  .card,.kpi,.idcard{backdrop-filter:none;-webkit-backdrop-filter:none}
+  .card{background:var(--milk-strong)}
+  .grain{display:none}
+}
+.orb{contain:strict}
+.tabpanel.hide,.datesubpanel.hide,.refsubpanel.hide,.subtabpanel.hide{content-visibility:hidden}
+
 @media print{
   body{background:#fff!important}
   .grain,.field,.topbar,.bottomnav,#toasts,.noprint{display:none!important}
@@ -707,11 +828,14 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
   <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding-top:.85rem;padding-bottom:.85rem;position:relative;z-index:1;">
     <div class="row" style="gap:.7rem;">
       <div class="brandmark">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="12" cy="12" r="8.6" stroke-width="1.5" opacity="1" stroke-dasharray="38 60" transform="rotate(-40 12 12)"/>
-          <circle cx="12" cy="12" r="6" stroke-width="1.4" opacity=".82" stroke-dasharray="27 40" transform="rotate(20 12 12)"/>
-          <circle cx="12" cy="12" r="3.6" stroke-width="1.3" opacity=".64" stroke-dasharray="16 30" transform="rotate(70 12 12)"/>
-          <circle cx="12" cy="12" r="1" fill="#F1E7D6" stroke="none"/>
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><linearGradient id="bm-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F8DDBA"/><stop offset="1" stop-color="#D98B55"/></linearGradient></defs>
+          <g class="bm-rings" stroke="url(#bm-grad)">
+            <circle cx="12" cy="12" r="8.4" stroke-width="1.7" stroke-dasharray="37 16" transform="rotate(-50 12 12)"/>
+            <circle cx="12" cy="12" r="5.5" stroke-width="1.6" stroke-dasharray="23.5 11" transform="rotate(40 12 12)" opacity=".85"/>
+            <circle cx="12" cy="12" r="2.7" stroke-width="1.5" stroke-dasharray="11 6" transform="rotate(130 12 12)" opacity=".7"/>
+          </g>
+          <circle cx="12" cy="12" r=".95" fill="#F6EAD8" stroke="none"/>
         </svg>
       </div>
       <div>
@@ -764,6 +888,11 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
         </div>
         <button onclick="pasteIntoInspector()" class="iconbtn focusable" data-i18n-title="paste_title" title="Paste" aria-label="Paste from clipboard"><span class="material-symbols-rounded">content_paste_go</span></button>
         <button onclick="loadSampleIntoInspector()" class="iconbtn focusable" data-i18n-title="sample_title" title="Sample ID" aria-label="Load a sample ID"><span class="material-symbols-rounded">auto_awesome</span></button>
+      </div>
+      <div class="idmeter" id="id-meter" aria-hidden="true"></div>
+      <div class="idmeter-caption">
+        <span class="idmeter-count mono" id="id-meter-count">0/14</span>
+        <span data-i18n="meter_hint">Spaces, dashes and Arabic-Indic digits are fine</span>
       </div>
     </div>
     <div id="inspector-result"></div>
@@ -961,6 +1090,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
   <div class="scrollx" style="margin-bottom:1.1rem;">
     <div class="pillrow">
       <button class="pill active focusable" data-datesub="between" onclick="switchDateSub('between')"><span class="material-symbols-rounded" style="font-size:1rem;">date_range</span><span data-i18n="sub_between">Between Dates</span></button>
+      <button class="pill focusable" data-datesub="addsub" onclick="switchDateSub('addsub')"><span class="material-symbols-rounded" style="font-size:1rem;">event_upcoming</span><span data-i18n="sub_addsub">Add / Subtract</span></button>
       <button class="pill focusable" data-datesub="age" onclick="switchDateSub('age')"><span class="material-symbols-rounded" style="font-size:1rem;">cake</span><span data-i18n="sub_age">Age</span></button>
       <button class="pill focusable" data-datesub="weekday" onclick="switchDateSub('weekday')"><span class="material-symbols-rounded" style="font-size:1rem;">view_week</span><span data-i18n="sub_weekday">Weekday</span></button>
       <button class="pill focusable" data-datesub="leapyears" onclick="switchDateSub('leapyears')"><span class="material-symbols-rounded" style="font-size:1rem;">event_repeat</span><span data-i18n="sub_leap">Leap Years</span></button>
@@ -974,6 +1104,18 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:.7rem;">
         <div><label class="eyebrow" data-i18n="lbl_start_date" style="display:block;margin-bottom:.35rem;">Start date</label><input type="date" id="dt-start" class="field-input focusable" oninput="computeBetweenDates()"></div>
         <div><label class="eyebrow" data-i18n="lbl_end_date" style="display:block;margin-bottom:.35rem;">End date</label><input type="date" id="dt-end" class="field-input focusable" oninput="computeBetweenDates()"></div>
+      </div>
+      <div class="row-between" style="gap:.5rem;">
+        <label class="toggle-row focusable" for="dt-include-end">
+          <input type="checkbox" id="dt-include-end" onchange="onIncludeEndChange(this.checked)">
+          <span class="toggle-track"></span>
+          <span class="toggle-label" data-i18n="lbl_include_end">Include end date</span>
+        </label>
+        <button type="button" class="btn btn-ghost btn-sm focusable" onclick="swapBetweenDates()"><span class="material-symbols-rounded" style="font-size:1rem;">swap_horiz</span><span data-i18n="btn_swap">Swap</span></button>
+      </div>
+      <div>
+        <label class="eyebrow" data-i18n="quick_label" style="display:block;margin-bottom:.4rem;">Quick end date</label>
+        <div class="quickchips" id="between-quick"></div>
       </div>
       <div>
         <label class="eyebrow" data-i18n="lbl_working_days" style="display:block;margin-bottom:.4rem;">Working days</label>
@@ -991,6 +1133,35 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
       </div>
     </div>
     <div id="between-result" role="status" aria-live="polite" aria-atomic="true" class="card pad"></div>
+  </div>
+
+  <div id="datesub-addsub" class="datesubpanel grid2 hide">
+    <div class="card pad stack">
+      <div><label class="eyebrow" data-i18n="as_start" style="display:block;margin-bottom:.35rem;">Start date</label><input type="date" id="as-start" class="field-input focusable" oninput="computeAddSub()"></div>
+      <div class="pillrow" id="as-op-row" role="radiogroup">
+        <button type="button" class="pill active focusable" data-asop="add" role="radio" aria-checked="true" onclick="setAddSubOp('add')"><span class="material-symbols-rounded" style="font-size:1rem;">add</span><span data-i18n="as_add">Add</span></button>
+        <button type="button" class="pill focusable" data-asop="sub" role="radio" aria-checked="false" onclick="setAddSubOp('sub')"><span class="material-symbols-rounded" style="font-size:1rem;">remove</span><span data-i18n="as_sub">Subtract</span></button>
+      </div>
+      <div class="as-grid" id="as-grid">
+        <div class="as-cal"><label class="eyebrow" for="as-years" data-i18n="as_years">Years</label><input type="number" id="as-years" class="field-input focusable num" min="0" step="1" inputmode="numeric" placeholder="0" oninput="computeAddSub()"></div>
+        <div class="as-cal"><label class="eyebrow" for="as-months" data-i18n="as_months">Months</label><input type="number" id="as-months" class="field-input focusable num" min="0" step="1" inputmode="numeric" placeholder="0" oninput="computeAddSub()"></div>
+        <div class="as-cal"><label class="eyebrow" for="as-weeks" data-i18n="as_weeks">Weeks</label><input type="number" id="as-weeks" class="field-input focusable num" min="0" step="1" inputmode="numeric" placeholder="0" oninput="computeAddSub()"></div>
+        <div><label class="eyebrow" for="as-days" id="as-days-label" data-i18n="as_days">Days</label><input type="number" id="as-days" class="field-input focusable num" min="0" step="1" inputmode="numeric" placeholder="0" oninput="computeAddSub()"></div>
+      </div>
+      <label class="toggle-row focusable" for="as-business" style="align-items:flex-start;">
+        <input type="checkbox" id="as-business" onchange="onAddSubBusinessChange(this.checked)">
+        <span class="toggle-track" style="margin-top:.1rem;"></span>
+        <span class="stack" style="gap:.1rem;">
+          <span class="toggle-label" data-i18n="as_business">Count working days only</span>
+          <span style="font-size:.68rem;color:var(--ink-3);white-space:normal;" data-i18n="as_business_hint">Skips your non-working days and saved holidays</span>
+        </span>
+      </label>
+      <div>
+        <label class="eyebrow" data-i18n="as_presets" style="display:block;margin-bottom:.4rem;">Presets</label>
+        <div class="quickchips" id="as-presets"></div>
+      </div>
+    </div>
+    <div id="addsub-result" role="status" aria-live="polite" aria-atomic="true" class="card pad"></div>
   </div>
 
   <div id="datesub-age" class="datesubpanel grid2 hide">
@@ -1028,7 +1199,17 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
 
   <div id="datesub-calendars" class="datesubpanel grid2 hide">
     <div class="card pad stack">
-      <div><label class="eyebrow" data-i18n="lbl_any_date" style="display:block;margin-bottom:.35rem;">Any date</label><input type="date" id="dt-calconvert" class="field-input focusable" oninput="computeCalendarConvert()"></div>
+      <div class="scrollx"><div class="pillrow" id="calmode-row">
+        <button type="button" class="pill active focusable" data-calmode="greg" onclick="setCalMode('greg')" data-i18n="calmode_greg">From Gregorian</button>
+        <button type="button" class="pill focusable" data-calmode="hijri" onclick="setCalMode('hijri')" data-i18n="calmode_hijri">From Hijri</button>
+        <button type="button" class="pill focusable" data-calmode="coptic" onclick="setCalMode('coptic')" data-i18n="calmode_coptic">From Coptic</button>
+      </div></div>
+      <div id="calmode-greg"><label class="eyebrow" data-i18n="lbl_any_date" style="display:block;margin-bottom:.35rem;">Any date</label><input type="date" id="dt-calconvert" class="field-input focusable" oninput="computeCalendarConvert()"></div>
+      <div id="calmode-alt" class="alt-date-grid hide">
+        <div><label class="eyebrow" for="alt-day" data-i18n="alt_day">Day</label><input type="number" id="alt-day" class="field-input focusable num" min="1" max="30" inputmode="numeric" placeholder="1" oninput="computeCalendarConvert()"></div>
+        <div><label class="eyebrow" data-i18n="alt_month">Month</label><select id="alt-month" class="field-select focusable" aria-label="Month" onchange="computeCalendarConvert()"></select></div>
+        <div><label class="eyebrow" for="alt-year" data-i18n="alt_year">Year</label><input type="number" id="alt-year" class="field-input focusable num" min="1" max="9999" inputmode="numeric" oninput="computeCalendarConvert()"></div>
+      </div>
       <p data-i18n="hijri_estimated_hint" style="font-size:.72rem;color:var(--ink-3);margin:0;">Calculated (tabular Islamic calendar) — the officially announced date can differ by a day or two</p>
     </div>
     <div id="calconvert-result" role="status" aria-live="polite" aria-atomic="true" class="card pad"></div>
@@ -1036,8 +1217,11 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
 
   <div id="datesub-prayer" class="datesubpanel stack hide">
     <div class="card pad stack">
-      <label class="eyebrow" data-i18n="lbl_prayer_city" style="display:block;margin-bottom:.35rem;">City</label>
-      <input type="text" id="prayer-city-search" class="field-input focusable" autocomplete="off" data-i18n-ph="ph_prayer_city_search" placeholder="Search any city…" oninput="onPrayerCitySearch(this.value)" onfocus="onPrayerCitySearch(this.value)">
+      <label class="eyebrow" data-i18n="lbl_prayer_city" for="prayer-city-search" style="display:block;margin-bottom:.35rem;">City</label>
+      <div class="row" style="gap:.5rem;">
+        <input type="text" id="prayer-city-search" class="field-input focusable" style="flex:1;" autocomplete="off" data-i18n-ph="ph_prayer_city_search" placeholder="Search any city…" oninput="onPrayerCitySearch(this.value)" onfocus="onPrayerCitySearch(this.value)" onkeydown="onPrayerCityKey(event)">
+        <button type="button" class="btn btn-soft btn-sm focusable" style="padding-block:.72rem;" onclick="usePrayerHere()"><span class="material-symbols-rounded" style="font-size:1rem;">location_on</span><span data-i18n="btn_near_me">Near me</span></button>
+      </div>
       <div id="prayer-city-results" class="hide stack" style="gap:.1rem;max-height:16rem;overflow:auto;"></div>
       <p style="font-size:.72rem;color:var(--ink-3);margin:0;" data-i18n="prayer_calc_hint">Calculated locally (Egyptian General Authority of Survey method, Shafi Asr) — not fetched from any server. Times are estimates; check your mosque for the exact call to prayer.</p>
     </div>
@@ -1291,6 +1475,10 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
         <span data-i18n="btn_upload_file">Upload file</span>
         <input type="file" id="holiday-file-input" accept=".csv,.txt" class="hide" onchange="handleHolidayFileUpload(event)">
       </label>
+      <button type="button" class="btn btn-ghost btn-sm focusable" onclick="exportHolidaysICS()">
+        <span class="material-symbols-rounded" style="font-size:1.05rem;">event_upcoming</span>
+        <span data-i18n="btn_export_ics">Export .ics</span>
+      </button>
       <button type="button" class="btn btn-primary btn-sm focusable" onclick="importHolidays()">
         <span class="material-symbols-rounded" style="font-size:1.05rem;">check</span>
         <span data-i18n="btn_add_holidays">Add holidays</span>
@@ -1385,8 +1573,76 @@ const ICON_DEFS={
   view_week:'<rect x="3.5" y="4.5" width="4.3" height="15" rx="1.2"/><rect x="9.8" y="4.5" width="4.3" height="15" rx="1.2"/><rect x="16.1" y="4.5" width="4.3" height="15" rx="1.2"/>',
   view_column:'<rect x="3.5" y="4.5" width="17" height="15" rx="2.2"/><path d="M9.5 4.5v15M14.5 4.5v15"/>'
 };
+/* ── Refined icon family (24px grid, 1.6 stroke, round caps) — overrides + additions ── */
+Object.assign(ICON_DEFS,{
+  arrow_forward:'<path d="M5 12h14"/><path d="M13.5 6.5 19 12l-5.5 5.5"/>',
+  arrow_back:'<path d="M19 12H5"/><path d="M10.5 6.5 5 12l5.5 5.5"/>',
+  chevron_right:'<path d="m9.5 6 6 6-6 6"/>',
+  chevron_left:'<path d="m14.5 6-6 6 6 6"/>',
+  expand_more:'<path d="m6.5 9.5 5.5 5.5 5.5-5.5"/>',
+  auto_awesome:'<path d="M11 3.5c.55 3.9 2.1 5.45 6 6-3.9.55-5.45 2.1-6 6-.55-3.9-2.1-5.45-6-6 3.9-.55 5.45-2.1 6-6Z"/><path d="M18.5 14.5c.25 1.6.9 2.25 2.5 2.5-1.6.25-2.25.9-2.5 2.5-.25-1.6-.9-2.25-2.5-2.5 1.6-.25 2.25-.9 2.5-2.5Z"/>',
+  auto_fix_high:'<path d="m4 20 11-11"/><path d="m13.5 7.5 3 3"/><path d="M17.5 2.8c.3 1.6.8 2.1 2.4 2.4-1.6.3-2.1.8-2.4 2.4-.3-1.6-.8-2.1-2.4-2.4 1.6-.3 2.1-.8 2.4-2.4Z"/><path d="M8 3.5v2M7 4.5h2M19.5 14v2M18.5 15h2"/>',
+  cake:'<path d="M4 20.5h16"/><path d="M5.5 20.5v-6a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v6"/><path d="M5.5 16.2c1.3 0 1.9-1 3.2-1s1.9 1 3.3 1 2-1 3.3-1 1.9 1 3.2 1"/><path d="M12 12.5V9.3"/><path d="M12 7c-.9 0-1.5-.6-1.5-1.4 0-1 1.5-2.4 1.5-2.4s1.5 1.4 1.5 2.4c0 .8-.6 1.4-1.5 1.4Z"/>',
+  calendar_month:'<rect x="3.75" y="5" width="16.5" height="15.25" rx="3.5"/><path d="M3.75 10h16.5"/><path d="M8.25 3v3.5M15.75 3v3.5"/><circle cx="8.3" cy="13.8" r=".95" fill="currentColor" stroke="none"/><circle cx="12" cy="13.8" r=".95" fill="currentColor" stroke="none"/><circle cx="15.7" cy="13.8" r=".95" fill="currentColor" stroke="none"/><circle cx="8.3" cy="17" r=".95" fill="currentColor" stroke="none"/><circle cx="12" cy="17" r=".95" fill="currentColor" stroke="none"/>',
+  date_range:'<rect x="3.75" y="5" width="16.5" height="15.25" rx="3.5"/><path d="M3.75 10h16.5"/><path d="M8.25 3v3.5M15.75 3v3.5"/><path d="M9 15h6"/><circle cx="8" cy="15" r="1.2" fill="currentColor" stroke="none"/><circle cx="16" cy="15" r="1.2" fill="currentColor" stroke="none"/>',
+  event_upcoming:'<rect x="3.75" y="5" width="16.5" height="15.25" rx="3.5"/><path d="M3.75 10h16.5"/><path d="M8.25 3v3.5M15.75 3v3.5"/><path d="M12 12.8v4.4M9.8 15h4.4"/>',
+  today:'<rect x="3.75" y="5" width="16.5" height="15.25" rx="3.5"/><path d="M3.75 10h16.5"/><path d="M8.25 3v3.5M15.75 3v3.5"/><rect x="8.5" y="12.8" width="4" height="4" rx="1.1" fill="currentColor" stroke="none"/>',
+  check:'<path d="m5 12.5 4.5 4.5L19 7.5"/>',
+  check_circle:'<circle cx="12" cy="12" r="8.75"/><path d="m8.2 12.3 2.6 2.6 5-5.3"/>',
+  task_alt:'<path d="M20.5 11.2v.8a8.5 8.5 0 1 1-5-7.75"/><path d="m8.5 11.5 3 3 9-9"/>',
+  cancel:'<circle cx="12" cy="12" r="8.75"/><path d="m9.5 9.5 5 5M14.5 9.5l-5 5"/>',
+  close:'<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>',
+  error:'<circle cx="12" cy="12" r="8.75"/><path d="M12 7.6v5.2"/><circle cx="12" cy="16.2" r="1" fill="currentColor" stroke="none"/>',
+  info:'<circle cx="12" cy="12" r="8.75"/><path d="M12 11v5.2"/><circle cx="12" cy="7.9" r="1" fill="currentColor" stroke="none"/>',
+  block:'<circle cx="12" cy="12" r="8.75"/><path d="m5.8 5.8 12.4 12.4"/>',
+  remove:'<path d="M6 12h12"/>',
+  add:'<path d="M12 5.5v13M5.5 12h13"/>',
+  settings:'<path d="M10.3 3.5h3.4l.5 2.3 1.7 1 2.3-.8 1.7 2.9-1.8 1.6v2l1.8 1.6-1.7 2.9-2.3-.8-1.7 1-.5 2.3h-3.4l-.5-2.3-1.7-1-2.3.8-1.7-2.9 1.8-1.6v-2L4.1 8.9l1.7-2.9 2.3.8 1.7-1z"/><circle cx="12" cy="12" r="2.8"/>',
+  search:'<circle cx="11" cy="11" r="6.75"/><path d="m20 20-4.2-4.2"/>',
+  dark_mode:'<path d="M20.2 14.6A8.3 8.3 0 1 1 9.4 3.8a6.6 6.6 0 0 0 10.8 10.8Z"/>',
+  light_mode:'<circle cx="12" cy="12" r="4"/><path d="M12 2.8v1.9M12 19.3v1.9M4.9 4.9l1.35 1.35M17.75 17.75l1.35 1.35M2.8 12h1.9M19.3 12h1.9M4.9 19.1l1.35-1.35M17.75 6.25l1.35-1.35"/>',
+  contrast:'<circle cx="12" cy="12" r="8.75"/><path d="M12 3.25a8.75 8.75 0 0 1 0 17.5Z" fill="currentColor" stroke="none"/>',
+  functions:'<path d="M17.5 5H7l5.6 7L7 19h10.5"/>',
+  public:'<circle cx="12" cy="12" r="8.75"/><path d="M3.5 12h17"/><path d="M12 3.25c2.4 2.4 3.6 5.3 3.6 8.75S14.4 18.35 12 20.75C9.6 18.35 8.4 15.45 8.4 12S9.6 5.65 12 3.25Z"/>',
+  content_copy:'<rect x="8.5" y="8.5" width="12" height="12" rx="2.75"/><path d="M15.5 8.5V6.25A2.75 2.75 0 0 0 12.75 3.5h-6.5A2.75 2.75 0 0 0 3.5 6.25v6.5a2.75 2.75 0 0 0 2.75 2.75H8.5"/>',
+  content_paste:'<rect x="5" y="4.5" width="14" height="16.5" rx="2.75"/><rect x="8.75" y="2.75" width="6.5" height="3.5" rx="1.2"/>',
+  content_paste_go:'<path d="M15.5 4.5h.75A2.75 2.75 0 0 1 19 7.25V10"/><path d="M8.5 4.5h-.75A2.75 2.75 0 0 0 5 7.25v11A2.75 2.75 0 0 0 7.75 21H12"/><rect x="8.75" y="2.75" width="6.5" height="3.5" rx="1.2"/><path d="M14.5 16.5h6.5M18 13.5l3 3-3 3"/>',
+  delete:'<path d="M4.5 6.75h15"/><path d="M9.25 6.75V5a1.5 1.5 0 0 1 1.5-1.5h2.5a1.5 1.5 0 0 1 1.5 1.5v1.75"/><path d="m6.25 6.75.8 11.6a2.2 2.2 0 0 0 2.2 2.15h5.5a2.2 2.2 0 0 0 2.2-2.15l.8-11.6"/><path d="M10 11v5.5M14 11v5.5"/>',
+  delete_sweep:'<path d="M3 6.75h11"/><path d="M6.75 6.75V5a1.5 1.5 0 0 1 1.5-1.5h1.5a1.5 1.5 0 0 1 1.5 1.5v1.75"/><path d="m4.5 6.75.7 11.6a2.2 2.2 0 0 0 2.2 2.15h3.2a2.2 2.2 0 0 0 2.2-2.15l.7-11.6"/><path d="M16 10h5M17 14h4M18 18h3"/>',
+  download:'<path d="M12 3.75v11"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M4.5 19.5h15"/>',
+  download_done:'<path d="m6 11.5 4 4 8-8.5"/><path d="M4.5 19.5h15"/>',
+  cloud_upload:'<path d="M7.25 18.5a4.25 4.25 0 0 1-.6-8.46 5.5 5.5 0 0 1 10.6-1.3 4.6 4.6 0 0 1-.5 9.76"/><path d="M12 11.5v8M9 14.5l3-3 3 3"/>',
+  description:'<path d="M14 3.5H7.25A2.25 2.25 0 0 0 5 5.75v12.5a2.25 2.25 0 0 0 2.25 2.25h9.5A2.25 2.25 0 0 0 19 18.25V8.5Z"/><path d="M14 3.5v5h5"/><path d="M8.75 13h6.5M8.75 16.5h4.5"/>',
+  upload_file:'<path d="M14 3.5H7.25A2.25 2.25 0 0 0 5 5.75v12.5a2.25 2.25 0 0 0 2.25 2.25h9.5A2.25 2.25 0 0 0 19 18.25V8.5Z"/><path d="M14 3.5v5h5"/><path d="M12 17.5v-5.5M9.75 14.25 12 12l2.25 2.25"/>',
+  csv:'<path d="M14 3.5H7.25A2.25 2.25 0 0 0 5 5.75v12.5a2.25 2.25 0 0 0 2.25 2.25h9.5A2.25 2.25 0 0 0 19 18.25V8.5Z"/><path d="M14 3.5v5h5"/><path d="M8.5 12.5h7M8.5 15.5h7M12 12.5v5.5"/>',
+  man:'<circle cx="10" cy="14" r="5.5"/><path d="M14 10l6-6"/><path d="M15.5 4H20v4.5"/>',
+  woman:'<circle cx="12" cy="9" r="5.5"/><path d="M12 14.5v7M9 18.5h6"/>',
+  play_arrow:'<path d="M8 5.2v13.6a.8.8 0 0 0 1.2.7l10.9-6.8a.8.8 0 0 0 0-1.4L9.2 4.5a.8.8 0 0 0-1.2.7Z" fill="currentColor" stroke="none"/>',
+  print:'<path d="M7 8.5V4.75A1.25 1.25 0 0 1 8.25 3.5h7.5A1.25 1.25 0 0 1 17 4.75V8.5"/><rect x="3.5" y="8.5" width="17" height="8.5" rx="2.5"/><path d="M7 14.5h10v5.25a.75.75 0 0 1-.75.75h-8.5a.75.75 0 0 1-.75-.75Z"/><circle cx="17" cy="11.6" r=".9" fill="currentColor" stroke="none"/>',
+  mosque:'<path d="M6.5 11c0-3.1 2.5-5.3 5.5-7 3 1.7 5.5 3.9 5.5 7"/><path d="M12 4V2.5"/><path d="M4 11h16"/><path d="M5 11v9.5h14V11"/><path d="M10 20.5v-3a2 2 0 0 1 4 0v3"/>',
+  location_on:'<path d="M12 21s-6.75-6.2-6.75-11.25a6.75 6.75 0 0 1 13.5 0C18.75 14.8 12 21 12 21Z"/><circle cx="12" cy="9.75" r="2.4"/>',
+  gavel:'<path d="m13.5 4 6.5 6.5"/><path d="m10.5 7 6.5 6.5"/><path d="m12 5.5 5 5-2.5 2.5-5-5z"/><path d="m11 11-7 7a1.4 1.4 0 0 0 2 2l7-7"/><path d="M13 21h7"/>',
+  science:'<path d="M9.5 3.5h5"/><path d="M10.25 3.5v5.3L5 17.8a2 2 0 0 0 1.75 3h10.5a2 2 0 0 0 1.75-3l-5.25-9V3.5"/><path d="M7.5 14.5h9"/>',
+  sync:'<path d="M20 12a8 8 0 0 1-14.2 5"/><path d="M4 12a8 8 0 0 1 14.2-5"/><path d="M18.5 3.5V7.2h-3.7M5.5 20.5v-3.7h3.7"/>',
+  swap_horiz:'<path d="M4.5 8.5h14M15 5l3.5 3.5L15 12"/><path d="M19.5 15.5h-14M9 12l-3.5 3.5L9 19"/>',
+  swap_vert:'<path d="M8 19.5V5M4.5 8.5 8 5l3.5 3.5"/><path d="M16 4.5v14.5M12.5 15.5 16 19l3.5-3.5"/>',
+  table_rows:'<rect x="3.5" y="4.5" width="17" height="15" rx="2.75"/><path d="M3.5 9.5h17M3.5 14.5h17"/>',
+  view_week:'<rect x="3.5" y="4.5" width="17" height="15" rx="2.75"/><path d="M9.2 4.5v15M14.8 4.5v15"/>',
+  view_column:'<rect x="3.5" y="4.5" width="17" height="15" rx="2.75"/><path d="M9.2 4.5v15M14.8 4.5v15"/><path d="M5.8 8h1.2M11.4 8h1.2M17 8h1.2" stroke-width="2"/>',
+  event_repeat:'<path d="M20.25 11V8.5A3.5 3.5 0 0 0 16.75 5H7.25a3.5 3.5 0 0 0-3.5 3.5v8.25a3.5 3.5 0 0 0 3.5 3.5H11"/><path d="M3.75 10h16.5M8.25 3v3.5M15.75 3v3.5"/><path d="M21 17.5a3.5 3.5 0 1 1-1-2.45"/><path d="M20.4 13.4v1.9h-1.9"/>',
+  layers_clear:'<path d="m12 3.75 8.25 4.5L12 12.75l-8.25-4.5Z"/><path d="m3.75 12.5 8.25 4.5 8.25-4.5"/><path d="m3.75 16.25 8.25 4.5 8.25-4.5"/>',
+  schedule:'<circle cx="12" cy="12" r="8.75"/><path d="M12 7.5V12l3 2"/>',
+  hourglass:'<path d="M6.5 3.5h11M6.5 20.5h11"/><path d="M7.5 3.5c0 4 4.5 5.5 4.5 8.5s-4.5 4.5-4.5 8.5M16.5 3.5c0 4-4.5 5.5-4.5 8.5s4.5 4.5 4.5 8.5"/>',
+  insights:'<path d="M4 20h16"/><rect x="5.5" y="12" width="3" height="5.5" rx="1"/><rect x="10.5" y="8" width="3" height="9.5" rx="1"/><rect x="15.5" y="4.5" width="3" height="13" rx="1"/>',
+  bolt:'<path d="M13 3 5.5 13.2h5.8L10.5 21 18.5 10.6h-5.8Z"/>',
+  history:'<path d="M3.75 12a8.25 8.25 0 1 0 2.5-5.9"/><path d="M3.5 4.5v3.9h3.9"/><path d="M12 8v4.3l2.8 1.7"/>',
+  open_in_new:'<path d="M14 4.5h5.5V10"/><path d="M19.5 4.5 11 13"/><path d="M18 14v3.75A2.25 2.25 0 0 1 15.75 20h-9.5A2.25 2.25 0 0 1 4 17.75v-9.5A2.25 2.25 0 0 1 6.25 6H10"/>',
+  calculate:'<rect x="4.5" y="3.5" width="15" height="17" rx="3"/><rect x="7.5" y="6.5" width="9" height="3.5" rx="1"/><circle cx="8.6" cy="13.5" r=".95" fill="currentColor" stroke="none"/><circle cx="12" cy="13.5" r=".95" fill="currentColor" stroke="none"/><circle cx="15.4" cy="13.5" r=".95" fill="currentColor" stroke="none"/><circle cx="8.6" cy="17" r=".95" fill="currentColor" stroke="none"/><circle cx="12" cy="17" r=".95" fill="currentColor" stroke="none"/><circle cx="15.4" cy="17" r=".95" fill="currentColor" stroke="none"/>',
+  keyboard:'<rect x="2.75" y="6" width="18.5" height="12" rx="2.75"/><path d="M6.5 10h.01M10 10h.01M14 10h.01M17.5 10h.01M8 14h8" stroke-width="2"/>',
+  celebration:'<path d="m4 20 4.5-11.5 7 7Z"/><path d="M14 4.5c.3 1.2 1 1.9 2.2 2.2M19.5 9c-1.5-.4-2.9.3-3.5 1.6"/><circle cx="19" cy="4.5" r="1" fill="currentColor" stroke="none"/><circle cx="20" cy="14" r="1" fill="currentColor" stroke="none"/>'
+});
 function iconSvgWrap(inner){
-  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">'+inner+'</svg>';
+  return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+inner+'</svg>';
 }
 function hydrateIcon(el){
   if(el.querySelector&&el.querySelector('svg')) return;
@@ -1725,6 +1981,67 @@ ar:{
   copy_summary_id:res=>`الرقم القومي: ${res.id}\nالنوع: ${t('gender_'+(res.gender==='Male'?'male':'female'))}\nتاريخ الميلاد: ${res.birthDateStr} (${dayName(res.birthDayIndex)})\nالمحافظة: ${govDisplay(res.govCode)} (${res.govCode})\nالعمر الحالي: ${res.currentAgeYears} سنة ${res.currentAgeMonths} شهر ${res.currentAgeDays} يوم\nإجمالي أيام العمر: ${res.totalDaysLived}\nسن المعاش: ${res.retireAge} عامًا\nتاريخ المعاش: ${res.retireDateStr}\nالفحوصات الهيكلية: ${res.checksPassed}/${res.checksTotal} اجتازت`,
 }
 };
+/* ── v2 strings ── */
+Object.assign(I18N.en,{
+  copied_label:'Copied', toast_sheets_loading:'Loading spreadsheet engine…',
+  btn_add_calendar:'Add to calendar', btn_export_ics:'Export .ics', ics_hint:'Download an .ics file for Google, Apple or Outlook Calendar', toast_ics_saved:'Calendar file downloaded',
+  ics_birthday:'Birthday', ics_retirement:age=>`Retirement (age ${age})`, ics_target_date:'Target date',
+  meter_hint:'Spaces, dashes and Arabic-Indic digits are fine',
+  partial_century:'Century', partial_birth:'Birth', partial_gov:'Governorate', partial_gender:'Gender', partial_waiting:'Keep typing — decoding as you go',
+  next_bday_label:'Next birthday', turns_n:n=>`Turns ${n}`, retire_in:'Retirement in', cd_years:'Years', cd_months:'Months', cd_days:'Days',
+  timeline_born:'Born', timeline_today:'Today', timeline_retire:'Retires',
+  insights_title:'Insights', ins_gender:'Gender split', ins_gov:'Top governorates', ins_age:'Age bands', ins_retire:'Retiring soon',
+  ins_retire_12:'Within 12 months', ins_retire_5:'Within 5 years', ins_eligible:'Already eligible', ins_avg_age:'Average age', ins_dupes:'Duplicate IDs',
+  sub_addsub:'Add / Subtract', as_start:'Start date', as_add:'Add', as_sub:'Subtract', as_years:'Years', as_months:'Months', as_weeks:'Weeks', as_days:'Days', as_workdays:'Working days',
+  as_business:'Count working days only', as_business_hint:'Skips your non-working days and saved holidays', as_presets:'Presets',
+  as_pick:'Pick a start date and an amount to shift it by.', as_result:'Resulting date', as_shift:'Total shift', as_days_n:n=>`${localeNum(n)} day${Math.abs(n)===1?'':'s'}`,
+  as_summary:(from,to)=>`${from} → ${to}`, as_clamped:'Day clamped to the end of the month (e.g. Jan 31 + 1 month = Feb 28/29)',
+  preset_30d:'+30 days', preset_90d:'+90 days', preset_6m:'+6 months', preset_1y:'+1 year', preset_60y:'+60 years', preset_10wd:'+10 working days',
+  lbl_include_end:'Include end date', btn_swap:'Swap', quick_label:'Quick end date', q_today:'Today', q_eom:'End of month', q_eoy:'End of year', q_plus30:'+30 days', q_plus1y:'+1 year',
+  dt_weeks_days:(w,d)=>`${localeNum(w)} wk ${d} d`, dt_weekend_days:'Non-working days', dt_hours:'Hours', dt_weeks:'Weeks', dt_months_total:'Total months',
+  dt_breakdown:'Breakdown', dt_copy_result:'Copy result', dt_until_today:n=>n===0?'Today':(n>0?`${localeNum(n)} days from today`:`${localeNum(-n)} days ago`),
+  dt_next_bday_weekday:'Next birthday falls on', dt_age_milestones:'Milestones', dt_ms_10k:'10,000 days old', dt_ms_20k:'20,000 days old', dt_ms_retire60:'Turns 60',
+  dt_ms_on:(d,rel)=>`${d} · ${rel}`, dt_age_in:'Age in other units', dt_months_lived:'Months', dt_weeks_lived:'Weeks', dt_hours_lived:'Hours',
+  dt_zodiac:'Zodiac', dt_hijri_age:'Hijri age', dt_hijri_years:n=>`${n} Hijri years`,
+  dt_quarter:'Quarter', dt_days_left_year:'Days left in year', dt_month_len:'Days in month', dt_nth_weekday:(n,day,month)=>`${n} ${day} of ${month}`, dt_ordinal:n=>{const s=['th','st','nd','rd'],v=n%100;return n+(s[(v-20)%10]||s[v]||s[0]);},
+  calmode_greg:'From Gregorian', calmode_hijri:'From Hijri', calmode_coptic:'From Coptic', alt_day:'Day', alt_month:'Month', alt_year:'Year',
+  alt_pick:'Enter a day, month and year to convert', alt_invalid:'That day doesn\u2019t exist in this month',
+  btn_near_me:'Near me', prayer_locating:'Finding your location…', prayer_loc_denied:'Location unavailable — search for a city instead', prayer_nearest:(c,km)=>`Nearest city: ${c} (${km} km)`,
+  prayer_tomorrow:'tomorrow',
+  cmd_go_dates_addsub:'Date Tools — Add / Subtract', cmd_go_dates_calendars:'Date Tools — Hijri / Coptic converter', cmd_go_dates_prayer:'Date Tools — Prayer times',
+  cmd_act_focus_id:'Focus the ID input', cmd_act_lang:'Switch language', cmd_act_settings:'Open settings',
+  zodiac:['Capricorn','Aquarius','Pisces','Aries','Taurus','Gemini','Cancer','Leo','Virgo','Libra','Scorpio','Sagittarius']
+});
+Object.assign(I18N.ar,{
+  copied_label:'تم النسخ', toast_sheets_loading:'جارٍ تحميل محرّك الجداول…',
+  btn_add_calendar:'إضافة للتقويم', btn_export_ics:'تصدير ⁦.ics⁩', ics_hint:'تنزيل ملف ⁦.ics⁩ لتقويم Google أو Apple أو Outlook', toast_ics_saved:'تم تنزيل ملف التقويم',
+  ics_birthday:'عيد الميلاد', ics_retirement:age=>`المعاش (سن ${age})`, ics_target_date:'التاريخ المستهدف',
+  meter_hint:'المسافات والشرطات والأرقام العربية مقبولة',
+  partial_century:'القرن', partial_birth:'الميلاد', partial_gov:'المحافظة', partial_gender:'النوع', partial_waiting:'واصل الكتابة — يتم فك الرقم أثناء الإدخال',
+  next_bday_label:'عيد الميلاد القادم', turns_n:n=>`يُتم ${n} عامًا`, retire_in:'المعاش بعد', cd_years:'سنوات', cd_months:'شهور', cd_days:'أيام',
+  timeline_born:'الميلاد', timeline_today:'اليوم', timeline_retire:'المعاش',
+  insights_title:'مؤشرات', ins_gender:'توزيع النوع', ins_gov:'أكثر المحافظات', ins_age:'الفئات العمرية', ins_retire:'قرب المعاش',
+  ins_retire_12:'خلال 12 شهرًا', ins_retire_5:'خلال 5 سنوات', ins_eligible:'مستحق بالفعل', ins_avg_age:'متوسط العمر', ins_dupes:'أرقام مكررة',
+  sub_addsub:'إضافة / طرح', as_start:'تاريخ البداية', as_add:'إضافة', as_sub:'طرح', as_years:'سنوات', as_months:'شهور', as_weeks:'أسابيع', as_days:'أيام', as_workdays:'أيام عمل',
+  as_business:'احتساب أيام العمل فقط', as_business_hint:'يتخطى أيام الراحة والإجازات المحفوظة', as_presets:'اختصارات',
+  as_pick:'اختر تاريخ البداية ومقدار الإزاحة.', as_result:'التاريخ الناتج', as_shift:'إجمالي الإزاحة', as_days_n:n=>`${localeNum(n)} يوم`,
+  as_summary:(from,to)=>`${from} ← ${to}`, as_clamped:'تم ضبط اليوم على آخر الشهر (مثال: 31 يناير + شهر = 28/29 فبراير)',
+  preset_30d:'+30 يومًا', preset_90d:'+90 يومًا', preset_6m:'+6 أشهر', preset_1y:'+سنة', preset_60y:'+60 سنة', preset_10wd:'+10 أيام عمل',
+  lbl_include_end:'احتساب يوم النهاية', btn_swap:'تبديل', quick_label:'تاريخ نهاية سريع', q_today:'اليوم', q_eom:'نهاية الشهر', q_eoy:'نهاية السنة', q_plus30:'+30 يومًا', q_plus1y:'+سنة',
+  dt_weeks_days:(w,d)=>`${localeNum(w)} أسبوع و${d} يوم`, dt_weekend_days:'أيام الراحة', dt_hours:'ساعات', dt_weeks:'أسابيع', dt_months_total:'إجمالي الشهور',
+  dt_breakdown:'التفاصيل', dt_copy_result:'نسخ النتيجة', dt_until_today:n=>n===0?'اليوم':(n>0?`بعد ${localeNum(n)} يوم من اليوم`:`منذ ${localeNum(-n)} يوم`),
+  dt_next_bday_weekday:'عيد الميلاد القادم يوافق', dt_age_milestones:'محطات', dt_ms_10k:'عمر 10,000 يوم', dt_ms_20k:'عمر 20,000 يوم', dt_ms_retire60:'بلوغ الستين',
+  dt_ms_on:(d,rel)=>`${d} · ${rel}`, dt_age_in:'العمر بوحدات أخرى', dt_months_lived:'شهور', dt_weeks_lived:'أسابيع', dt_hours_lived:'ساعات',
+  dt_zodiac:'البرج', dt_hijri_age:'العمر الهجري', dt_hijri_years:n=>`${n} سنة هجرية`,
+  dt_quarter:'الربع', dt_days_left_year:'أيام متبقية في السنة', dt_month_len:'أيام الشهر', dt_nth_weekday:(n,day,month)=>`${day} رقم ${n} في ${month}`, dt_ordinal:n=>String(n),
+  calmode_greg:'من الميلادي', calmode_hijri:'من الهجري', calmode_coptic:'من القبطي', alt_day:'اليوم', alt_month:'الشهر', alt_year:'السنة',
+  alt_pick:'أدخل اليوم والشهر والسنة للتحويل', alt_invalid:'هذا اليوم غير موجود في هذا الشهر',
+  btn_near_me:'موقعي', prayer_locating:'جارٍ تحديد موقعك…', prayer_loc_denied:'تعذّر تحديد الموقع — ابحث عن مدينة بدلًا من ذلك', prayer_nearest:(c,km)=>`أقرب مدينة: ${c} (${km} كم)`,
+  prayer_tomorrow:'غدًا',
+  cmd_go_dates_addsub:'أدوات التاريخ — إضافة / طرح', cmd_go_dates_calendars:'أدوات التاريخ — محوّل الهجري / القبطي', cmd_go_dates_prayer:'أدوات التاريخ — مواقيت الصلاة',
+  cmd_act_focus_id:'الانتقال إلى حقل الرقم القومي', cmd_act_lang:'تبديل اللغة', cmd_act_settings:'فتح الإعدادات',
+  zodiac:['الجدي','الدلو','الحوت','الحمل','الثور','الجوزاء','السرطان','الأسد','العذراء','الميزان','العقرب','القوس']
+});
 function t(key,...args){
   const v=(I18N[currentLang]&&I18N[currentLang][key]!==undefined)?I18N[currentLang][key]:I18N.en[key];
   return typeof v==='function'?v(...args):v;
@@ -1765,7 +2082,9 @@ function refreshDynamicContent(){
   if(typeof computeLeapSingle==='function') computeLeapSingle();
   if(typeof computeLeapRange==='function') computeLeapRange();
   if(uploadedSheetData.length) renderUploadPreview(Object.keys(uploadedSheetData[0]));
-  if(typeof computeCalendarConvert==='function') computeCalendarConvert();
+  if(typeof computeCalendarConvert==='function'){ if(calMode!=='greg') setCalMode(calMode); else computeCalendarConvert(); }
+  if(typeof computeAddSub==='function'){renderBetweenQuickChips();renderAddSubPresets();computeAddSub();const l=document.getElementById('as-days-label');if(l) l.textContent=t(addSubBusiness?'as_workdays':'as_days');}
+  updateIdMeter(document.getElementById('inspector-input').value);
   if(selectedPrayerCity){
     const inp=document.getElementById('prayer-city-search');
     if(inp) inp.value=(currentLang==='ar'&&selectedPrayerCity.ar)?selectedPrayerCity.ar:selectedPrayerCity.en;
@@ -2070,7 +2389,7 @@ function isoToLocalDate(iso){
   if(parts.length!==3) return null;
   const y=+parts[0],m=+parts[1],d=+parts[2];
   if(!y||!m||!d) return null;
-  const dt=new Date(y,m-1,d);
+  const dt=mkDate(y,m-1,d);
   return isNaN(dt.getTime())?null:dt;
 }
 function pad2(n){return String(n).padStart(2,'0');}
@@ -2221,7 +2540,7 @@ function buildDateField(nativeInput){
       return;
     }
     const di=+d,mi=+m,yi=+y;
-    const test=new Date(yi,mi-1,di);
+    const test=mkDate(yi,mi-1,di);
     const validDate=test.getFullYear()===yi&&test.getMonth()===mi-1&&test.getDate()===di;
     const inRange=validDate&&(!minDateVal||stripTime(test)>=minDateVal)&&(!maxDateVal||stripTime(test)<=maxDateVal);
     if(!inRange){
@@ -2811,7 +3130,7 @@ function flashCopied(btnEl){
   const width=btnEl.offsetWidth;
   btnEl.style.minWidth=width+'px';
   btnEl.classList.add('copied');
-  btnEl.innerHTML='<span class="material-symbols-rounded" style="font-size:.95rem;">check</span> Copied';
+  btnEl.innerHTML='<span class="material-symbols-rounded" style="font-size:.95rem;">check</span> '+escapeHtml(t('copied_label'));
   setTimeout(()=>{btnEl.classList.remove('copied');btnEl.innerHTML=original;btnEl.style.minWidth='';btnEl.dataset.flashing='0';},1400);
 }
 
@@ -2884,30 +3203,30 @@ function isFakePattern(cleaned){
 }
 
 function isLeapYear(y){return (y%4===0&&y%100!==0)||(y%400===0);}
-function daysInMonth(y,m){return new Date(y,m+1,0).getDate();}
+function daysInMonth(y,m){return mkDate(y,m+1,0).getDate();}
 function addMonthsClamped(date,delta){
   const mIdx=date.getMonth()+delta;
   const targetY=date.getFullYear()+Math.floor(mIdx/12);
   const targetM=((mIdx%12)+12)%12;
   const d=Math.min(date.getDate(),daysInMonth(targetY,targetM));
-  return new Date(targetY,targetM,d);
+  return mkDate(targetY,targetM,d);
 }
 function addYearsSameMonth(date,delta){
   const targetY=date.getFullYear()+delta,m=date.getMonth();
   const d=Math.min(date.getDate(),daysInMonth(targetY,m));
-  return new Date(targetY,m,d);
+  return mkDate(targetY,m,d);
 }
 
 function addYears(date,years){
   const y=date.getFullYear()+years,m=date.getMonth(),d=date.getDate();
-  const candidate=new Date(y,m,d);
+  const candidate=mkDate(y,m,d);
   if(candidate.getMonth()!==((m%12)+12)%12){
-    return new Date(y,m+1,0);
+    return mkDate(y,m+1,0);
   }
   return candidate;
 }
 function daysBetween(a,b){return Math.round((stripTime(b)-stripTime(a))/86400000);}
-function stripTime(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate());}
+function stripTime(d){return mkDate(d.getFullYear(),d.getMonth(),d.getDate());}
 const XLSX_DATE_EPOCH=new Date(1899,11,30);
 function toExcelSerial(d){return daysBetween(XLSX_DATE_EPOCH,d);}
 function isoStrToExcelSerial(isoStr){
@@ -2935,7 +3254,7 @@ function calcAge(birthDate,asOf){
   if(months<0){years--;months+=12;}
   const anchorMonthIndex=birthDate.getMonth()+(years*12+months);
   const intendedMonth=((anchorMonthIndex%12)+12)%12;
-  const anchor=new Date(birthDate.getFullYear()+Math.floor(anchorMonthIndex/12),intendedMonth,birthDate.getDate());
+  const anchor=mkDate(birthDate.getFullYear()+Math.floor(anchorMonthIndex/12),intendedMonth,birthDate.getDate());
   if(anchor.getMonth()!==intendedMonth)anchor.setDate(0);
   const nowStripped=stripTime(now);
   const days=Math.round((nowStripped-stripTime(anchor))/86400000);
@@ -3087,8 +3406,8 @@ function parseID(rawInput,wantTrace){
   out.daysUntilRetire=daysBetween(now,retire.retireDate);
   out.yearsUntilRetire=out.daysUntilRetire>0?Math.floor(out.daysUntilRetire/365.25):0;
   out.isEligible=out.daysUntilRetire<=0;
-  out.careerPercent=Math.max(0,Math.min(100,Math.round((age.years/out.retireAge)*100)));
-  pushTrace(`Career progress: ${age.years}/${out.retireAge} years = ${out.careerPercent}%`,['year','month','day']);
+  out.careerPercent=Math.max(0,Math.min(100,Math.round((daysBetween(checkDate,now)/Math.max(1,daysBetween(checkDate,retire.retireDate)))*100)));
+  pushTrace(`Retirement progress: ${age.totalDays} of ${daysBetween(checkDate,retire.retireDate)} days from birth to retirement = ${out.careerPercent}%`,['year','month','day']);
   pushTrace(`Retirement eligibility: ${out.isEligible?'Eligible now':out.yearsUntilRetire+' years remaining'}`,['year','month','day']);
 
   if(mm===2&&dd===29){out.flags.push('feb29-birthdate');pushTrace('Note: Feb 29 birth date — an unusual but valid edge case, handled without drift',['month','day']);}
@@ -3116,8 +3435,13 @@ function julianToJD(y,m,d){
   return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d-1524.5;
 }
 function jdToGregorianDate(jd){
-  return new Date(Math.round((jd+0.5-2440588)*86400000));
+  /* Build a LOCAL calendar date from the UTC day — avoids off-by-one for users west of UTC */
+  const u=new Date(Math.round((jd+0.5-2440588)*86400000));
+  return mkDate(u.getUTCFullYear(),u.getUTCMonth(),u.getUTCDate());
 }
+/* Local date constructor that is safe for years 0–99 (new Date(y,…) maps those to 19xx) */
+function mkDate(y,m,d){const dt=new Date(2000,0,1);dt.setFullYear(y,m,d);dt.setHours(0,0,0,0);return dt;}
+function isRealDate(y,m,d){const dt=mkDate(y,m-1,d);return dt.getFullYear()===y&&dt.getMonth()===m-1&&dt.getDate()===d;}
 function islamicToJD(y,m,d){
   const EPOCH=1948439.5;
   return d+Math.ceil(29.5*(m-1))+(y-1)*354+Math.floor((3+11*y)/30)+EPOCH-1;
@@ -6633,8 +6957,8 @@ function onPrayerCitySearch(query){
     const countryLabel=currentLang==='ar'?c.countryAr:c.countryEn;
     return `<div class="cmdk-item focusable" tabindex="0" role="button" data-city-idx="${i}" onclick='selectPrayerCityByIndex(${i})' onkeydown="if(event.key==='Enter'){selectPrayerCityByIndex(${i})}">
       <span class="material-symbols-rounded" style="font-size:1rem;color:var(--ink-3);">location_on</span>
-      <span style="flex:1;">${cityLabel}</span>
-      <span style="font-size:.72rem;color:var(--ink-3);">${countryLabel}</span>
+      <span style="flex:1;">${escapeHtml(cityLabel)}</span>
+      <span style="font-size:.72rem;color:var(--ink-3);">${escapeHtml(countryLabel||'')}</span>
     </div>`;
   }).join('');
   box.classList.remove('hide');
@@ -6668,12 +6992,14 @@ function renderPrayerTimesResult(){
     const timesTomorrow=computePrayerTimesFor(tmr.getUTCFullYear(),tmr.getUTCMonth()+1,tmr.getUTCDate(),{lat:city.lat,lng:city.lng});
     nextInfo=timesTomorrow.fajr?{key:'fajr',date:timesTomorrow.fajr}:null;
   }
+  const isTomorrow=nextInfo&&!nextPrayerInfo(times,now);
   const rows=['fajr','sunrise','dhuhr','asr','maghrib','isha'].map(key=>{
-    const isNext=nextInfo&&nextInfo.key===key;
-    return `<div class="checkrow" style="${isNext?'background:var(--amber-soft);border-radius:12px;padding:.5rem .6rem;margin:0 -.6rem;':''}">
-      <span style="font-size:.85rem;font-weight:${isNext?'700':'600'};flex:1;">${t('prayer_'+key)}</span>
-      ${isNext?`<span class="chip chip-accent" style="margin-inline-end:.5rem;">${t('prayer_next_label')}</span>`:''}
-      <span class="num" style="font-size:.95rem;font-weight:700;${isNext?'color:var(--amber-text);':''}">${formatLocalTime(times[key],tz)}</span>
+    const isNext=nextInfo&&nextInfo.key===key&&!isTomorrow;
+    const past=times[key]&&times[key].getTime()<=now.getTime();
+    return `<div class="prayer-row${isNext?' next':''}${past&&!isNext?' past':''}">
+      <span class="pn">${t('prayer_'+key)}</span>
+      ${isNext?`<span class="chip chip-accent">${t('prayer_next_label')}</span>`:''}
+      <span class="pt num">${formatLocalTime(times[key],tz)}</span>
     </div>`;
   }).join('');
   const cityLabel=currentLang==='ar'&&city.ar?city.ar:city.en;
@@ -6684,10 +7010,14 @@ function renderPrayerTimesResult(){
     <div class="card pad stack">
       <p class="result-summary" style="margin:0;">${summaryText}</p>
       <div class="row-between">
-        <h4 class="cardtitle" style="margin:0;">${cityLabel}<span style="font-size:.72rem;color:var(--ink-3);font-weight:500;margin-inline-start:.4rem;">${countryLabel}</span></h4>
-        ${nextInfo?`<span style="font-size:.78rem;color:var(--ink-3);">${t('prayer_time_to_next')} <b class="num" id="prayer-countdown-val" style="color:var(--amber-text);">${formatCountdown(nextInfo.date.getTime()-now.getTime())}</b></span>`:''}
+        <h4 class="cardtitle" style="margin:0;"><span class="material-symbols-rounded" style="font-size:1rem;color:var(--ink-3);margin-inline-end:.3rem;">location_on</span>${escapeHtml(cityLabel)}<span style="font-size:.72rem;color:var(--ink-3);font-weight:500;margin-inline-start:.4rem;">${escapeHtml(countryLabel||'')}</span></h4>
+        <span class="mono" style="font-size:.7rem;color:var(--ink-3);">${escapeHtml(tz)}</span>
       </div>
-      <div class="stack" style="gap:.15rem;">${rows}</div>
+      ${nextInfo?`<div class="prayer-hero">
+        <div><div class="eyebrow">${t('prayer_next_label')}</div><div class="nm">${t('prayer_'+nextInfo.key)}</div><div class="tm num">${formatLocalTime(nextInfo.date,tz)}${isTomorrow?` · ${t('prayer_tomorrow')}`:''}</div></div>
+        <div><div class="eyebrow" style="text-align:end;">${t('prayer_time_to_next')}</div><div class="cd" id="prayer-countdown-val">${formatCountdown(nextInfo.date.getTime()-now.getTime())}</div></div>
+      </div>`:''}
+      <div class="stack" style="gap:.1rem;">${rows}</div>
       ${hasMissingTime?`<div style="font-size:.68rem;color:var(--amber-text);padding-top:.2rem;">${t('prayer_high_latitude_note')}</div>`:''}
       <div style="font-size:.68rem;color:var(--ink-3);padding-top:.2rem;">${t('prayer_result_estimate_note')}</div>
     </div>`;
@@ -6715,6 +7045,207 @@ function startPrayerCountdown(){
 function stopPrayerCountdown(){
   if(prayerCountdownTimer){clearInterval(prayerCountdownTimer);prayerCountdownTimer=null;}
 }
+function onPrayerCityKey(e){
+  const box=document.getElementById('prayer-city-results');
+  if(!box||box.classList.contains('hide')) return;
+  const items=[...box.querySelectorAll('.cmdk-item')];
+  if(!items.length) return;
+  let idx=items.findIndex(el=>el.classList.contains('kbd-active'));
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){
+    e.preventDefault();
+    idx=e.key==='ArrowDown'?Math.min(items.length-1,idx+1):Math.max(0,idx-1);
+    items.forEach((el,i)=>el.classList.toggle('kbd-active',i===idx));
+    items[idx].scrollIntoView({block:'nearest'});
+  }else if(e.key==='Enter'){
+    e.preventDefault();selectPrayerCityByIndex(idx<0?0:idx);
+  }else if(e.key==='Escape'){box.classList.add('hide');}
+}
+function haversineKm(a,b,c,d){const R=6371,r=Math.PI/180,dl=(c-a)*r,dg=(d-b)*r;const x=Math.sin(dl/2)**2+Math.cos(a*r)*Math.cos(c*r)*Math.sin(dg/2)**2;return 2*R*Math.asin(Math.sqrt(x));}
+function usePrayerHere(){
+  if(!navigator.geolocation){showToast(t('prayer_loc_denied'),'error');return;}
+  showToast(t('prayer_locating'),'location_on','info');
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const {latitude:lat,longitude:lng}=pos.coords;
+    const pool=EGYPT_PRAYER_CITIES.map(c=>({...c,countryEn:'Egypt',countryAr:'مصر'})).concat(parseGlobalCities());
+    let best=null,bestD=Infinity;
+    pool.forEach(c=>{const d=haversineKm(lat,lng,c.lat,c.lng);if(d<bestD){bestD=d;best=c;}});
+    if(!best){showToast(t('prayer_loc_denied'),'error');return;}
+    const tz=(Intl.DateTimeFormat().resolvedOptions().timeZone)||best.tz||'Africa/Cairo';
+    const label=currentLang==='ar'&&best.ar?best.ar:best.en;
+    /* Use the exact coordinates for accuracy; keep the nearest city's name for display */
+    selectedPrayerCity=Object.assign({},best,{lat,lng,tz:bestD<150?(best.tz||tz):tz});
+    document.getElementById('prayer-city-search').value=label;
+    document.getElementById('prayer-city-results').classList.add('hide');
+    saveState({selectedPrayerCityEn:best.en,selectedPrayerCityLat:best.lat,selectedPrayerCityLng:best.lng});
+    renderPrayerTimesResult();startPrayerCountdown();
+    showToast(t('prayer_nearest',label,Math.round(bestD)),'check_circle');
+  },()=>showToast(t('prayer_loc_denied'),'error'),{timeout:10000,maximumAge:600000});
+}
+
+/* ── Modal manager: focus trap, focus restore, scroll lock, Esc — for every .cmdk-overlay ── */
+function initModalManager(){
+  const FOCUSABLE='button:not([disabled]),[href],input:not([disabled]):not([type="hidden"]),select:not([disabled]):not([tabindex="-1"]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
+  document.querySelectorAll('.cmdk-overlay').forEach(ov=>{
+    const box=ov.querySelector('.cmdk-box');
+    const title=box&&box.querySelector('.cardtitle');
+    if(title){if(!title.id) title.id=ov.id+'-title';ov.setAttribute('aria-labelledby',title.id);}
+    else if(ov.id==='cmdk-overlay') ov.setAttribute('aria-label',t('cmdk_title'));
+    ov.setAttribute('aria-hidden','true');
+    new MutationObserver(()=>{
+      const open=ov.classList.contains('open');
+      if(open===!!ov._wasOpen) return;
+      ov._wasOpen=open;
+      ov.setAttribute('aria-hidden',open?'false':'true');
+      const anyOpen=!!document.querySelector('.cmdk-overlay.open');
+      document.documentElement.style.overflow=anyOpen?'hidden':'';
+      if(open){
+        ov._restore=document.activeElement;
+        setTimeout(()=>{
+          if(ov.contains(document.activeElement)) return;
+          const first=[...ov.querySelectorAll(FOCUSABLE)].find(el=>el.offsetParent!==null);
+          if(first) first.focus();
+        },40);
+      }else if(ov._restore&&document.contains(ov._restore)){
+        try{ov._restore.focus({preventScroll:true});}catch(e){}
+        ov._restore=null;
+      }
+    }).observe(ov,{attributes:true,attributeFilter:['class']});
+    ov.addEventListener('keydown',e=>{
+      if(e.key!=='Tab') return;
+      const items=[...ov.querySelectorAll(FOCUSABLE)].filter(el=>el.offsetParent!==null);
+      if(!items.length) return;
+      const first=items[0],last=items[items.length-1];
+      if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}
+      else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}
+    });
+  });
+}
+
+/* ── Deep links: #/dates/addsub, #/id/batch, #/reference/law … + browser back/forward ── */
+const ROUTE_TABS={id:'idtools',formula:'formula',dates:'datetools',reference:'reference'};
+const ROUTE_TABS_REV={idtools:'id',formula:'formula',datetools:'dates',reference:'reference'};
+let routeSyncing=false;
+function currentRoute(){
+  const tab=(document.querySelector('.tabpanel:not(.hide)')||{}).id||'tab-idtools';
+  const name=tab.replace('tab-','');
+  let sub='';
+  if(name==='idtools') sub=((document.querySelector('.subtabpanel:not(.hide)')||{}).id||'').replace('subtab-','');
+  if(name==='datetools') sub=((document.querySelector('.datesubpanel:not(.hide)')||{}).id||'').replace('datesub-','');
+  if(name==='reference') sub=((document.querySelector('.refsubpanel:not(.hide)')||{}).id||'').replace('refsub-','');
+  return '#/'+ROUTE_TABS_REV[name]+(sub?'/'+sub:'');
+}
+function pushRoute(){
+  if(routeSyncing) return;
+  const r=currentRoute();
+  if(location.hash!==r){try{history.pushState(null,'',r);}catch(e){}}
+}
+function applyRoute(hash){
+  const m=/^#\/(\w+)(?:\/(\w+))?/.exec(hash||'');
+  if(!m||!ROUTE_TABS[m[1]]) return false;
+  routeSyncing=true;
+  try{
+    const tab=ROUTE_TABS[m[1]],sub=m[2];
+    switchTab(tab);
+    if(sub){
+      if(tab==='idtools'&&document.getElementById('subtab-'+sub)) switchSubTab(sub);
+      if(tab==='datetools'&&document.getElementById('datesub-'+sub)) switchDateSub(sub);
+      if(tab==='reference'&&document.getElementById('refsub-'+sub)) switchRefSub(sub);
+    }
+  }finally{routeSyncing=false;}
+  return true;
+}
+function initRouting(){
+  ['switchTab','switchSubTab','switchDateSub','switchRefSub'].forEach(fn=>{
+    const orig=window[fn];
+    window[fn]=function(...a){const r=orig.apply(this,a);pushRoute();return r;};
+  });
+  if(!applyRoute(location.hash)){try{history.replaceState(null,'',currentRoute());}catch(e){}}
+  window.addEventListener('popstate',()=>applyRoute(location.hash));
+}
+
+/* ── Calendar (.ics) export ── */
+function icsEscape(s){return String(s).replace(/[\\,;]/g,m=>'\\'+m).replace(/\n/g,'\\n');}
+function icsDate(d){return `${String(d.getFullYear()).padStart(4,'0')}${pad2(d.getMonth()+1)}${pad2(d.getDate())}`;}
+function downloadICS(events,filename){
+  const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
+  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//LX ID//Toolkit//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+  events.forEach((ev,i)=>{
+    const end=new Date(ev.date);end.setDate(end.getDate()+1);
+    lines.push('BEGIN:VEVENT',`UID:lxid-${icsDate(ev.date)}-${i}-${Math.random().toString(36).slice(2,8)}@lxid`,`DTSTAMP:${stamp}`,
+      `DTSTART;VALUE=DATE:${icsDate(ev.date)}`,`DTEND;VALUE=DATE:${icsDate(end)}`,`SUMMARY:${icsEscape(ev.title)}`);
+    if(ev.desc) lines.push(`DESCRIPTION:${icsEscape(ev.desc)}`);
+    if(ev.yearly) lines.push('RRULE:FREQ=YEARLY');
+    if(ev.alarmDays){lines.push('BEGIN:VALARM','ACTION:DISPLAY',`DESCRIPTION:${icsEscape(ev.title)}`,`TRIGGER:-P${ev.alarmDays}D`,'END:VALARM');}
+    lines.push('END:VEVENT');
+  });
+  lines.push('END:VCALENDAR');
+  downloadBlob(lines.join('\r\n'),filename,'text/calendar;charset=utf-8');
+  showToast(t('toast_ics_saved'),'download_done');
+}
+function exportInspectorICS(){
+  const res=parseID(document.getElementById('inspector-input').value);
+  if(!res.valid) return;
+  const nb=nextBirthdayInfo(res.birthDateObj);
+  const ev=[{date:nb.date,title:t('ics_birthday'),yearly:true}];
+  if(!res.isEligible) ev.push({date:res.retireDateObj,title:t('ics_retirement',res.retireAge),desc:res.retireRule,alarmDays:30});
+  downloadICS(ev,'lxid-dates.ics');
+}
+function exportAddSubICS(){
+  const iso=document.getElementById('addsub-result').dataset.iso;
+  const d=isoToLocalDate(iso);if(!d) return;
+  downloadICS([{date:d,title:t('ics_target_date'),desc:iso}],`date-${iso}.ics`);
+}
+function exportHolidaysICS(){
+  if(!holidayMap.size){showToast(t('holiday_empty_state'),'info');return;}
+  const ev=[...holidayMap.entries()].sort((a,b)=>a[0]<b[0]?-1:1).map(([k,l])=>({date:isoToLocalDate(k),title:l||t('lbl_holidays')}));
+  downloadICS(ev,'holidays.ics');
+}
+
+/* ── v2 boot-time wiring ── */
+function initEnhancements(){
+  initModalManager();
+  initRouting();
+  updateIdMeter(document.getElementById('inspector-input').value);
+  const st=loadState();
+  betweenIncludeEnd=!!st.betweenIncludeEnd;
+  const inc=document.getElementById('dt-include-end');if(inc) inc.checked=betweenIncludeEnd;
+  renderBetweenQuickChips();renderAddSubPresets();
+  if(st.asStart){const el=document.getElementById('as-start');el.value=st.asStart;if(el.syncDateDisplay) el.syncDateDisplay();}
+  ['asY','asM','asW','asD'].forEach((k,i)=>{if(st[k]) document.getElementById(['as-years','as-months','as-weeks','as-days'][i]).value=st[k];});
+  if(st.addSubOp) setAddSubOp(st.addSubOp);
+  if(st.addSubBusiness){document.getElementById('as-business').checked=true;onAddSubBusinessChange(true);}
+  computeBetweenDates();computeAddSub();
+  if(st.calMode&&st.calMode!=='greg') setCalMode(st.calMode); else computeCalendarConvert();
+  /* Warm the spreadsheet engine when the browser is idle so exports feel instant */
+  const warm=()=>loadXLSX().catch(()=>{});
+  ('requestIdleCallback' in window)?requestIdleCallback(warm,{timeout:6000}):setTimeout(warm,3500);
+  /* "/" focuses the ID input (like search on many sites) */
+  document.addEventListener('keydown',e=>{
+    if(e.key!=='/'||e.metaKey||e.ctrlKey||e.altKey) return;
+    const tag=(document.activeElement&&document.activeElement.tagName)||'';
+    if(/INPUT|TEXTAREA|SELECT/.test(tag)||document.activeElement.isContentEditable) return;
+    if(document.querySelector('.cmdk-overlay.open')) return;
+    e.preventDefault();switchTab('idtools');switchSubTab('single');document.getElementById('inspector-input').focus();
+  });
+  generateAppleTouchIcon();
+}
+/* Rasterise the brand mark for iOS home-screen (apple-touch-icon must be a PNG) */
+function generateAppleTouchIcon(){
+  try{
+    const c=document.createElement('canvas');c.width=c.height=180;
+    const x=c.getContext('2d');
+    const g=x.createLinearGradient(0,0,0,180);g.addColorStop(0,'#2E2318');g.addColorStop(1,'#0A0705');
+    x.fillStyle=g;x.fillRect(0,0,180,180);
+    const a=x.createLinearGradient(40,40,140,140);a.addColorStop(0,'#F6CFA3');a.addColorStop(1,'#C6733F');
+    x.strokeStyle=a;x.lineCap='round';
+    [[56,11,-50,.72],[37,10,40,.62],[18.5,9,130,.62]].forEach(([r,w,rot,frac],i)=>{
+      x.globalAlpha=[1,.85,.7][i];x.lineWidth=w;x.beginPath();
+      const s=rot*Math.PI/180;x.arc(90,90,r,s,s+Math.PI*2*frac);x.stroke();
+    });
+    x.globalAlpha=1;x.fillStyle='#F6EAD8';x.beginPath();x.arc(90,90,6.5,0,Math.PI*2);x.fill();
+    document.getElementById('apple-touch-icon').href=c.toDataURL('image/png');
+  }catch(e){}
+}
 
 
 function genderBadge(gender,size){
@@ -6727,7 +7258,7 @@ function toCSV(headers,rows){
   const esc=v=>{
     let s=String(v??'');
     if(/^[=+\-@\t\r]/.test(s))s="'"+s;
-    return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
+    return /[",\r\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
   };
   let out='\uFEFF'+headers.map(esc).join(',')+'\r\n';
   rows.forEach(r=>{out+=r.map(esc).join(',')+'\r\n';});
@@ -6740,8 +7271,31 @@ function downloadBlob(content,filename,mime){
   a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
+/* SheetJS is ~900 KB — loaded lazily (idle warm-up, or on first need) instead of blocking first paint. */
+let _xlsxPromise=null;
+function loadXLSX(){
+  if(typeof XLSX!=='undefined') return Promise.resolve(XLSX);
+  if(_xlsxPromise) return _xlsxPromise;
+  _xlsxPromise=new Promise((resolve,reject)=>{
+    const s=document.createElement('script');
+    s.src='https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';
+    s.async=true;s.crossOrigin='anonymous';
+    s.onload=()=>resolve(window.XLSX);
+    s.onerror=()=>{_xlsxPromise=null;s.remove();reject(new Error('xlsx-load'));};
+    document.head.appendChild(s);
+  });
+  return _xlsxPromise;
+}
+/* Run fn once the engine is ready; shows a toast if the CDN is unreachable. Returns true if it ran synchronously. */
+function withXLSX(fn){
+  if(typeof XLSX!=='undefined'){fn();return true;}
+  showToast(t('toast_sheets_loading'),'sync');
+  loadXLSX().then(()=>fn()).catch(()=>showToast(t('toast_sheets_unavailable'),'error'));
+  return false;
+}
 function ensureXLSX(){
   if(typeof XLSX!=='undefined') return true;
+  loadXLSX().catch(()=>{});
   showToast(t('toast_sheets_unavailable'),'error');
   return false;
 }
@@ -7118,6 +7672,7 @@ function renderBatchTable(){
         <div class="kpi kpi-scarlet"><div class="lbl">${t('kpi_errors')}</div><div class="num disp" style="color:var(--scarlet);">${errorCount}</div></div>
         ${showNullBucket?`<div class="kpi kpi-sun"><div class="lbl">${t('kpi_null')}</div><div class="num disp" style="color:var(--sun);">${nullCount}</div></div>`:''}
       </div>
+      ${renderBatchInsights()}
       <div class="row" style="flex-wrap:wrap;gap:.5rem;">
         <div class="pillrow">
           <button class="pill${batchTableCats.has('valid')?' active':''} focusable" onclick="toggleBatchTableCat('valid')"><span class="statdot ok" style="margin-inline-end:.35rem;"></span>${t('filter_valid')}</button>
@@ -7141,6 +7696,50 @@ function renderBatchTable(){
       if(searchSelStart!==null) newSearchInput.setSelectionRange(searchSelStart,searchSelEnd);
     }
   }
+}
+
+/* Aggregate analytics over plausible rows — all computed locally */
+function renderBatchInsights(){
+  const valid=batchResults.filter(r=>r.valid);
+  if(valid.length<2) return '';
+  const now=stripTime(new Date());
+  const m=valid.filter(r=>r.gender==='Male').length,f=valid.length-m;
+  const pm=Math.round(m/valid.length*100);
+  const govCounts={};valid.forEach(r=>{govCounts[r.govCode]=(govCounts[r.govCode]||0)+1;});
+  const topGov=Object.entries(govCounts).sort((a,b)=>b[1]-a[1]).slice(0,4);
+  const maxGov=topGov.length?topGov[0][1]:1;
+  const bands=[['<18',0,17],['18–29',18,29],['30–44',30,44],['45–59',45,59],['60+',60,999]];
+  const bandCounts=bands.map(([l,a,b])=>[l,valid.filter(r=>r.currentAgeYears>=a&&r.currentAgeYears<=b).length]);
+  const maxBand=Math.max(1,...bandCounts.map(x=>x[1]));
+  const within12=valid.filter(r=>r.daysUntilRetire>0&&r.daysUntilRetire<=365).length;
+  const within5=valid.filter(r=>r.daysUntilRetire>0&&r.daysUntilRetire<=1826).length;
+  const eligible=valid.filter(r=>r.daysUntilRetire<=0).length;
+  const avgAge=(valid.reduce((s,r)=>s+r.currentAgeYears+(r.currentAgeMonths/12),0)/valid.length).toFixed(1);
+  const dupes=valid.filter(r=>r.flags&&r.flags.includes('duplicate-id')).length;
+  const bar=(label,val,max,cls)=>`<div class="bar-row"><span class="bl" title="${escapeHtml(label)}">${escapeHtml(label)}</span><span class="bt"><span class="bf ${cls||''}" style="width:${Math.max(2,val/max*100)}%"></span></span><span class="bv">${localeNum(val)}</span></div>`;
+  return `<div class="insights">
+    <div class="insight">
+      <h5><span class="material-symbols-rounded">insights</span>${t('ins_gender')}</h5>
+      <div class="gender-split" role="img" aria-label="${pm}% / ${100-pm}%"><span class="m" style="width:${pm}%"></span><span class="f" style="width:${100-pm}%"></span></div>
+      ${bar(t('gender_male'),m,valid.length,'m')}${bar(t('gender_female'),f,valid.length,'f')}
+      <div class="bdrow" style="margin-top:.35rem;"><span class="k">${t('ins_avg_age')}</span><span class="v">${avgAge}</span></div>
+    </div>
+    <div class="insight">
+      <h5><span class="material-symbols-rounded">public</span>${t('ins_gov')}</h5>
+      ${topGov.map(([code,n])=>bar(govDisplay(code),n,maxGov)).join('')}
+      <h5 style="margin-top:.8rem;"><span class="material-symbols-rounded">cake</span>${t('ins_age')}</h5>
+      ${bandCounts.map(([l,n])=>bar(l,n,maxBand)).join('')}
+    </div>
+    <div class="insight">
+      <h5><span class="material-symbols-rounded">hourglass</span>${t('ins_retire')}</h5>
+      <div class="bdlist">
+        <div class="bdrow"><span class="k">${t('ins_retire_12')}</span><span class="v" style="color:var(--amber-text)">${localeNum(within12)}</span></div>
+        <div class="bdrow"><span class="k">${t('ins_retire_5')}</span><span class="v">${localeNum(within5)}</span></div>
+        <div class="bdrow"><span class="k">${t('ins_eligible')}</span><span class="v" style="color:var(--mint)">${localeNum(eligible)}</span></div>
+        <div class="bdrow"><span class="k">${t('ins_dupes')}</span><span class="v" style="${dupes?'color:var(--scarlet)':''}">${localeNum(dupes)}</span></div>
+      </div>
+    </div>
+  </div>`;
 }
 
 const BATCH_COLUMN_DEFS=[
@@ -7382,7 +7981,7 @@ function exportRows(rows,format,fname,colKeys,injectFormulas){
     const headers=Object.keys(data[0]);
     downloadBlob(toCSV(headers,data.map(row=>headers.map(h=>row[h]))),`${fname}.csv`,'text/csv;charset=utf-8;');
   }else{
-    if(!ensureXLSX()) return;
+    if(typeof XLSX==='undefined'){withXLSX(()=>exportRows(rows,format,fname,colKeys,injectFormulas));return;}
     const canInject=injectFormulas&&keys.includes('id');
     downloadXLSX(data,t('results_title'),`${fname}.xlsx`,canInject?(ws=>injectXLSXFormulas(ws,rows,keys,'id')):null);
     if(injectFormulas&&!keys.includes('id')) showToast(t('toast_formulas_need_id'),'info');
@@ -7476,7 +8075,7 @@ function clearUploadedFile(){
 function handleFileUpload(e){
   const file=e.target.files[0];
   if(!file) return;
-  if(!ensureXLSX()) return;
+  if(typeof XLSX==='undefined'){withXLSX(()=>handleFileUpload({target:{files:[file]}}));return;}
   resetUploadState();
   const maxBytes=25*1024*1024;
   if(file.size>maxBytes){
@@ -7741,7 +8340,7 @@ function downloadUpload(format){
   if(format==='csv'){
     downloadBlob(toCSV(keys,data.map(row=>keys.map(h=>row[h]))),'processed_national_ids.csv','text/csv;charset=utf-8;');
   }else{
-    if(!ensureXLSX()) return;
+    if(typeof XLSX==='undefined'){withXLSX(()=>downloadUpload(format));return;}
     const canInject=uploadInjectFormulas&&keys.includes(uploadIdColName);
     downloadXLSX(data,'Processed','processed_national_ids.xlsx',canInject?(ws=>injectUploadXLSXFormulas(ws,keys)):null);
     if(uploadInjectFormulas&&!keys.includes(uploadIdColName)) showToast(t('toast_formulas_need_id'),'info');
@@ -7800,11 +8399,58 @@ function animateCountUp(el,endValue,duration,formatter){
 
 let inspectDebounce=null,lastInspectorValid=false;
 function inspectIDDebounced(){clearTimeout(inspectDebounce);inspectDebounce=setTimeout(inspectID,120);}
+/* Live 14-segment meter coloured by field group (date · location · gender · check) */
+const METER_CLASSES=['s-date','s-date','s-date','s-date','s-date','s-date','s-date','s-loc','s-loc','s-loc','s-loc','s-loc','s-gen','s-chk'];
+function updateIdMeter(raw){
+  const meter=document.getElementById('id-meter'),count=document.getElementById('id-meter-count');
+  if(!meter) return;
+  if(!meter.childElementCount) meter.innerHTML=METER_CLASSES.map(c=>`<i class="${c}"></i>`).join('');
+  const n=normalizeIDInput(raw||'').length;
+  [...meter.children].forEach((el,i)=>el.classList.toggle('on',i<n));
+  meter.classList.toggle('over',n>14);
+  meter.classList.toggle('done',n===14);
+  if(count){count.textContent=`${n}/14`;count.classList.toggle('ok',n===14);count.classList.toggle('over',n>14);}
+}
+/* Decode whatever is already typed so the user gets feedback before reaching 14 digits */
+function renderPartialDecode(digits){
+  const chip=(k,v,cls)=>`<span class="partial-chip ${cls||''}"><span class="k">${k}</span>${v}</span>`;
+  const parts=[];
+  const c=digits[0];
+  if(c){
+    const ok=c==='2'||c==='3';
+    parts.push(chip(t('partial_century'),ok?(c==='2'?'1900s':'2000s'):escapeHtml(c),ok?'':'bad'));
+  }
+  if(digits.length>=7&&(c==='2'||c==='3')){
+    const y=(c==='2'?1900:2000)+ +digits.slice(1,3),m=+digits.slice(3,5),d=+digits.slice(5,7);
+    const ok=m>=1&&m<=12&&isRealDate(y,m,d);
+    parts.push(chip(t('partial_birth'),ok?`${d} ${monthName(m-1)} ${y}`:`${pad2(d)}/${pad2(m)}/${y}`,ok?'':'bad'));
+  }else if(digits.length>1) parts.push(chip(t('partial_birth'),'…','pending'));
+  if(digits.length>=9){
+    const g=digits.slice(7,9),known=!!GOVERNORATES[g];
+    parts.push(chip(t('partial_gov'),`${escapeHtml(govDisplay(g))} <span class="mono" style="opacity:.6">${g}</span>`,known?'':'bad'));
+  }else if(digits.length>=7) parts.push(chip(t('partial_gov'),'…','pending'));
+  if(digits.length>=13){
+    const male=(+digits[12])%2===1;
+    parts.push(chip(t('partial_gender'),t(male?'gender_male':'gender_female')));
+  }else if(digits.length>=9) parts.push(chip(t('partial_gender'),'…','pending'));
+  return `<div class="card pad stack" style="gap:.7rem;">
+    <div class="row" style="gap:.5rem;color:var(--ink-3);font-size:.76rem;font-weight:600;"><span class="material-symbols-rounded" style="font-size:1rem;">keyboard</span>${t('partial_waiting')}</div>
+    <div class="partial-card">${parts.join('')}</div>
+  </div>`;
+}
 function inspectID(){
   const raw=document.getElementById('inspector-input').value;
   saveStateDebounced({inspectorValue:raw});
+  updateIdMeter(raw);
   const box=document.getElementById('inspector-result');
   if(!raw.trim()){box.innerHTML='';lastInspectorValid=false;return;}
+  const digitsNow=normalizeIDInput(raw);
+  const looksScientific=/e[+\-]?\d/i.test(raw);
+  if(!looksScientific&&digitsNow.length>0&&digitsNow.length<14){
+    lastInspectorValid=false;box.classList.remove('anim-in');
+    box.innerHTML=renderPartialDecode(digitsNow);
+    return;
+  }
   const res=parseID(raw,true);
   const shouldAnimate=res.valid&&!lastInspectorValid;
   lastInspectorValid=res.valid;
@@ -7897,7 +8543,7 @@ function renderInspectorResult(res){
           </div>
           ${genderBadge(res.gender,'1.05rem')}
         </div>
-        <div class="scrollx row" style="gap:.15rem;padding:.3rem 0 .1rem;">${segHtml}</div>
+        <div class="scrollx row idseg-row" style="gap:.15rem;padding:.3rem 0 .1rem;">${segHtml}</div>
       </div>
     </div>
 
@@ -7925,6 +8571,14 @@ function renderInspectorResult(res){
             <div class="stattile-icon c-rose"><span class="material-symbols-rounded">fingerprint</span></div>
             <div><div class="eyebrow">${t('gov_field_label')}</div><div class="stattile-val" style="${res.governorateKnown?'':'font-style:italic;color:var(--ink-2);font-weight:600;'}">${govDisplay(res.govCode)}</div></div>
           </div>
+          ${(()=>{const nb=nextBirthdayInfo(res.birthDateObj);return `<div class="stattile">
+            <div class="stattile-icon"><span class="material-symbols-rounded">celebration</span></div>
+            <div><div class="eyebrow">${t('next_bday_label')}</div><div class="stattile-val">${nb.days===0?t('dt_bday_today'):t('as_days_n',nb.days)}</div><div class="stattile-sub" style="font-size:.72rem;color:var(--ink-2);">${t('turns_n',nb.turns)} · ${dayName(nb.date.getDay())}</div></div>
+          </div>`;})()}
+          <div class="stattile">
+            <div class="stattile-icon c-mint"><span class="material-symbols-rounded">schedule</span></div>
+            <div><div class="eyebrow">${t('dt_zodiac')}</div><div class="stattile-val">${zodiacName(res.birthDateObj)}</div></div>
+          </div>
           <div class="stattile" style="grid-column:1/-1;">
             <div class="stattile-icon c-azure"><span class="material-symbols-rounded">dark_mode</span></div>
             <div>
@@ -7949,9 +8603,11 @@ function renderInspectorResult(res){
             <div class="chip chip-accent" style="width:fit-content;">${t('law_badge')}</div>
             <div style="font-size:.92rem;font-weight:650;">${t('retire_age_years',res.retireAge)}</div>
             <div style="font-size:.87rem;">${t('retires_label')} <span class="num" style="color:var(--amber-text);font-weight:700;">${res.retireDateStr}</span></div>
-            <div style="font-size:.78rem;color:var(--ink-2);">${res.isEligible?t('already_eligible'):t('years_remaining',res.yearsUntilRetire)}</div>
+            <div style="font-size:.78rem;color:var(--ink-2);">${res.isEligible?t('already_eligible'):`${dayName(res.retireDateObj.getDay())} · ${t('dt_until_today',res.daysUntilRetire)}`}</div>
           </div>
         </div>
+        ${renderLifeTimeline(res)}
+        ${res.isEligible?'':renderRetireCountdown(res)}
       </div>
     </div>
 
@@ -7961,6 +8617,7 @@ function renderInspectorResult(res){
         <div class="row noprint" style="gap:.4rem;">
           <button onclick="window.print()" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">print</span>${t('btn_print')}</button>
           <button onclick="copyInspectorSummary()" class="btn btn-ghost btn-sm focusable"><span class="material-symbols-rounded" style="font-size:.95rem;">content_copy</span>${t('btn_copy')}</button>
+          <button onclick="exportInspectorICS()" class="btn btn-soft btn-sm focusable" title="${escapeHtml(t('ics_hint'))}"><span class="material-symbols-rounded" style="font-size:.95rem;">event_upcoming</span>${t('btn_add_calendar')}</button>
         </div>
       </div>
       <div class="checkgrid">${renderChecksGrid(res)}</div>
@@ -7968,6 +8625,38 @@ function renderInspectorResult(res){
     </div>
 
     ${renderTraceDrawer(res)}
+  </div>`;
+}
+function nextBirthdayInfo(birth,asOf){
+  const today=stripTime(asOf||new Date());
+  const age=calcAge(birth,today);
+  let next=addYears(birth,age.years);
+  if(next<today) next=addYears(birth,age.years+1);
+  if(next.getTime()===today.getTime()) return {date:next,days:0,turns:age.years};
+  return {date:next,days:daysBetween(today,next),turns:calcAge(birth,next).years};
+}
+function renderLifeTimeline(res){
+  const b=res.birthDateObj,r=res.retireDateObj,now=stripTime(new Date());
+  const total=Math.max(1,daysBetween(b,r)),pos=Math.max(0,Math.min(1,daysBetween(b,now)/total));
+  const pct=(pos*100).toFixed(2);
+  const side=document.documentElement.dir==='rtl'?'right':'left';
+  return `<div class="timeline" role="img" aria-label="${escapeHtml(t('timeline_born')+' '+res.birthDateStr+' → '+t('timeline_retire')+' '+res.retireDateStr)}">
+    <div class="timeline-fill" style="width:${pct}%"></div>
+    <div class="timeline-mark" style="${side}:${pct}%"></div>
+    <span class="timeline-lbl start" style="${side}:0">${t('timeline_born')} ${b.getFullYear()}</span>
+    ${pos>.18&&pos<.82?`<span class="timeline-lbl" style="${side}:${pct}%">${t('timeline_today')}</span>`:''}
+    <span class="timeline-lbl end" style="${side==='left'?'right':'left'}:0">${t('timeline_retire')} ${r.getFullYear()}</span>
+  </div>`;
+}
+function renderRetireCountdown(res){
+  const span=calcAge(stripTime(new Date()),res.retireDateObj);
+  return `<div class="stack" style="gap:.45rem;">
+    <div class="eyebrow">${t('retire_in')}</div>
+    <div class="cd-grid">
+      <div class="cd-tile"><div class="n">${span.years}</div><div class="u">${t('cd_years')}</div></div>
+      <div class="cd-tile"><div class="n">${span.months}</div><div class="u">${t('cd_months')}</div></div>
+      <div class="cd-tile"><div class="n">${span.days}</div><div class="u">${t('cd_days')}</div></div>
+    </div>
   </div>`;
 }
 function toggleTraceDrawer(btn){
@@ -8203,8 +8892,7 @@ function copyFormula(elementId,evt){
 function parseDateInput(id){
   const v=document.getElementById(id).value;
   if(!v) return null;
-  const [y,m,d]=v.split('-').map(Number);
-  return new Date(y,m-1,d);
+  return isoToLocalDate(v);
 }
 
 function renderWorkdayPicker(){
@@ -8218,43 +8906,181 @@ function toggleWorkday(i){
   saveState({workDays:Array.from(workDaySet)});
 }
 
+/* Count days in [lo, hiExclusive) whose weekday is in workDaySet — O(1) + at most 6 remainder steps */
+function countWorkdays(lo,hiExcl){
+  const n=daysBetween(lo,hiExcl);
+  if(n<=0) return 0;
+  const perWeek=workDaySet.size,fullWeeks=Math.floor(n/7);
+  let c=fullWeeks*perWeek;
+  const startDow=lo.getDay();
+  for(let i=0;i<n%7;i++) if(workDaySet.has((startDow+fullWeeks*7+i)%7)) c++;
+  return c;
+}
+function holidaysOnWorkdays(lo,hiExcl){
+  let c=0;const loK=isoDateKey(lo),hiK=isoDateKey(hiExcl);
+  holidayMap.forEach((_,k)=>{
+    if(k>=loK&&k<hiK){const d=isoToLocalDate(k);if(d&&workDaySet.has(d.getDay())) c++;}
+  });
+  return c;
+}
+let betweenIncludeEnd=false;
+function onIncludeEndChange(v){betweenIncludeEnd=!!v;saveState({betweenIncludeEnd});computeBetweenDates();}
+function setDateInputValue(id,iso){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.value=iso||'';
+  if(typeof el.syncDateDisplay==='function') el.syncDateDisplay();
+  el.dispatchEvent(new Event('input',{bubbles:true}));
+}
+function swapBetweenDates(){
+  const a=document.getElementById('dt-start').value,b=document.getElementById('dt-end').value;
+  document.getElementById('dt-start').value=b;
+  setDateInputValue('dt-end',a);
+  const s=document.getElementById('dt-start');if(s.syncDateDisplay) s.syncDateDisplay();
+}
+function renderBetweenQuickChips(){
+  const box=document.getElementById('between-quick');
+  if(!box) return;
+  const items=[['today','q_today'],['eom','q_eom'],['eoy','q_eoy'],['p30','q_plus30'],['p1y','q_plus1y']];
+  box.innerHTML=items.map(([k,l])=>`<button type="button" class="qchip focusable" onclick="applyBetweenQuick('${k}')">${t(l)}</button>`).join('');
+}
+function applyBetweenQuick(kind){
+  const base=parseDateInput('dt-start')||stripTime(new Date());
+  if(!document.getElementById('dt-start').value) setDateInputValue('dt-start',isoDateKey(base));
+  let d;
+  if(kind==='today') d=stripTime(new Date());
+  else if(kind==='eom') d=mkDate(base.getFullYear(),base.getMonth()+1,0);
+  else if(kind==='eoy') d=mkDate(base.getFullYear(),11,31);
+  else if(kind==='p30'){d=new Date(base);d.setDate(d.getDate()+30);}
+  else d=addYears(base,1);
+  setDateInputValue('dt-end',isoDateKey(d));
+}
+function resultEmpty(icon,msg){return `<div class="result-empty"><span class="material-symbols-rounded">${icon}</span><span>${msg}</span></div>`;}
+function fmtLongDate(d){return formatCaption(d);}
 function computeBetweenDates(){
   const start=parseDateInput('dt-start');
   const end=parseDateInput('dt-end');
   const box=document.getElementById('between-result');
   saveStateDebounced({dtStart:document.getElementById('dt-start').value,dtEnd:document.getElementById('dt-end').value});
-  if(!start||!end){box.innerHTML=`<div style="text-align:center;padding:2rem 1rem;color:var(--ink-3);">${t('dt_pick_start_end')}</div>`;return;}
+  if(!start||!end){box.innerHTML=resultEmpty('date_range',t('dt_pick_start_end'));return;}
   const s=stripTime(start),e=stripTime(end);
   const reversed=s>e;
   const lo=reversed?e:s,hi=reversed?s:e;
-  const totalDays=daysBetween(lo,hi);
-  let workdays=0;
-  const cursor=new Date(lo);
-  while(cursor<hi){if(workDaySet.has(cursor.getDay())) workdays++;cursor.setDate(cursor.getDate()+1);}
-  const span=calcAge(lo,hi);
-  const years=span.years,months=span.months,days=span.days;
-  let holidaysInRange=0;
-  if(holidayMap.size){
-    const hcursor=new Date(lo);
-    while(hcursor<hi){
-      if(workDaySet.has(hcursor.getDay())&&holidayMap.has(isoDateKey(hcursor))) holidaysInRange++;
-      hcursor.setDate(hcursor.getDate()+1);
-    }
-  }
+  const hiExcl=new Date(hi);if(betweenIncludeEnd) hiExcl.setDate(hiExcl.getDate()+1);
+  const totalDays=daysBetween(lo,hiExcl);
+  const workdays=countWorkdays(lo,hiExcl);
+  const holidaysInRange=holidayMap.size?holidaysOnWorkdays(lo,hiExcl):0;
   const netWorkdays=workdays-holidaysInRange;
+  const span=calcAge(lo,hiExcl);
+  const totalMonths=span.years*12+span.months;
+  const weeks=Math.floor(totalDays/7),remDays=totalDays%7;
+  const copyTxt=`${isoDateKey(s)} → ${isoDateKey(e)}: ${totalDays} days (${t('age_ymd',span.years,span.months,span.days)}), ${workdays} ${t('lbl_working_days').toLowerCase()}${holidayMap.size?`, ${netWorkdays} net`:''}`;
   box.innerHTML=`
     <div class="stack">
-      <p class="result-summary">${t('dt_summary_between',totalDays,workdays)}</p>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;">
-        <div class="kpi"><div class="lbl">${t('dt_total_days')}</div><div class="num disp">${totalDays}${reversed?t('dt_reversed'):''}</div></div>
-        <div class="kpi"><div class="lbl">${t('lbl_working_days')}</div><div class="num disp" style="color:var(--amber-text);">${workdays}</div></div>
+      <div class="hero-date">
+        <button type="button" class="iconbtn hero-copy focusable" title="${t('dt_copy_result')}" aria-label="${t('dt_copy_result')}" onclick="copyText(${escapeHtml(JSON.stringify(copyTxt))},null)"><span class="material-symbols-rounded" style="font-size:1rem;">content_copy</span></button>
+        <div class="lbl">${t('dt_total_days')}${reversed?t('dt_reversed'):''}</div>
+        <div class="big num">${t('as_days_n',totalDays)}</div>
+        <div class="sub">${t('age_ymd',span.years,span.months,span.days)} · ${t('dt_weeks_days',weeks,remDays)}</div>
       </div>
-      ${holidayMap.size?`<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;">
+      <div class="kpi-grid">
+        <div class="kpi kpi-amber"><div class="lbl">${t('lbl_working_days')}</div><div class="num disp" style="color:var(--amber-text);">${localeNum(workdays)}</div></div>
+        <div class="kpi"><div class="lbl">${t('dt_weekend_days')}</div><div class="num disp">${localeNum(totalDays-workdays)}</div></div>
+      </div>
+      ${holidayMap.size?`<div class="kpi-grid">
         <div class="kpi kpi-scarlet"><div class="lbl">${t('lbl_holidays_in_range')}</div><div class="num disp">${holidaysInRange}</div></div>
-        <div class="kpi kpi-mint"><div class="lbl">${t('lbl_net_working_days')}</div><div class="num disp" style="color:var(--mint);">${netWorkdays}</div></div>
+        <div class="kpi kpi-mint"><div class="lbl">${t('lbl_net_working_days')}</div><div class="num disp" style="color:var(--mint);">${localeNum(netWorkdays)}</div></div>
       </div>`:''}
-      <div class="kpi"><div class="lbl">${t('dt_calendar_span')}</div><div style="font-size:1.05rem;font-weight:650;" class="disp">${t('age_ymd',years,months,days)}</div></div>
+      <div class="kpi">
+        <div class="lbl">${t('dt_breakdown')}</div>
+        <div class="bdlist">
+          <div class="bdrow"><span class="k">${t('dt_months_total')}</span><span class="v">${localeNum(totalMonths)}</span></div>
+          <div class="bdrow"><span class="k">${t('dt_weeks')}</span><span class="v">${(totalDays/7).toFixed(1)}</span></div>
+          <div class="bdrow"><span class="k">${t('dt_hours')}</span><span class="v">${localeNum(totalDays*24)}</span></div>
+          <div class="bdrow"><span class="k">${t('lbl_start_date')}</span><span class="v">${fmtLongDate(s)}</span></div>
+          <div class="bdrow"><span class="k">${t('lbl_end_date')}</span><span class="v">${fmtLongDate(e)}</span></div>
+        </div>
+      </div>
     </div>`;
+}
+
+/* ── Add / Subtract ── */
+let addSubOp='add',addSubBusiness=false;
+function setAddSubOp(op){
+  addSubOp=op==='sub'?'sub':'add';
+  document.querySelectorAll('#as-op-row .pill').forEach(b=>{const on=b.dataset.asop===addSubOp;b.classList.toggle('active',on);b.setAttribute('aria-checked',on?'true':'false');});
+  saveState({addSubOp});computeAddSub();
+}
+function onAddSubBusinessChange(v){
+  addSubBusiness=!!v;
+  document.getElementById('as-grid').classList.toggle('business',addSubBusiness);
+  const lbl=document.getElementById('as-days-label');if(lbl) lbl.textContent=t(addSubBusiness?'as_workdays':'as_days');
+  saveState({addSubBusiness});computeAddSub();
+}
+function renderAddSubPresets(){
+  const box=document.getElementById('as-presets');if(!box) return;
+  const p=[['30d','preset_30d'],['90d','preset_90d'],['6m','preset_6m'],['1y','preset_1y'],['60y','preset_60y'],['10wd','preset_10wd']];
+  box.innerHTML=p.map(([k,l])=>`<button type="button" class="qchip focusable" onclick="applyAddSubPreset('${k}')">${t(l)}</button>`).join('');
+}
+function applyAddSubPreset(k){
+  const set=(y,m,w,d)=>{['years','months','weeks','days'].forEach((f,i)=>{document.getElementById('as-'+f).value=[y,m,w,d][i]||'';});};
+  if(k==='10wd'){if(!addSubBusiness){document.getElementById('as-business').checked=true;onAddSubBusinessChange(true);}set(0,0,0,10);}
+  else{
+    if(addSubBusiness){document.getElementById('as-business').checked=false;onAddSubBusinessChange(false);}
+    ({'30d':()=>set(0,0,0,30),'90d':()=>set(0,0,0,90),'6m':()=>set(0,6,0,0),'1y':()=>set(1,0,0,0),'60y':()=>set(60,0,0,0)})[k]();
+  }
+  setAddSubOp('add');
+  if(!document.getElementById('as-start').value) setDateInputValue('as-start',isoDateKey(new Date()));
+  computeAddSub();
+}
+function addBusinessDays(start,n,dir){
+  if(!workDaySet.size) return null;
+  const d=new Date(start);let left=n,guard=0;
+  while(left>0&&guard<200000){
+    d.setDate(d.getDate()+dir);guard++;
+    if(workDaySet.has(d.getDay())&&!holidayMap.has(isoDateKey(d))) left--;
+  }
+  return left>0?null:d;
+}
+function computeAddSub(){
+  const box=document.getElementById('addsub-result');if(!box) return;
+  const start=parseDateInput('as-start');
+  const num=id=>Math.max(0,Math.floor(Math.abs(+document.getElementById(id).value||0)));
+  const Y=num('as-years'),M=num('as-months'),W=num('as-weeks'),D=num('as-days');
+  saveStateDebounced({asStart:document.getElementById('as-start').value,asY:Y,asM:M,asW:W,asD:D});
+  if(!start||(!addSubBusiness&&!(Y||M||W||D))||(addSubBusiness&&!D)){box.innerHTML=resultEmpty('event_upcoming',t('as_pick'));return;}
+  const dir=addSubOp==='sub'?-1:1;
+  let result,clamped=false;
+  if(addSubBusiness){
+    result=addBusinessDays(start,D,dir);
+    if(!result){box.innerHTML=resultEmpty('error',t('as_pick'));return;}
+  }else{
+    const totalMonths=dir*(Y*12+M);
+    const intended=start.getDate();
+    result=addMonthsClamped(start,totalMonths);
+    clamped=result.getDate()!==intended;
+    result.setDate(result.getDate()+dir*(W*7+D));
+  }
+  const shift=daysBetween(start,result);
+  const fromToday=daysBetween(stripTime(new Date()),result);
+  const hijri=formatHijri(gregorianToHijri(result));
+  const iso=isoDateKey(result);
+  box.innerHTML=`<div class="stack">
+    <div class="hero-date">
+      <button type="button" class="iconbtn hero-copy focusable" title="${t('dt_copy_result')}" aria-label="${t('dt_copy_result')}" onclick="copyText('${iso}',null)"><span class="material-symbols-rounded" style="font-size:1rem;">content_copy</span></button>
+      <div class="lbl">${t('as_result')}</div>
+      <div class="big">${fmtLongDate(result)}</div>
+      <div class="sub mono">${iso}</div>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="lbl">${t('as_shift')}</div><div class="num disp">${shift>0?'+':''}${localeNum(shift)}</div><div class="sub">${t('dt_weeks_days',Math.floor(Math.abs(shift)/7),Math.abs(shift)%7)}</div></div>
+      <div class="kpi"><div class="lbl">${t('weekday_label')}</div><div class="disp" style="font-size:1.1rem;font-weight:650;">${dayName(result.getDay())}</div><div class="sub">${t('dt_until_today',fromToday)}</div></div>
+    </div>
+    <div class="kpi"><div class="lbl">${t('calconvert_hijri')}</div><div style="font-weight:650;">${hijri}</div><div class="sub">${formatCoptic(gregorianToCoptic(result))}</div></div>
+    ${clamped?`<p style="font-size:.7rem;color:var(--ink-3);margin:0;">${t('as_clamped')}</p>`:''}
+    <button type="button" class="btn btn-soft btn-sm focusable" style="align-self:flex-start;" onclick="exportAddSubICS()"><span class="material-symbols-rounded" style="font-size:1rem;">event_upcoming</span>${t('btn_add_calendar')}</button>
+  </div>`;
+  box.dataset.iso=iso;
 }
 
 function isoDateKey(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
@@ -8449,22 +9275,50 @@ function computeAge(){
   const asof=asofVal?parseDateInput('dt-asof'):new Date();
   const box=document.getElementById('age-result');
   saveStateDebounced({dtBirth:document.getElementById('dt-birth').value,dtAsof:asofVal});
-  if(!birth){box.innerHTML=`<div style="text-align:center;padding:2rem 1rem;color:var(--ink-3);">${t('dt_pick_birth')}</div>`;return;}
-  const age=calcAge(birth,asof);
-  const cursorYears=age.years;
-  let bday=addYears(birth,cursorYears);
-  if(stripTime(bday)<stripTime(asof)) bday=addYears(birth,cursorYears+1);
-  const daysToNext=daysBetween(stripTime(asof),stripTime(bday));
+  if(!birth){box.innerHTML=resultEmpty('cake',t('dt_pick_birth'));return;}
+  const asofS=stripTime(asof);
+  if(stripTime(birth)>asofS){box.innerHTML=resultEmpty('error',t('date_invalid'));return;}
+  const age=calcAge(birth,asofS);
+  const nb=nextBirthdayInfo(birth,asofS);
+  const hijriAge=(()=>{const hb=gregorianToHijri(birth),hn=gregorianToHijri(asofS);let y=hn.year-hb.year;if(hn.month<hb.month||(hn.month===hb.month&&hn.day<hb.day))y--;return Math.max(0,y);})();
+  const milestone=(label,date)=>{const rel=daysBetween(stripTime(new Date()),date);return `<div class="bdrow"><span class="k">${label}</span><span class="v">${t('dt_ms_on',isoDateKey(date),t('dt_until_today',rel))}</span></div>`;};
+  const d10k=new Date(birth);d10k.setDate(d10k.getDate()+10000);
+  const d20k=new Date(birth);d20k.setDate(d20k.getDate()+20000);
+  const ageTxt=t('age_ymd',age.years,age.months,age.days);
   box.innerHTML=`
     <div class="stack">
-      <p class="result-summary">${t('dt_summary_age',t('age_ymd',age.years,age.months,age.days))}</p>
-      <div class="kpi"><div class="lbl">${t('dt_exact_age')}</div><div style="font-size:1.3rem;font-weight:650;" class="disp">${t('age_ymd',age.years,age.months,age.days)}</div></div>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;">
-        <div class="kpi"><div class="lbl">${t('dt_total_days_lived')}</div><div class="num disp">${age.totalDays}</div></div>
-        <div class="kpi"><div class="lbl">${t('dt_days_to_next_bday')}</div><div class="num disp" style="color:var(--amber-text);">${daysToNext===0?t('dt_bday_today'):daysToNext}</div></div>
+      <div class="hero-date">
+        <button type="button" class="iconbtn hero-copy focusable" title="${t('dt_copy_result')}" aria-label="${t('dt_copy_result')}" onclick="copyText(${escapeHtml(JSON.stringify(ageTxt))},null)"><span class="material-symbols-rounded" style="font-size:1rem;">content_copy</span></button>
+        <div class="lbl">${t('dt_exact_age')}</div>
+        <div class="big">${ageTxt}</div>
+        <div class="sub">${t('dt_born_on')} ${fmtLongDate(birth)}</div>
       </div>
-      <div class="kpi"><div class="lbl">${t('dt_born_on')}</div><div style="font-weight:650;">${dayName(birth.getDay())}, ${monthName(birth.getMonth())} ${birth.getDate()}, ${birth.getFullYear()}</div></div>
+      <div class="kpi-grid">
+        <div class="kpi kpi-amber"><div class="lbl">${t('dt_days_to_next_bday')}</div><div class="num disp" style="color:var(--amber-text);">${nb.days===0?t('dt_bday_today'):localeNum(nb.days)}</div><div class="sub">${t('turns_n',nb.turns)} · ${dayName(nb.date.getDay())}</div></div>
+        <div class="kpi"><div class="lbl">${t('dt_total_days_lived')}</div><div class="num disp">${localeNum(age.totalDays)}</div></div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">${t('dt_age_in')}</div>
+        <div class="bdlist">
+          <div class="bdrow"><span class="k">${t('dt_months_lived')}</span><span class="v">${localeNum(age.years*12+age.months)}</span></div>
+          <div class="bdrow"><span class="k">${t('dt_weeks_lived')}</span><span class="v">${localeNum(Math.floor(age.totalDays/7))}</span></div>
+          <div class="bdrow"><span class="k">${t('dt_hours_lived')}</span><span class="v">${localeNum(age.totalDays*24)}</span></div>
+          <div class="bdrow"><span class="k">${t('dt_hijri_age')}</span><span class="v">${t('dt_hijri_years',hijriAge)}</span></div>
+          <div class="bdrow"><span class="k">${t('dt_zodiac')}</span><span class="v">${zodiacName(birth)}</span></div>
+        </div>
+      </div>
+      <div class="kpi">
+        <div class="lbl">${t('dt_age_milestones')}</div>
+        <div class="bdlist">${milestone(t('dt_ms_10k'),d10k)}${milestone(t('dt_ms_20k'),d20k)}${milestone(t('dt_ms_retire60'),addYears(birth,60))}</div>
+      </div>
     </div>`;
+}
+function zodiacName(d){
+  const m=d.getMonth()+1,day=d.getDate();
+  const cut=[20,19,21,20,21,21,23,23,23,23,22,22]; /* first day of the NEXT sign in each month */
+  let idx=day>=cut[m-1]?m:m-1; /* 0=Capricorn */
+  idx=((idx%12)+12)%12;
+  return (I18N[currentLang].zodiac||I18N.en.zodiac)[idx];
 }
 
 function isoWeekInfo(date){
@@ -8487,36 +9341,101 @@ function computeWeekday(){
   const date=parseDateInput('dt-weekday');
   const box=document.getElementById('weekday-result');
   saveStateDebounced({dtWeekday:document.getElementById('dt-weekday').value});
-  if(!date){box.innerHTML=`<div style="text-align:center;padding:2rem 1rem;color:var(--ink-3);">${t('dt_pick_date')}</div>`;return;}
+  if(!date){box.innerHTML=resultEmpty('view_week',t('dt_pick_date'));return;}
   const dow=date.getDay();
-  const dayOfYear=daysBetween(new Date(date.getFullYear(),0,1),date)+1;
-  const {isoWeek}=isoWeekInfo(date);
+  const y=date.getFullYear();
+  const dayOfYear=daysBetween(mkDate(y,0,1),date)+1;
+  const yearLen=isLeapYear(y)?366:365;
+  const {isoWeek,isoYear}=isoWeekInfo(date);
   const sundayWeek=sundayWeekNumber(date,dayOfYear);
+  const nth=Math.ceil(date.getDate()/7);
+  const rel=daysBetween(stripTime(new Date()),date);
   box.innerHTML=`
     <div class="stack">
-      <p class="result-summary">${t('dt_summary_weekday',dayName(dow))}</p>
-      <div class="kpi"><div class="lbl">${t('weekday_label')}</div><div style="font-size:1.3rem;font-weight:650;" class="disp">${dayName(dow)}</div></div>
-      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:.7rem;">
-        <div class="kpi"><div class="lbl">${t('dt_day_of_year')}</div><div class="num disp">${dayOfYear}</div></div>
-        <div class="kpi"><div class="lbl">${t('dt_week_number')}</div><div class="num disp">${isoWeek}</div></div>
-        <div class="kpi"><div class="lbl">${t('dt_week_number_sunday')}</div><div class="num disp">${sundayWeek}</div></div>
-        <div class="kpi"><div class="lbl">${t('dt_leap_year')}</div><div style="font-weight:650;">${isLeapYear(date.getFullYear())?t('dt_leap_yes'):t('dt_leap_no')}</div></div>
+      <div class="hero-date">
+        <div class="lbl">${t('weekday_label')}</div>
+        <div class="big">${dayName(dow)}</div>
+        <div class="sub">${t('dt_nth_weekday',t('dt_ordinal',nth),dayName(dow),monthName(date.getMonth()))} · ${t('dt_until_today',rel)}</div>
       </div>
+      <div class="kpi-grid c3">
+        <div class="kpi"><div class="lbl">${t('dt_day_of_year')}</div><div class="num disp">${dayOfYear}</div><div class="sub">/ ${yearLen}</div></div>
+        <div class="kpi"><div class="lbl">${t('dt_week_number')}</div><div class="num disp">${isoWeek}</div>${isoYear!==y?`<div class="sub">${isoYear}</div>`:''}</div>
+        <div class="kpi"><div class="lbl">${t('dt_quarter')}</div><div class="num disp">Q${Math.floor(date.getMonth()/3)+1}</div></div>
+        <div class="kpi"><div class="lbl">${t('dt_week_number_sunday')}</div><div class="num disp">${sundayWeek}</div></div>
+        <div class="kpi"><div class="lbl">${t('dt_days_left_year')}</div><div class="num disp">${yearLen-dayOfYear}</div></div>
+        <div class="kpi"><div class="lbl">${t('dt_month_len')}</div><div class="num disp">${daysInMonth(y,date.getMonth())}</div></div>
+      </div>
+      <div class="kpi"><div class="lbl">${t('dt_leap_year')}</div><div style="font-weight:650;">${isLeapYear(y)?t('dt_leap_yes'):t('dt_leap_no')}</div></div>
     </div>`;
 }
 
+let calMode='greg';
+function setCalMode(mode){
+  calMode=['greg','hijri','coptic'].includes(mode)?mode:'greg';
+  document.querySelectorAll('#calmode-row .pill').forEach(b=>b.classList.toggle('active',b.dataset.calmode===calMode));
+  document.getElementById('calmode-greg').classList.toggle('hide',calMode!=='greg');
+  document.getElementById('calmode-alt').classList.toggle('hide',calMode==='greg');
+  if(calMode!=='greg'){
+    const sel=document.getElementById('alt-month');
+    const names=calMode==='hijri'?(I18N[currentLang].hijriMonths||I18N.en.hijriMonths):(I18N[currentLang].copticMonths||I18N.en.copticMonths);
+    const prev=sel.value;
+    sel.innerHTML=names.map((n,i)=>`<option value="${i+1}">${i+1} · ${escapeHtml(n)}</option>`).join('');
+    sel.value=prev&&+prev<=names.length?prev:'1';
+    const yr=document.getElementById('alt-year');
+    if(!yr.value||yr.dataset.mode!==calMode){
+      const today=new Date();
+      const cur=calMode==='hijri'?gregorianToHijri(today):gregorianToCoptic(today);
+      yr.value=cur.year;document.getElementById('alt-day').value=cur.day;sel.value=String(cur.month);
+      yr.dataset.mode=calMode;
+    }
+    sel.dispatchEvent(new Event('change'));
+  }
+  saveState({calMode});
+  computeCalendarConvert();
+}
 function computeCalendarConvert(){
-  const date=parseDateInput('dt-calconvert');
   const box=document.getElementById('calconvert-result');
-  saveStateDebounced({dtCalconvert:document.getElementById('dt-calconvert').value});
-  if(!date){box.innerHTML=`<div style="text-align:center;padding:2rem 1rem;color:var(--ink-3);">${t('dt_pick_calconvert')}</div>`;return;}
+  let date=null;
+  if(calMode==='greg'){
+    date=parseDateInput('dt-calconvert');
+    saveStateDebounced({dtCalconvert:document.getElementById('dt-calconvert').value});
+    if(!date){box.innerHTML=resultEmpty('dark_mode',t('dt_pick_calconvert'));return;}
+  }else{
+    const d=parseInt(document.getElementById('alt-day').value,10);
+    const m=parseInt(document.getElementById('alt-month').value,10);
+    const y=parseInt(document.getElementById('alt-year').value,10);
+    if(!d||!m||!y){box.innerHTML=resultEmpty('dark_mode',t('alt_pick'));return;}
+    let jd;
+    if(calMode==='hijri'){
+      if(d<1||d>30){box.innerHTML=resultEmpty('error',t('alt_invalid'));return;}
+      jd=islamicToJD(y,m,d);
+      const back=jdToIslamic(jd);
+      if(back.month!==m||back.day!==d){box.innerHTML=resultEmpty('error',t('alt_invalid'));return;}
+    }else{
+      const maxD=m===13?((y%4===3)?6:5):30;
+      if(d<1||d>maxD){box.innerHTML=resultEmpty('error',t('alt_invalid'));return;}
+      jd=copticToJD(y,m,d);
+    }
+    date=jdToGregorianDate(jd);
+  }
   const hijri=gregorianToHijri(date),coptic=gregorianToCoptic(date);
+  const rel=daysBetween(stripTime(new Date()),date);
+  const hero=calMode==='greg'
+    ?{lbl:t('calconvert_hijri'),big:formatHijri(hijri),sub:fmtLongDate(date)}
+    :{lbl:t('calconvert_gregorian'),big:fmtLongDate(date),sub:isoDateKey(date)};
   box.innerHTML=`
     <div class="stack">
-      <p class="result-summary">${t('dt_summary_calconvert',`${dayName(date.getDay())}, ${monthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}`,formatHijri(hijri),formatCoptic(coptic))}</p>
-      <div class="kpi"><div class="lbl">${t('calconvert_gregorian')}</div><div style="font-weight:650;">${dayName(date.getDay())}, ${monthName(date.getMonth())} ${date.getDate()}, ${date.getFullYear()}</div></div>
-      <div class="kpi"><div class="lbl">${t('calconvert_hijri')}</div><div style="font-size:1.15rem;font-weight:650;" class="disp">${formatHijri(hijri)}</div></div>
-      <div class="kpi"><div class="lbl">${t('calconvert_coptic')}</div><div style="font-size:1.15rem;font-weight:650;" class="disp">${formatCoptic(coptic)}</div></div>
+      <div class="hero-date">
+        <button type="button" class="iconbtn hero-copy focusable" title="${t('dt_copy_result')}" aria-label="${t('dt_copy_result')}" onclick="copyText(${escapeHtml(JSON.stringify(hero.big))},null)"><span class="material-symbols-rounded" style="font-size:1rem;">content_copy</span></button>
+        <div class="lbl">${hero.lbl}</div>
+        <div class="big">${hero.big}</div>
+        <div class="sub">${hero.sub} · ${t('dt_until_today',rel)}</div>
+      </div>
+      <div class="kpi"><div class="lbl">${t('calconvert_gregorian')}</div><div style="font-weight:650;">${fmtLongDate(date)} <span class="mono" style="color:var(--ink-3);font-size:.78rem;">${isoDateKey(date)}</span></div></div>
+      <div class="kpi-grid">
+        <div class="kpi"><div class="lbl">${t('calconvert_hijri')}</div><div style="font-size:1.02rem;font-weight:650;" class="disp">${formatHijri(hijri)}</div></div>
+        <div class="kpi"><div class="lbl">${t('calconvert_coptic')}</div><div style="font-size:1.02rem;font-weight:650;" class="disp">${formatCoptic(coptic)}</div></div>
+      </div>
     </div>`;
 }
 
@@ -8567,6 +9486,9 @@ const COMMANDS=[
   {id:'go-idtools-upload',labelKey:'cmd_go_idtools_upload',groupKey:'cmdk_group_nav',icon:'upload_file',run:()=>{switchTab('idtools');switchSubTab('upload');}},
   {id:'go-formula',labelKey:'cmd_go_formula',groupKey:'cmdk_group_nav',icon:'functions',run:()=>switchTab('formula')},
   {id:'go-dates-between',labelKey:'cmd_go_dates_between',groupKey:'cmdk_group_nav',icon:'date_range',run:()=>{switchTab('datetools');switchDateSub('between');}},
+  {id:'go-dates-addsub',labelKey:'cmd_go_dates_addsub',groupKey:'cmdk_group_nav',icon:'event_upcoming',run:()=>{switchTab('datetools');switchDateSub('addsub');}},
+  {id:'go-dates-calendars',labelKey:'cmd_go_dates_calendars',groupKey:'cmdk_group_nav',icon:'dark_mode',run:()=>{switchTab('datetools');switchDateSub('calendars');}},
+  {id:'go-dates-prayer',labelKey:'cmd_go_dates_prayer',groupKey:'cmdk_group_nav',icon:'mosque',run:()=>{switchTab('datetools');switchDateSub('prayer');}},
   {id:'go-dates-age',labelKey:'cmd_go_dates_age',groupKey:'cmdk_group_nav',icon:'cake',run:()=>{switchTab('datetools');switchDateSub('age');}},
   {id:'go-dates-weekday',labelKey:'cmd_go_dates_weekday',groupKey:'cmdk_group_nav',icon:'view_week',run:()=>{switchTab('datetools');switchDateSub('weekday');}},
   {id:'go-dates-leap',labelKey:'cmd_go_dates_leap',groupKey:'cmdk_group_nav',icon:'event_repeat',run:()=>{switchTab('datetools');switchDateSub('leapyears');}},
@@ -8574,6 +9496,9 @@ const COMMANDS=[
   {id:'go-reference-gov',labelKey:'cmd_go_reference_gov',groupKey:'cmdk_group_nav',icon:'public',run:()=>{switchTab('reference');switchRefSub('governorates');}},
   {id:'go-reference-law',labelKey:'cmd_go_reference_law',groupKey:'cmdk_group_nav',icon:'gavel',run:()=>{switchTab('reference');switchRefSub('law');}},
   {id:'go-reference-dates',labelKey:'cmd_go_reference_dates',groupKey:'cmdk_group_nav',icon:'dark_mode',run:()=>{switchTab('reference');switchRefSub('dates');}},
+  {id:'act-focus-id',labelKey:'cmd_act_focus_id',groupKey:'cmdk_group_actions',icon:'keyboard',run:()=>{switchTab('idtools');switchSubTab('single');setTimeout(()=>document.getElementById('inspector-input').focus(),40);}},
+  {id:'act-lang',labelKey:'cmd_act_lang',groupKey:'cmdk_group_actions',icon:'public',run:()=>toggleLang()},
+  {id:'act-settings',labelKey:'cmd_act_settings',groupKey:'cmdk_group_actions',icon:'settings',run:()=>openSettings()},
   {id:'act-paste-clipboard',labelKey:'cmd_act_paste_clipboard',groupKey:'cmdk_group_actions',icon:'content_paste_go',run:()=>{switchTab('idtools');switchSubTab('batch');batchPasteFromClipboard();}},
   {id:'act-sample-batch',labelKey:'cmd_act_sample_batch',groupKey:'cmdk_group_actions',icon:'science',run:()=>{switchTab('idtools');switchSubTab('batch');batchLoadSample();}},
   {id:'act-sample-single',labelKey:'cmd_act_sample_single',groupKey:'cmdk_group_actions',icon:'science',run:()=>{switchTab('idtools');switchSubTab('single');loadSampleIntoInspector();}},
@@ -8688,14 +9613,14 @@ function renderGovTable(){
   tbody.innerHTML=entries.map(([code,name],idx)=>{
     const rowId=`govrow-${idx}`;
     return `<tr>
-      <td><span class="material-symbols-rounded rowcopy focusable" id="${rowId}" role="button" tabindex="0" title="${t('copy_visible_title')}" onclick="copyGovRow('${code}','${name}','${rowId}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();copyGovRow('${code}','${name}','${rowId}')}">content_copy</span></td>
+      <td><span class="material-symbols-rounded rowcopy focusable" id="${rowId}" role="button" tabindex="0" title="${t('copy_visible_title')}" onclick="copyGovRow('${code}','${rowId}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();copyGovRow('${code}','${rowId}')}">content_copy</span></td>
       <td class="mono" style="font-weight:650;">${code}</td>
       <td>${name}</td>
     </tr>`;
   }).join('');
 }
-function copyGovRow(code,name,elId){
-  copyText(`${code}\t${name}`,null,t('toast_row_copied'));
+function copyGovRow(code,elId){
+  copyText(`${code}\t${govDisplay(code)}`,null,t('toast_row_copied'));
   const el=document.getElementById(elId);
   if(el){el.textContent='check';el.style.color='var(--mint)';setTimeout(()=>{el.textContent='content_copy';el.style.color='';},1200);}
 }
@@ -8719,7 +9644,7 @@ function rehydrateBatchResult(cached){
   const daysUntilRetire=daysBetween(now,retire.retireDate);
   const yearsUntilRetire=daysUntilRetire>0?Math.floor(daysUntilRetire/365.25):0;
   const isEligible=daysUntilRetire<=0;
-  const careerPercent=Math.max(0,Math.min(100,Math.round((age.years/retire.age)*100)));
+  const careerPercent=Math.max(0,Math.min(100,Math.round((daysBetween(birthDateObj,now)/Math.max(1,daysBetween(birthDateObj,retire.retireDate)))*100)));
   return Object.assign({},cached,{
     currentAgeYears:age.years,currentAgeMonths:age.months,currentAgeDays:age.days,totalDaysLived:age.totalDays,
     retireAge:retire.age,retireRule:retire.rule,
@@ -8796,7 +9721,8 @@ function restoreCachedState(){
   if(state.activeRefSub&&state.activeRefSub!=='structure') switchRefSub(state.activeRefSub);
 }
 
-window.onload=function(){
+function bootApp(){
+  if(bootApp._done) return; bootApp._done=true;
   restoreCachedState();
   applyStaticTranslations();
   initTheme();
@@ -8861,11 +9787,13 @@ window.onload=function(){
     if(active&&active.tagName==='INPUT'&&active.type==='number')active.blur();
   },{passive:true});
   if(document.getElementById('inspector-input').value.trim()) inspectID();
-};
-window.addEventListener('resize',moveTopIndicator);
-if('serviceWorker' in navigator){
-  window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});
+  initEnhancements();
+  document.documentElement.classList.add('app-ready');
 }
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',bootApp); else bootApp();
+/* Re-measure the tab indicator once web fonts settle (widths change) */
+if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>{moveTopIndicator();});
+window.addEventListener('resize',moveTopIndicator);
 </script>
 </body>
 </html>
