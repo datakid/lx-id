@@ -1,11 +1,12 @@
-const CACHE_NAME = 'raqam-shell-v1';
-const APP_SHELL = ['./', './index.html', './css/raqam.css', './manifest.webmanifest', './icons/raqam.svg', './icons/raqam-maskable.svg'];
+const CACHE_NAME = 'lxid-shell-v2';
+const APP_SHELL = ['./id.html', './manifest.webmanifest'];
 const RUNTIME_HOSTS = ['cdn.sheetjs.com', 'fonts.googleapis.com', 'fonts.gstatic.com'];
 
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => Promise.all(APP_SHELL.map(url => cache.add(url).catch(() => null))))
+      .then(cache => cache.addAll(APP_SHELL))
+      .catch(() => {})
   );
   self.skipWaiting();
 });
@@ -14,8 +15,9 @@ self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(names =>
       Promise.all(names.filter(n => n !== CACHE_NAME).map(n => caches.delete(n)))
-    ).then(() => self.clients.claim())
+    )
   );
+  self.clients.claim();
 });
 
 self.addEventListener('fetch', event => {
@@ -23,25 +25,9 @@ self.addEventListener('fetch', event => {
   if (req.method !== 'GET') return;
 
   const url = new URL(req.url);
-  const sameOrigin = url.origin === self.location.origin;
+  const isAppShell = url.origin === self.location.origin;
   const isRuntimeAsset = RUNTIME_HOSTS.includes(url.hostname);
-  if (!sameOrigin && !isRuntimeAsset) return;
-  if (sameOrigin && url.pathname.includes('/tables/')) return;
-
-  if (req.mode === 'navigate') {
-    event.respondWith(
-      fetch(req)
-        .then(res => {
-          if (res && res.status === 200) {
-            const copy = res.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy)).catch(() => {});
-          }
-          return res;
-        })
-        .catch(() => caches.match('./index.html').then(r => r || caches.match('./')))
-    );
-    return;
-  }
+  if (!isAppShell && !isRuntimeAsset) return;
 
   event.respondWith(
     caches.match(req).then(cached => {

@@ -3,21 +3,20 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0D0B09">
-<title>Raqam — Egyptian National ID & Retirement Toolkit</title>
+<meta name="theme-color" content="#0E0C0A">
+<title>LX ID — Egyptian National ID & Retirement Toolkit</title>
 <meta name="description" content="Decode Egyptian national IDs, compute retirement dates under Law 148/2019, and work with dates, Hijri/Coptic calendars and prayer times — all privately in your browser.">
 <meta name="color-scheme" content="light dark">
-<link rel="icon" type="image/svg+xml" href="icons/raqam.svg">
-<link rel="apple-touch-icon" id="apple-touch-icon" href="icons/raqam.svg">
-<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='b' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0' stop-color='%232E2318'/%3E%3Cstop offset='1' stop-color='%230A0705'/%3E%3C/linearGradient%3E%3ClinearGradient id='a' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23F6CFA3'/%3E%3Cstop offset='1' stop-color='%23C6733F'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='15' fill='url(%23b)'/%3E%3Cg fill='none' stroke='url(%23a)' stroke-linecap='round'%3E%3Ccircle cx='32' cy='32' r='20' stroke-width='4.2' stroke-dasharray='88 38' transform='rotate(-50 32 32)'/%3E%3Ccircle cx='32' cy='32' r='13' stroke-width='3.8' stroke-dasharray='56 26' transform='rotate(40 32 32)' opacity='.85'/%3E%3Ccircle cx='32' cy='32' r='6.5' stroke-width='3.4' stroke-dasharray='27 14' transform='rotate(130 32 32)' opacity='.7'/%3E%3C/g%3E%3Ccircle cx='32' cy='32' r='2.4' fill='%23F6EAD8'/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" id="apple-touch-icon" href="">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Raqam">
+<meta name="apple-mobile-web-app-title" content="LX ID">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,650;9..144,760&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Cairo:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<style id="base-style">
+<style>
 :root{
   --bg:#F7F3EC; --bg-deep:#EFE9DD;
   --milk:rgba(255,255,255,0.55); --milk-strong:rgba(255,255,255,0.75); --milk-border:rgba(255,255,255,0.9);
@@ -688,6 +687,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
 @media(min-width:1024px){
   .mobile-only{display:none !important}
 }
+/* ═════ v2 polish layer ═════ */
 .idmeter{display:grid;grid-template-columns:repeat(14,1fr);gap:3px;margin-top:.15rem}
 .idmeter i{height:5px;border-radius:3px;background:var(--edge-strong);transition:background .25s ease,transform .25s cubic-bezier(.34,1.56,.64,1),opacity .2s}
 .idmeter i.on{transform:scaleY(1.25)}
@@ -790,6 +790,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
 :where(button,[role="button"],a,input,select,textarea):focus-visible{outline:2px solid color-mix(in srgb,var(--amber) 70%,transparent);outline-offset:2px}
 .field-input:focus-visible,.field-area:focus-visible,.dateseg:focus-visible,.cmdk-input:focus-visible{outline:none}
 
+/* Phones: ID segments wrap instead of hiding behind a horizontal scroll */
 @media(max-width:640px){
   .idseg-row{flex-wrap:wrap;overflow:visible!important;gap:.4rem!important;justify-content:flex-start}
   .idseg-row .idseg-divider{display:none}
@@ -798,6 +799,7 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
   .idseg-row .idseg-compound{min-width:3.6rem}
   .idseg-row .idseg .tag{font-size:.5rem}
 }
+/* Performance: backdrop blur is the most expensive thing on phones — keep it for chrome, drop it for content cards */
 @media(max-width:768px){
   .card,.kpi,.idcard{backdrop-filter:none;-webkit-backdrop-filter:none}
   .card{background:var(--milk-strong)}
@@ -816,7 +818,6 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
   .idseg-group,.idseg-group .idseg{background:#fff!important}
 }
 </style>
-<link rel="stylesheet" href="css/raqam.css">
 </head>
 <body>
 <div class="field"><div class="orb orb-a"></div><div class="orb orb-b"></div><div class="orb orb-c"></div></div>
@@ -826,18 +827,20 @@ table.previewtable td.col-active{background:var(--amber-soft);color:var(--ink);f
 <header class="topbar">
   <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:.75rem;padding-top:.85rem;padding-bottom:.85rem;position:relative;z-index:1;">
     <div class="row" style="gap:.7rem;">
-      <a class="brandmark" href="#/id/single" aria-label="Raqam">
-        <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-          <defs><linearGradient id="bm-a" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#F6C590"/><stop offset="1" stop-color="#DE8146"/></linearGradient></defs>
-          <rect class="bm-bar bm-1" x="11" y="21" width="42" height="9.5" rx="4.75" fill="url(#bm-a)"/>
-          <rect class="bm-bar bm-2" x="11" y="34" width="11.5" height="9.5" rx="4.75" fill="#8DB8E6"/>
-          <rect class="bm-bar bm-3" x="25.5" y="34" width="16.5" height="9.5" rx="4.75" fill="#EC9DBA"/>
-          <circle class="bm-bar bm-4" cx="48.25" cy="38.75" r="4.75" fill="#F6ECDD"/>
+      <div class="brandmark">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <defs><linearGradient id="bm-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F8DDBA"/><stop offset="1" stop-color="#D98B55"/></linearGradient></defs>
+          <g class="bm-rings" stroke="url(#bm-grad)">
+            <circle cx="12" cy="12" r="8.4" stroke-width="1.7" stroke-dasharray="37 16" transform="rotate(-50 12 12)"/>
+            <circle cx="12" cy="12" r="5.5" stroke-width="1.6" stroke-dasharray="23.5 11" transform="rotate(40 12 12)" opacity=".85"/>
+            <circle cx="12" cy="12" r="2.7" stroke-width="1.5" stroke-dasharray="11 6" transform="rotate(130 12 12)" opacity=".7"/>
+          </g>
+          <circle cx="12" cy="12" r=".95" fill="#F6EAD8" stroke="none"/>
         </svg>
-      </a>
-      <div class="brandtext">
-        <div class="brandname">Raqam<span class="brandname-ar" lang="ar">رقم</span></div>
-        <div class="brandsub" data-i18n="brand_subtitle">National ID &amp; Retirement Toolkit</div>
+      </div>
+      <div>
+        <div class="disp" style="font-size:1.05rem;font-weight:650;line-height:1.1;">LX ID</div>
+        <div data-i18n="brand_subtitle" style="font-size:.68rem;color:var(--ink-3);font-weight:600;">National ID &amp; Retirement Toolkit</div>
       </div>
     </div>
     <nav class="toptabs desktop-only" id="toptabs">
@@ -1570,6 +1573,7 @@ const ICON_DEFS={
   view_week:'<rect x="3.5" y="4.5" width="4.3" height="15" rx="1.2"/><rect x="9.8" y="4.5" width="4.3" height="15" rx="1.2"/><rect x="16.1" y="4.5" width="4.3" height="15" rx="1.2"/>',
   view_column:'<rect x="3.5" y="4.5" width="17" height="15" rx="2.2"/><path d="M9.5 4.5v15M14.5 4.5v15"/>'
 };
+/* ── Refined icon family (24px grid, 1.6 stroke, round caps) — overrides + additions ── */
 Object.assign(ICON_DEFS,{
   arrow_forward:'<path d="M5 12h14"/><path d="M13.5 6.5 19 12l-5.5 5.5"/>',
   arrow_back:'<path d="M19 12H5"/><path d="M10.5 6.5 5 12l5.5 5.5"/>',
@@ -1764,7 +1768,7 @@ en:{
   law_badge:'Law 148/2019', law_title:'Egypt\u2019s phased retirement age increase',
   law_desc:'The standard pension age of 60 steps up gradually until it reaches 65. The age that applies to a given person depends on their birth date.',
   law_col_from:'Applies from', law_col_age:'Retirement age', law_years:n=>`${n} years`, law_baseline:d=>`Before ${d}`,
-  retire_rule_baseline:d=>`Turns 60 before ${d} → retirement age stays at 60`, retire_rule_threshold:(d,age)=>`Age ${age} is in force from ${d} and is reached under it → retirement at ${age} (Law 148/2019)`,
+  retire_rule_baseline:d=>`Turns 60 before ${d} → retirement age stays at 60`, retire_rule_threshold:(d,age)=>`Turns 60 on/after ${d} → retirement age is ${age} (Law 148/2019)`,
   settings_theme:'Theme', theme_system:'System', theme_light:'Light', theme_dark:'Dark',
   settings_surface:'Surface style', settings_typeface:'Typeface',
   settings_privacy:'Privacy', settings_remember_sensitive:'Remember ID numbers I enter, for this browser tab only (off by default — turn on only if you\'re on a private device)',
@@ -1920,7 +1924,7 @@ ar:{
   law_badge:'القانون رقم 148 لسنة 2019', law_title:'الزيادة التدريجية لسن المعاش في مصر',
   law_desc:'يرتفع سن المعاش القياسي البالغ 60 عامًا تدريجيًا حتى يصل إلى 65 عامًا. السن المطبَّق على كل شخص يعتمد على تاريخ ميلاده.',
   law_col_from:'يُطبَّق اعتبارًا من', law_col_age:'سن المعاش', law_years:n=>`${n} عامًا`, law_baseline:d=>`قبل ${d}`,
-  retire_rule_baseline:d=>`يبلغ الستين قبل ${d} → يظل سن المعاش 60`, retire_rule_threshold:(d,age)=>`سن ${age} سارٍ منذ ${d} ويبلغه خلال سريانه → المعاش عند ${age} (القانون 148 لسنة 2019)`,
+  retire_rule_baseline:d=>`يبلغ الستين قبل ${d} → يظل سن المعاش 60`, retire_rule_threshold:(d,age)=>`يبلغ الستين في أو بعد ${d} → سن المعاش ${age} (القانون 148 لسنة 2019)`,
   settings_theme:'المظهر', theme_system:'النظام', theme_light:'فاتح', theme_dark:'داكن',
   settings_surface:'نمط السطح', settings_typeface:'الخط',
   settings_privacy:'الخصوصية', settings_remember_sensitive:'تذكّر الأرقام القومية التي أدخلها، لهذا التبويب فقط (معطّل افتراضيًا — فعّله فقط إذا كنت على جهاز خاص)',
@@ -1977,6 +1981,7 @@ ar:{
   copy_summary_id:res=>`الرقم القومي: ${res.id}\nالنوع: ${t('gender_'+(res.gender==='Male'?'male':'female'))}\nتاريخ الميلاد: ${res.birthDateStr} (${dayName(res.birthDayIndex)})\nالمحافظة: ${govDisplay(res.govCode)} (${res.govCode})\nالعمر الحالي: ${res.currentAgeYears} سنة ${res.currentAgeMonths} شهر ${res.currentAgeDays} يوم\nإجمالي أيام العمر: ${res.totalDaysLived}\nسن المعاش: ${res.retireAge} عامًا\nتاريخ المعاش: ${res.retireDateStr}\nالفحوصات الهيكلية: ${res.checksPassed}/${res.checksTotal} اجتازت`,
 }
 };
+/* ── v2 strings ── */
 Object.assign(I18N.en,{
   copied_label:'Copied', toast_sheets_loading:'Loading spreadsheet engine…',
   btn_add_calendar:'Add to calendar', btn_export_ics:'Export .ics', ics_hint:'Download an .ics file for Google, Apple or Outlook Calendar', toast_ics_saved:'Calendar file downloaded',
@@ -2055,7 +2060,7 @@ function applyStaticTranslations(){
   document.querySelectorAll('[data-i18n-title]').forEach(el=>{const v=t(el.dataset.i18nTitle);el.title=v;el.setAttribute('aria-label',v);});
   const langBtn=document.getElementById('lang-btn');
   if(langBtn){langBtn.textContent=currentLang==='ar'?'EN':'ع';langBtn.title=t('lang_title');langBtn.setAttribute('aria-label',t('lang_title'));}
-  document.title=currentLang==='ar'?'رقم — أداة الرقم القومي والمعاش المصري':'Raqam — Egyptian National ID & Retirement Toolkit';
+  document.title=currentLang==='ar'?'LX ID — أداة الرقم القومي والمعاش المصري':'LX ID — Egyptian National ID & Retirement Toolkit';
 }
 function refreshDynamicContent(){
   if(document.getElementById('inspector-input').value.trim()) inspectID();
@@ -2119,16 +2124,8 @@ const RETIREMENT_LAW=[
   {date:new Date(2040,6,1),age:65,label:'1 Jul 2040'}
 ];
 const SAMPLE_IDS=['29805121401234','30101011509876','27510202100001','26501010100001','29202290001234','30501010100001'];
-const STORAGE_KEY='raqam-state-v1';
-const SESSION_STORAGE_KEY='raqam-session-v1';
-(function migrateLegacyStorage(){
-  try{
-    if(!localStorage.getItem(STORAGE_KEY)){const old=localStorage.getItem('lxid-state-v8');if(old) localStorage.setItem(STORAGE_KEY,old);}
-    localStorage.removeItem('lxid-state-v8');
-    if(!sessionStorage.getItem(SESSION_STORAGE_KEY)){const olds=sessionStorage.getItem('lxid-session-v1');if(olds) sessionStorage.setItem(SESSION_STORAGE_KEY,olds);}
-    sessionStorage.removeItem('lxid-session-v1');
-  }catch(e){}
-})();
+const STORAGE_KEY='lxid-state-v8';
+const SESSION_STORAGE_KEY='lxid-session-v1';
 const SENSITIVE_KEYS=['inspectorValue','batchInput','batchResultsCache','dtBirth'];
 
 let uploadedSheetData=[];
@@ -3238,33 +3235,15 @@ function isoStrToExcelSerial(isoStr){
   return toExcelSerial(new Date(+m[1],+m[2]-1,+m[3]));
 }
 
-function retirementAgeInForce(date){
-  let age=60,rule=null;
-  for(const lawRule of RETIREMENT_LAW){
-    if(date.getTime()>=lawRule.date.getTime()){age=lawRule.age;rule=lawRule;}
-  }
-  return {age,rule};
-}
 function getRetirementInfo(birthDate){
   const turn60=addYears(birthDate,60);
-  const maxAge=RETIREMENT_LAW[RETIREMENT_LAW.length-1].age;
-  let age=60,retireDate=turn60,matched=null;
-  for(let a=60;a<=maxAge;a++){
-    const d=addYears(birthDate,a);
-    const inForce=retirementAgeInForce(d);
-    if(inForce.age<=a){age=a;retireDate=d;matched=inForce.rule;break;}
+  let age=60,matched=null;
+  for(const lawRule of RETIREMENT_LAW){
+    if(turn60.getTime()>=lawRule.date.getTime()){age=lawRule.age;matched=lawRule;}
   }
-  const rule=matched?t('retire_rule_threshold',formatLawDate(matched.date),age):t('retire_rule_baseline',formatLawDate(RETIREMENT_LAW[0].date));
+  const rule=matched?t('retire_rule_threshold',formatLawDate(matched.date),matched.age):t('retire_rule_baseline',formatLawDate(RETIREMENT_LAW[0].date));
+  const retireDate=addYears(birthDate,age);
   return {age,turn60,retireDate,rule};
-}
-function yearsUntil(from,to){
-  const a=stripTime(from),b=stripTime(to);
-  if(b<=a) return 0;
-  return calcAge(a,b).years;
-}
-function lifeProgressPercent(birth,now,retire){
-  const total=Math.max(1,daysBetween(birth,retire));
-  return Math.max(0,Math.min(100,Math.round(daysBetween(birth,now)/total*100)));
 }
 
 function calcAge(birthDate,asOf){
@@ -3425,9 +3404,9 @@ function parseID(rawInput,wantTrace){
   pushTrace(`Current age: ${age.years}y ${age.months}m ${age.days}d (as of ${now.toDateString()})`,['year','month','day']);
 
   out.daysUntilRetire=daysBetween(now,retire.retireDate);
-  out.yearsUntilRetire=yearsUntil(now,retire.retireDate);
+  out.yearsUntilRetire=out.daysUntilRetire>0?Math.floor(out.daysUntilRetire/365.25):0;
   out.isEligible=out.daysUntilRetire<=0;
-  out.careerPercent=lifeProgressPercent(checkDate,now,retire.retireDate);
+  out.careerPercent=Math.max(0,Math.min(100,Math.round((daysBetween(checkDate,now)/Math.max(1,daysBetween(checkDate,retire.retireDate)))*100)));
   pushTrace(`Retirement progress: ${age.totalDays} of ${daysBetween(checkDate,retire.retireDate)} days from birth to retirement = ${out.careerPercent}%`,['year','month','day']);
   pushTrace(`Retirement eligibility: ${out.isEligible?'Eligible now':out.yearsUntilRetire+' years remaining'}`,['year','month','day']);
 
@@ -3456,9 +3435,11 @@ function julianToJD(y,m,d){
   return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(m+1))+d-1524.5;
 }
 function jdToGregorianDate(jd){
+  /* Build a LOCAL calendar date from the UTC day — avoids off-by-one for users west of UTC */
   const u=new Date(Math.round((jd+0.5-2440588)*86400000));
   return mkDate(u.getUTCFullYear(),u.getUTCMonth(),u.getUTCDate());
 }
+/* Local date constructor that is safe for years 0–99 (new Date(y,…) maps those to 19xx) */
 function mkDate(y,m,d){const dt=new Date(2000,0,1);dt.setFullYear(y,m,d);dt.setHours(0,0,0,0);return dt;}
 function isRealDate(y,m,d){const dt=mkDate(y,m-1,d);return dt.getFullYear()===y&&dt.getMonth()===m-1&&dt.getDate()===d;}
 function islamicToJD(y,m,d){
@@ -7091,6 +7072,7 @@ function usePrayerHere(){
     if(!best){showToast(t('prayer_loc_denied'),'error');return;}
     const tz=(Intl.DateTimeFormat().resolvedOptions().timeZone)||best.tz||'Africa/Cairo';
     const label=currentLang==='ar'&&best.ar?best.ar:best.en;
+    /* Use the exact coordinates for accuracy; keep the nearest city's name for display */
     selectedPrayerCity=Object.assign({},best,{lat,lng,tz:bestD<150?(best.tz||tz):tz});
     document.getElementById('prayer-city-search').value=label;
     document.getElementById('prayer-city-results').classList.add('hide');
@@ -7100,6 +7082,7 @@ function usePrayerHere(){
   },()=>showToast(t('prayer_loc_denied'),'error'),{timeout:10000,maximumAge:600000});
 }
 
+/* ── Modal manager: focus trap, focus restore, scroll lock, Esc — for every .cmdk-overlay ── */
 function initModalManager(){
   const FOCUSABLE='button:not([disabled]),[href],input:not([disabled]):not([type="hidden"]),select:not([disabled]):not([tabindex="-1"]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])';
   document.querySelectorAll('.cmdk-overlay').forEach(ov=>{
@@ -7138,6 +7121,7 @@ function initModalManager(){
   });
 }
 
+/* ── Deep links: #/dates/addsub, #/id/batch, #/reference/law … + browser back/forward ── */
 const ROUTE_TABS={id:'idtools',formula:'formula',dates:'datetools',reference:'reference'};
 const ROUTE_TABS_REV={idtools:'id',formula:'formula',datetools:'dates',reference:'reference'};
 let routeSyncing=false;
@@ -7179,14 +7163,15 @@ function initRouting(){
   window.addEventListener('popstate',()=>applyRoute(location.hash));
 }
 
+/* ── Calendar (.ics) export ── */
 function icsEscape(s){return String(s).replace(/[\\,;]/g,m=>'\\'+m).replace(/\n/g,'\\n');}
 function icsDate(d){return `${String(d.getFullYear()).padStart(4,'0')}${pad2(d.getMonth()+1)}${pad2(d.getDate())}`;}
 function downloadICS(events,filename){
   const stamp=new Date().toISOString().replace(/[-:]/g,'').replace(/\.\d+/,'');
-  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Raqam//Toolkit//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
+  const lines=['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//LX ID//Toolkit//EN','CALSCALE:GREGORIAN','METHOD:PUBLISH'];
   events.forEach((ev,i)=>{
     const end=new Date(ev.date);end.setDate(end.getDate()+1);
-    lines.push('BEGIN:VEVENT',`UID:raqam-${icsDate(ev.date)}-${i}-${Math.random().toString(36).slice(2,8)}@raqam`,`DTSTAMP:${stamp}`,
+    lines.push('BEGIN:VEVENT',`UID:lxid-${icsDate(ev.date)}-${i}-${Math.random().toString(36).slice(2,8)}@lxid`,`DTSTAMP:${stamp}`,
       `DTSTART;VALUE=DATE:${icsDate(ev.date)}`,`DTEND;VALUE=DATE:${icsDate(end)}`,`SUMMARY:${icsEscape(ev.title)}`);
     if(ev.desc) lines.push(`DESCRIPTION:${icsEscape(ev.desc)}`);
     if(ev.yearly) lines.push('RRULE:FREQ=YEARLY');
@@ -7203,7 +7188,7 @@ function exportInspectorICS(){
   const nb=nextBirthdayInfo(res.birthDateObj);
   const ev=[{date:nb.date,title:t('ics_birthday'),yearly:true}];
   if(!res.isEligible) ev.push({date:res.retireDateObj,title:t('ics_retirement',res.retireAge),desc:res.retireRule,alarmDays:30});
-  downloadICS(ev,'raqam-dates.ics');
+  downloadICS(ev,'lxid-dates.ics');
 }
 function exportAddSubICS(){
   const iso=document.getElementById('addsub-result').dataset.iso;
@@ -7216,6 +7201,7 @@ function exportHolidaysICS(){
   downloadICS(ev,'holidays.ics');
 }
 
+/* ── v2 boot-time wiring ── */
 function initEnhancements(){
   initModalManager();
   initRouting();
@@ -7230,8 +7216,10 @@ function initEnhancements(){
   if(st.addSubBusiness){document.getElementById('as-business').checked=true;onAddSubBusinessChange(true);}
   computeBetweenDates();computeAddSub();
   if(st.calMode&&st.calMode!=='greg') setCalMode(st.calMode); else computeCalendarConvert();
+  /* Warm the spreadsheet engine when the browser is idle so exports feel instant */
   const warm=()=>loadXLSX().catch(()=>{});
   ('requestIdleCallback' in window)?requestIdleCallback(warm,{timeout:6000}):setTimeout(warm,3500);
+  /* "/" focuses the ID input (like search on many sites) */
   document.addEventListener('keydown',e=>{
     if(e.key!=='/'||e.metaKey||e.ctrlKey||e.altKey) return;
     const tag=(document.activeElement&&document.activeElement.tagName)||'';
@@ -7241,27 +7229,23 @@ function initEnhancements(){
   });
   generateAppleTouchIcon();
 }
+/* Rasterise the brand mark for iOS home-screen (apple-touch-icon must be a PNG) */
 function generateAppleTouchIcon(){
   try{
-    const S=180,k=S/64;
-    const c=document.createElement('canvas');c.width=c.height=S;
+    const c=document.createElement('canvas');c.width=c.height=180;
     const x=c.getContext('2d');
-    const g=x.createLinearGradient(0,0,0,S);g.addColorStop(0,'#2A2019');g.addColorStop(1,'#0E0B08');
-    x.fillStyle=g;x.fillRect(0,0,S,S);
-    const sheen=x.createRadialGradient(S*.3,S*.1,0,S*.3,S*.1,S*.9);sheen.addColorStop(0,'rgba(255,255,255,.16)');sheen.addColorStop(.6,'rgba(255,255,255,0)');
-    x.fillStyle=sheen;x.fillRect(0,0,S,S);
-    const pill=(px,py,w,h,fill)=>{const r=h/2*k;x.beginPath();x.moveTo(px*k+r,py*k);x.arcTo(px*k+w*k,py*k,px*k+w*k,py*k+h*k,r);x.arcTo(px*k+w*k,py*k+h*k,px*k,py*k+h*k,r);x.arcTo(px*k,py*k+h*k,px*k,py*k,r);x.arcTo(px*k,py*k,px*k+w*k,py*k,r);x.closePath();x.fillStyle=fill;x.fill();};
-    const a=x.createLinearGradient(11*k,0,53*k,0);a.addColorStop(0,'#F6C590');a.addColorStop(1,'#DE8146');
-    pill(11,21,42,9.5,a);pill(11,34,11.5,9.5,'#8DB8E6');pill(25.5,34,16.5,9.5,'#EC9DBA');
-    x.fillStyle='#F6ECDD';x.beginPath();x.arc(48.25*k,38.75*k,4.75*k,0,Math.PI*2);x.fill();
+    const g=x.createLinearGradient(0,0,0,180);g.addColorStop(0,'#2E2318');g.addColorStop(1,'#0A0705');
+    x.fillStyle=g;x.fillRect(0,0,180,180);
+    const a=x.createLinearGradient(40,40,140,140);a.addColorStop(0,'#F6CFA3');a.addColorStop(1,'#C6733F');
+    x.strokeStyle=a;x.lineCap='round';
+    [[56,11,-50,.72],[37,10,40,.62],[18.5,9,130,.62]].forEach(([r,w,rot,frac],i)=>{
+      x.globalAlpha=[1,.85,.7][i];x.lineWidth=w;x.beginPath();
+      const s=rot*Math.PI/180;x.arc(90,90,r,s,s+Math.PI*2*frac);x.stroke();
+    });
+    x.globalAlpha=1;x.fillStyle='#F6EAD8';x.beginPath();x.arc(90,90,6.5,0,Math.PI*2);x.fill();
     document.getElementById('apple-touch-icon').href=c.toDataURL('image/png');
   }catch(e){}
 }
-function registerServiceWorker(){
-  if(!('serviceWorker' in navigator)||!/^https?:$/.test(location.protocol)) return;
-  window.addEventListener('load',()=>{navigator.serviceWorker.register('sw.js').catch(()=>{});});
-}
-registerServiceWorker();
 
 
 function genderBadge(gender,size){
@@ -7287,6 +7271,7 @@ function downloadBlob(content,filename,mime){
   a.href=url;a.download=filename;document.body.appendChild(a);a.click();document.body.removeChild(a);
   setTimeout(()=>URL.revokeObjectURL(url),1000);
 }
+/* SheetJS is ~900 KB — loaded lazily (idle warm-up, or on first need) instead of blocking first paint. */
 let _xlsxPromise=null;
 function loadXLSX(){
   if(typeof XLSX!=='undefined') return Promise.resolve(XLSX);
@@ -7301,6 +7286,7 @@ function loadXLSX(){
   });
   return _xlsxPromise;
 }
+/* Run fn once the engine is ready; shows a toast if the CDN is unreachable. Returns true if it ran synchronously. */
 function withXLSX(fn){
   if(typeof XLSX!=='undefined'){fn();return true;}
   showToast(t('toast_sheets_loading'),'sync');
@@ -7712,6 +7698,7 @@ function renderBatchTable(){
   }
 }
 
+/* Aggregate analytics over plausible rows — all computed locally */
 function renderBatchInsights(){
   const valid=batchResults.filter(r=>r.valid);
   if(valid.length<2) return '';
@@ -7733,19 +7720,15 @@ function renderBatchInsights(){
   return `<div class="insights">
     <div class="insight">
       <h5><span class="material-symbols-rounded">insights</span>${t('ins_gender')}</h5>
-      ${(()=>{const R=34,C=2*Math.PI*R,lm=C*m/valid.length,lf=C*f/valid.length,gap=(m&&f)?3:0;return `<div class="donut" role="img" aria-label="${pm}% / ${100-pm}%">
-        <svg width="88" height="88" viewBox="0 0 88 88"><circle class="d-track" cx="44" cy="44" r="${R}"/>
-        ${m?`<circle class="d-m" cx="44" cy="44" r="${R}" stroke-dasharray="${Math.max(0,lm-gap).toFixed(2)} ${C.toFixed(2)}"/>`:''}
-        ${f?`<circle class="d-f" cx="44" cy="44" r="${R}" stroke-dasharray="${Math.max(0,lf-gap).toFixed(2)} ${C.toFixed(2)}" stroke-dashoffset="${(-lm).toFixed(2)}"/>`:''}</svg>
-        <div class="donut-legend"><span><i style="background:var(--azure)"></i><b>${pm}%</b>${t('gender_male')} · ${localeNum(m)}</span><span><i style="background:var(--rose)"></i><b>${100-pm}%</b>${t('gender_female')} · ${localeNum(f)}</span></div>
-      </div>`;})()}
+      <div class="gender-split" role="img" aria-label="${pm}% / ${100-pm}%"><span class="m" style="width:${pm}%"></span><span class="f" style="width:${100-pm}%"></span></div>
+      ${bar(t('gender_male'),m,valid.length,'m')}${bar(t('gender_female'),f,valid.length,'f')}
       <div class="bdrow" style="margin-top:.35rem;"><span class="k">${t('ins_avg_age')}</span><span class="v">${avgAge}</span></div>
     </div>
     <div class="insight">
       <h5><span class="material-symbols-rounded">public</span>${t('ins_gov')}</h5>
       ${topGov.map(([code,n])=>bar(govDisplay(code),n,maxGov)).join('')}
       <h5 style="margin-top:.8rem;"><span class="material-symbols-rounded">cake</span>${t('ins_age')}</h5>
-      <div class="agebars" role="img" aria-label="${escapeHtml(t('ins_age'))}">${bandCounts.map(([l,n],i)=>`<div><span class="v">${localeNum(n)}</span><span class="b" style="height:${Math.max(3,n/maxBand*60)}px;animation-delay:${i*60}ms"></span><span class="l">${l}</span></div>`).join('')}</div>
+      ${bandCounts.map(([l,n])=>bar(l,n,maxBand)).join('')}
     </div>
     <div class="insight">
       <h5><span class="material-symbols-rounded">hourglass</span>${t('ins_retire')}</h5>
@@ -8383,22 +8366,13 @@ function progressRing(percent,size,stroke){
   const r=(size-stroke)/2;
   const c=2*Math.PI*r;
   const offset=c-(clamped/100)*c;
-  const cx=size/2,inner=r-stroke/2-4;
-  let ticks='';
-  for(let i=0;i<60;i++){
-    const a=(i/60)*Math.PI*2-Math.PI/2,major=i%5===0,len=major?5:2.5;
-    ticks+=`<line class="ring-tick${major?' major':''}" x1="${(cx+Math.cos(a)*inner).toFixed(2)}" y1="${(cx+Math.sin(a)*inner).toFixed(2)}" x2="${(cx+Math.cos(a)*(inner-len)).toFixed(2)}" y2="${(cx+Math.sin(a)*(inner-len)).toFixed(2)}" stroke-width="1" stroke-linecap="round"/>`;
-  }
-  const ka=(clamped/100)*Math.PI*2-Math.PI/2;
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="progress-ring" role="img" aria-label="${clamped}%">
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" class="progress-ring">
     <defs><linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="var(--amber-hi)"/><stop offset="100%" stop-color="var(--amber)"/>
+      <stop offset="0%" stop-color="var(--amber)"/><stop offset="100%" stop-color="var(--amber-hi)"/>
     </linearGradient></defs>
-    ${ticks}
-    <circle class="ring-track" cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke-width="${stroke}"/>
-    <circle cx="${cx}" cy="${cx}" r="${r}" fill="none" stroke="url(#ringGrad)" stroke-width="${stroke}" stroke-linecap="round"
-      stroke-dasharray="${c}" stroke-dashoffset="${c}" data-target-offset="${offset}" transform="rotate(-90 ${cx} ${cx})"/>
-    <circle class="ring-knob" cx="${(cx+Math.cos(ka)*r).toFixed(2)}" cy="${(cx+Math.sin(ka)*r).toFixed(2)}" r="${stroke/2+1.5}" stroke-width="3"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--edge)" stroke-width="${stroke}"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="url(#ringGrad)" stroke-width="${stroke}" stroke-linecap="round"
+      stroke-dasharray="${c}" stroke-dashoffset="${c}" data-target-offset="${offset}" transform="rotate(-90 ${size/2} ${size/2})"/>
   </svg>`;
 }
 function playRingDrawIn(container){
@@ -8425,6 +8399,7 @@ function animateCountUp(el,endValue,duration,formatter){
 
 let inspectDebounce=null,lastInspectorValid=false;
 function inspectIDDebounced(){clearTimeout(inspectDebounce);inspectDebounce=setTimeout(inspectID,120);}
+/* Live 14-segment meter coloured by field group (date · location · gender · check) */
 const METER_CLASSES=['s-date','s-date','s-date','s-date','s-date','s-date','s-date','s-loc','s-loc','s-loc','s-loc','s-loc','s-gen','s-chk'];
 function updateIdMeter(raw){
   const meter=document.getElementById('id-meter'),count=document.getElementById('id-meter-count');
@@ -8436,6 +8411,7 @@ function updateIdMeter(raw){
   meter.classList.toggle('done',n===14);
   if(count){count.textContent=`${n}/14`;count.classList.toggle('ok',n===14);count.classList.toggle('over',n>14);}
 }
+/* Decode whatever is already typed so the user gets feedback before reaching 14 digits */
 function renderPartialDecode(digits){
   const chip=(k,v,cls)=>`<span class="partial-chip ${cls||''}"><span class="k">${k}</span>${v}</span>`;
   const parts=[];
@@ -8618,7 +8594,7 @@ function renderInspectorResult(res){
       <div class="card pad ringcard">
         <div class="row" style="gap:1.25rem;align-items:center;">
           <div class="ringwrap">
-            ${progressRing(res.careerPercent,128,9)}
+            ${progressRing(res.careerPercent,104,10)}
             <div class="ringlabel">
               <div class="disp num" id="career-pct-val" style="font-size:1.5rem;font-weight:700;line-height:1;">${res.careerPercent}%</div>
             </div>
@@ -8807,30 +8783,26 @@ function feGenderExpr(ref){
 function feWeekdayExpr(ref){return `TEXT(${feBirthDateExpr(ref)},"dddd")`;}
 function feAgeExpr(ref){return `DATEDIF(${feBirthDateExpr(ref)},TODAY(),"y")`;}
 function feTotalDaysExpr(ref){return `TODAY()-${feBirthDateExpr(ref)}`;}
-function feRetireAgeStepsExpr(birth){
-  const steps=RETIREMENT_LAW.map((rule,i)=>({age:60+i,until:rule.date}));
-  const fmt=d=>`DATE(${d.getFullYear()},${d.getMonth()+1},${d.getDate()})`;
-  let expr=String(RETIREMENT_LAW[RETIREMENT_LAW.length-1].age);
-  for(let i=steps.length-1;i>=0;i--){
-    expr=`IF(EDATE(${birth},${steps[i].age*12})<${fmt(steps[i].until)},${steps[i].age},${expr})`;
-  }
-  return expr;
+function feTurn60Expr(ref){return `EDATE(${feBirthDateExpr(ref)},720)`;}
+function feRetireAgeStepsExpr(turn60Expr){
+  return `IF(${turn60Expr}>=DATE(2040,7,1),65,IF(${turn60Expr}>=DATE(2038,7,1),64,IF(${turn60Expr}>=DATE(2036,7,1),63,IF(${turn60Expr}>=DATE(2034,7,1),62,IF(${turn60Expr}>=DATE(2032,7,1),61,60)))))`;
 }
 function feRetireAgeExpr(ref){
-  return feRetireAgeStepsExpr(feBirthDateExpr(ref));
+  return feRetireAgeStepsExpr(feTurn60Expr(ref));
 }
 function feRetireDateExpr(ref){
   const birth=feBirthDateExpr(ref);
-  return `EDATE(${birth},(${feRetireAgeStepsExpr(birth)})*12)`;
+  const retireAge=feRetireAgeStepsExpr(feTurn60Expr(ref));
+  return `EDATE(${birth},(${retireAge})*12)`;
 }
 function feYearsToRetireExpr(ref){
   const retireDate=feRetireDateExpr(ref);
-  return `IF(${retireDate}<=TODAY(),0,DATEDIF(TODAY(),${retireDate},"y"))`;
+  return `IF(${retireDate}<=TODAY(),0,FLOOR((${retireDate}-TODAY())/365.25,1))`;
 }
 function feCareerPercentExpr(ref){
-  const birth=feBirthDateExpr(ref);
-  const retireDate=feRetireDateExpr(ref);
-  return `MAX(0,MIN(100,ROUND((TODAY()-${birth})/(${retireDate}-${birth})*100,0)))`;
+  const years=`DATEDIF(${feBirthDateExpr(ref)},TODAY(),"y")`;
+  const retireAge=feRetireAgeStepsExpr(feTurn60Expr(ref));
+  return `MAX(0,MIN(100,ROUND(${years}/(${retireAge})*100,0)))`;
 }
 
 function batchColumnValue(r,key){
@@ -8934,6 +8906,7 @@ function toggleWorkday(i){
   saveState({workDays:Array.from(workDaySet)});
 }
 
+/* Count days in [lo, hiExclusive) whose weekday is in workDaySet — O(1) + at most 6 remainder steps */
 function countWorkdays(lo,hiExcl){
   const n=daysBetween(lo,hiExcl);
   if(n<=0) return 0;
@@ -9031,6 +9004,7 @@ function computeBetweenDates(){
     </div>`;
 }
 
+/* ── Add / Subtract ── */
 let addSubOp='add',addSubBusiness=false;
 function setAddSubOp(op){
   addSubOp=op==='sub'?'sub':'add';
@@ -9341,8 +9315,8 @@ function computeAge(){
 }
 function zodiacName(d){
   const m=d.getMonth()+1,day=d.getDate();
-  const cut=[20,19,21,20,21,21,23,23,23,23,22,22];
-  let idx=day>=cut[m-1]?m:m-1;
+  const cut=[20,19,21,20,21,21,23,23,23,23,22,22]; /* first day of the NEXT sign in each month */
+  let idx=day>=cut[m-1]?m:m-1; /* 0=Capricorn */
   idx=((idx%12)+12)%12;
   return (I18N[currentLang].zodiac||I18N.en.zodiac)[idx];
 }
@@ -9668,9 +9642,9 @@ function rehydrateBatchResult(cached){
   const age=calcAge(birthDateObj,now);
   const retire=getRetirementInfo(birthDateObj);
   const daysUntilRetire=daysBetween(now,retire.retireDate);
-  const yearsUntilRetire=yearsUntil(now,retire.retireDate);
+  const yearsUntilRetire=daysUntilRetire>0?Math.floor(daysUntilRetire/365.25):0;
   const isEligible=daysUntilRetire<=0;
-  const careerPercent=lifeProgressPercent(birthDateObj,now,retire.retireDate);
+  const careerPercent=Math.max(0,Math.min(100,Math.round((daysBetween(birthDateObj,now)/Math.max(1,daysBetween(birthDateObj,retire.retireDate)))*100)));
   return Object.assign({},cached,{
     currentAgeYears:age.years,currentAgeMonths:age.months,currentAgeDays:age.days,totalDaysLived:age.totalDays,
     retireAge:retire.age,retireRule:retire.rule,

@@ -1,20 +1,15 @@
 {
-  "name": "LX ID — Egyptian National ID & Retirement Toolkit",
-  "short_name": "LX ID",
-  "description": "Parse, batch-process, and audit Egyptian National ID numbers entirely in your browser — retirement dates, Hijri/Coptic conversion, and exportable spreadsheets with live formulas.",
-  "start_url": "./id.html",
+  "name": "Raqam — Egyptian National ID & Retirement",
+  "short_name": "Raqam",
+  "description": "Decode Egyptian national IDs, compute retirement dates under Law 148/2019, and work with dates, Hijri/Coptic calendars and prayer times — privately in your browser.",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
-  "orientation": "any",
-  "background_color": "#F7F3EC",
-  "theme_color": "#0E0C0A",
+  "background_color": "#0D0B09",
+  "theme_color": "#0D0B09",
   "lang": "en",
-  "dir": "ltr",
   "icons": [
-    { "src": "icon-32.png", "sizes": "32x32", "type": "image/png" },
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "icons/raqam.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icons/raqam-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
   ]
 }
