@@ -16,6 +16,13 @@ Egyptian National ID & Retirement toolkit. Everything runs in the browser, and n
 - Numerals: Fraunces with lining, tabular figures for KPIs, countdowns and the ring.
 - Motion: short fades only, and `prefers-reduced-motion` is respected.
 
+## Typography (v3)
+- The fonts load as variable ranges (Fraunces opsz/wght/SOFT, Inter opsz/wght, JetBrains Mono, Cairo), so every weight in between renders as designed instead of snapping to the nearest loaded weight.
+- Fraunces uses optical sizing plus a slight softness (SOFT 40) for a calmer serif. Display weights are light (480–560), with tighter tracking at large sizes.
+- Inter uses contextual alternates, small-caps-style spacing on uppercase labels, and tabular lining figures wherever numbers sit in columns.
+- Headings use `text-wrap: balance` and paragraphs `text-wrap: pretty`.
+- Arabic (Cairo): letter-spacing is reset to 0 so connected letters stay joined, line-height is taller, and weights are adjusted for Arabic.
+
 ## Features
 - **ID Tools:** decode a single ID, batch analytics (KPIs, gender donut, governorate bars, age-band columns), Excel/CSV upload and export.
 - **Formulas:** Excel/Sheets formulas for birth date, gender, retirement age and date.
@@ -27,7 +34,7 @@ Egyptian National ID & Retirement toolkit. Everything runs in the browser, and n
 `#/id/single`, `#/id/batch`, `#/id/upload`, `#/formula`, `#/dates/{between|addsub|age|weekday|leapyears|calendars|prayer}`, `#/reference/{structure|governorates|law|dates}`
 
 ## Files
-`index.html` (app + base styles), `css/raqam.css` (design layer, loaded last), `sw.js` (cache `raqam-shell-v2`), `manifest.webmanifest`, `icons/`.
+`index.html` (app + base styles), `css/raqam.css` (design layer, loaded last), `sw.js` (cache `raqam-shell-v3`), `manifest.webmanifest`, `icons/`.
 
 ## Storage
 localStorage `raqam-state-v1` (preferences); sessionStorage `raqam-session-v1` (ID numbers, only if the user turns this on). No backend tables.

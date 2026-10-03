@@ -1,4 +1,4 @@
-const CACHE_NAME = 'raqam-shell-v2';
+const CACHE_NAME = 'raqam-shell-v3';
 const APP_SHELL = ['./', './index.html', './css/raqam.css', './manifest.webmanifest', './icons/raqam.svg', './icons/raqam-maskable.svg'];
 const RUNTIME_HOSTS = ['cdn.sheetjs.com', 'fonts.googleapis.com', 'fonts.gstatic.com'];
 
