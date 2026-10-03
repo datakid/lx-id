@@ -1,13 +1,12 @@
 {
-  "name": "Raqam — Egyptian National ID & Retirement",
+  "name": "Raqam — National ID & Retirement Toolkit",
   "short_name": "Raqam",
   "description": "Decode Egyptian national IDs, compute retirement dates under Law 148/2019, and work with dates, Hijri/Coptic calendars and prayer times — privately in your browser.",
-  "start_url": "./",
+  "start_url": "./#/id/single",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#0D0B09",
-  "theme_color": "#0D0B09",
-  "lang": "en",
+  "background_color": "#0B0907",
+  "theme_color": "#0B0907",
   "icons": [
     { "src": "icons/raqam.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
     { "src": "icons/raqam-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
