@@ -1,60 +1,31 @@
-const CACHE_NAME = 'raqam-shell-v3';
-const APP_SHELL = ['./', './index.html', './css/raqam.css', './manifest.webmanifest', './icons/raqam.svg', './icons/raqam-maskable.svg'];
-const RUNTIME_HOSTS = ['cdn.sheetjs.com', 'fonts.googleapis.com', 'fonts.gstatic.com'];
+const CACHE_NAME='raqam-shell-v3.1';
+const APP_SHELL=['./','./index.html','./manifest.webmanifest','./css/app.css','./js/core/dates.js','./js/core/id.js','./js/core/prayer.js','./js/core/holidays.js','./js/i18n.js','./js/ui.js','./js/views/id.js','./js/views/dates.js','./js/views/prayer.js','./js/views/more.js','./js/app.js','./images/raqam.svg','./images/raqam-maskable.svg','./images/raqam-mono.svg'];
+const RUNTIME_HOSTS=['cdn.sheetjs.com','fonts.googleapis.com','fonts.gstatic.com'];
 
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => Promise.all(APP_SHELL.map(url => cache.add(url).catch(() => null))))
-  );
+self.addEventListener('install',event=>{
+  event.waitUntil(caches.open(CACHE_NAME).then(cache=>cache.addAll(APP_SHELL)).catch(()=>{}));
   self.skipWaiting();
 });
 
-self.addEventListener('activate', event => {
-  event.waitUntil(
-    caches.keys().then(names =>
-      Promise.all(names.filter(n => n !== CACHE_NAME).map(n => caches.delete(n)))
-    ).then(() => self.clients.claim())
-  );
+self.addEventListener('activate',event=>{
+  event.waitUntil(caches.keys().then(names=>Promise.all(names.filter(n=>n!==CACHE_NAME).map(n=>caches.delete(n)))));
+  self.clients.claim();
 });
 
-self.addEventListener('fetch', event => {
-  const req = event.request;
-  if (req.method !== 'GET') return;
-
-  const url = new URL(req.url);
-  const sameOrigin = url.origin === self.location.origin;
-  const isRuntimeAsset = RUNTIME_HOSTS.includes(url.hostname);
-  if (!sameOrigin && !isRuntimeAsset) return;
-  if (sameOrigin && url.pathname.includes('/tables/')) return;
-
-  if (req.mode === 'navigate') {
-    event.respondWith(
-      fetch(req)
-        .then(res => {
-          if (res && res.status === 200) {
-            const copy = res.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put('./index.html', copy)).catch(() => {});
-          }
-          return res;
-        })
-        .catch(() => caches.match('./index.html').then(r => r || caches.match('./')))
-    );
-    return;
-  }
-
+self.addEventListener('fetch',event=>{
+  const req=event.request;
+  if(req.method!=='GET')return;
+  const url=new URL(req.url);
+  const isApp=url.origin===self.location.origin;
+  const isRuntime=RUNTIME_HOSTS.includes(url.hostname);
+  if(!isApp&&!isRuntime)return;
   event.respondWith(
-    caches.match(req).then(cached => {
-      const network = fetch(req)
-        .then(res => {
-          if (res && (res.status === 200 || res.type === 'opaque')) {
-            const copy = res.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(req, copy)).catch(() => {});
-          }
-          return res;
-        })
-        .catch(() => cached);
-      return cached || network;
+    caches.match(req,{ignoreSearch:isApp}).then(cached=>{
+      const network=fetch(req).then(res=>{
+        if(res&&(res.status===200||res.type==='opaque')){const copy=res.clone();caches.open(CACHE_NAME).then(c=>c.put(req,copy)).catch(()=>{});}
+        return res;
+      }).catch(()=>cached);
+      return cached||network;
     })
   );
 });

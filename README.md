@@ -1,44 +1,81 @@
-# Raqam — رقم
-
-Egyptian National ID & Retirement toolkit. Everything runs in the browser, and no data is sent anywhere.
+# Raqam (رقم) 3.2 — Egyptian National ID, Retirement & Date Toolkit
 
 ## Brand
-- **Name:** Raqam (Arabic for "number").
-- **Mark:** the 14-digit ID drawn as two rows of pills on an espresso tile. Amber is the birth date, blue is the governorate, rose is the serial/gender digit and the cream dot is the check digit. The shapes sit on one even grid (rows run x 13–51 with 3.5-unit gaps) and are optically centred.
-- **Files:** `icons/raqam.svg` (favicon/app icon), `icons/raqam-maskable.svg` (PWA maskable icon, full-bleed with a safe zone). On iOS, a matching PNG `apple-touch-icon` is drawn at runtime.
+- **Mark**: a calligraphic amber ر (first letter of رقم) with three dots along its curve in the ID's segment colours: blue for place, rose for serial/sex, cream for the check digit. It merges the letter with Raqam's original segmented-ID mark and stays legible at 16 px. One source (`MARK` in `js/ui.js`) feeds the header, the ID-card watermark and the iOS icon.
+- The dots pop in one after another when the page loads.
+- **Files**: `images/raqam.svg` (favicon/app), `images/raqam-maskable.svg` (PWA maskable), `images/raqam-mono.svg` (single-colour mask icon). A PNG apple-touch-icon is drawn at runtime.
+- **Wordmark**: "Raqam." in Fraunces with an amber full stop; "رقم." in Cairo for Arabic.
+- **Palette** kept from v3: amber `#C96E39→#F6C799`, ink `#0D0A07→#2B2119`, cream `#F4ECDD`, with azure and rose as data colours.
+- The mark draws itself in on load, and a faint watermark of it sits on the ID card.
 
-## Visual language (v2 pass)
-- Flat, quiet surfaces: solid warm-paper cards, hairline borders and soft shadows. No glass blur by default.
-- Removed every shimmer, sheen, gloss sweep, drifting orb, noise grain, chip shine and hover bounce.
-- Radius scale 22 / 16 / 12 / 9 px, plus a 12 px control radius. Rounded but not pill-shaped, and the same across buttons, inputs, tabs and pills.
-- Primary button: ink in light mode, amber in dark mode. Selected states use a neutral raised segment with an amber icon accent.
-- ID card: a deep espresso surface with a single faint amber glow. Each digit group carries a small colored tick (amber/blue/rose) in place of loud top borders.
-- Numerals: Fraunces with lining, tabular figures for KPIs, countdowns and the ring.
-- Motion: short fades only, and `prefers-reduced-motion` is respected.
+A private, browser-only toolkit for working with Egyptian national IDs (الرقم القومي), Law 148/2019 retirement dates, and calendar math (Gregorian, Hijri Umm al-Qura, Coptic, Julian), plus Egyptian holidays and prayer times. Bilingual (English / العربية, full RTL), light/dark, installable PWA. Nothing is sent to a server.
 
-## Typography (v3)
-- The fonts load as variable ranges (Fraunces opsz/wght/SOFT, Inter opsz/wght, JetBrains Mono, Cairo), so every weight in between renders as designed instead of snapping to the nearest loaded weight.
-- Fraunces uses optical sizing plus a slight softness (SOFT 40) for a calmer serif. Display weights are light (480–560), with tighter tracking at large sizes.
-- Inter uses contextual alternates, small-caps-style spacing on uppercase labels, and tabular lining figures wherever numbers sit in columns.
-- Headings use `text-wrap: balance` and paragraphs `text-wrap: pretty`.
-- Arabic (Cairo): letter-spacing is reset to 0 so connected letters stay joined, line-height is taller, and weights are adjusted for Arabic.
+## What 3.0 changes
+- Rebuilt from scratch as modules (`js/core/*` engines, `js/views/*` UI) instead of one 580 KB file.
+- Same visual identity (amber/ink palette, ring brandmark, Fraunces/Inter/Cairo), but calmer, rounder and lighter.
+- **Date engine** works on integer day numbers (Rata Die), so there is no time-zone or daylight-saving drift. Valid for years 1–9999.
+- **Hijri** now uses the official **Umm al-Qura** calendar through the browser's Intl engine, falling back to tabular arithmetic outside 1318–1500 AH. You can adjust it by ±2 days.
+- **Retirement**: offers both legal readings (age at 60 / age in force at retirement), the retirement-date rounding used by employers (exact / end of month / next month), and a choice for how 29 Feb anniversaries are handled.
+- **Smart date input** everywhere: `12/05/1998`, `1998-05-12`, `12 May 98`, `١٢ مايو ١٩٩٨`, `today`, `+30d`, `next fri`. Includes a calendar popover that shows Hijri days, and arrow-key nudging.
 
 ## Features
-- **ID Tools:** decode a single ID, batch analytics (KPIs, gender donut, governorate bars, age-band columns), Excel/CSV upload and export.
-- **Formulas:** Excel/Sheets formulas for birth date, gender, retirement age and date.
-- **Dates:** between dates (working days and holidays), add/subtract, age, weekday, leap years, Hijri/Coptic conversion, prayer times.
-- **Reference:** ID structure, governorates, Law 148/2019, calendar method notes.
-- Arabic/English (RTL), light/dark mode, surface presets, command palette, PWA (offline shell).
+**ID** (`#/id`, `#/id/<14 digits>`, `#/id/batch`, `#/id/upload`, `#/id/build`)
+- **Did you mean…**: when an ID is invalid, Raqam searches every one-typo variant (swapped neighbours, one wrong digit, a missing or extra digit) and offers the valid ones, with the changed digits highlighted.
+- **Privacy mask**: hides the serial and check digit on screen and keeps the ID out of the URL. **Recent IDs** live in memory for this session only, or in the tab's session storage if you allow it.
+- **Possible twins**: Batch and Spreadsheet flag different IDs that share a birth date and governorate.
+- **ID builder**: generates structurally valid, check-consistent test IDs from a birth date, governorate and sex, one or up to 1,000, ready to send to Batch.
+- Retirement now defaults to the "age in force at retirement" reading, as in Raqam v1. The "age at 60" reading is still available in Settings.
+- Live decoding while you type, with a partial readout for incomplete input. Accepts Arabic-Indic digits, spaces, dashes and scientific notation.
+- Six structural checks plus an optional unofficial checksum. Flags: duplicate, 29 Feb birthday, born abroad, under 16, placeholder dates, and more.
+- Shows age, next birthday, Hijri/Coptic birth date, zodiac, region, retirement ring, timeline and countdown. Copy, shareable link, print and .ics export.
+- **Batch**: paste or extract IDs from any text. Results come with insights (sex split, governorates, age bands, retirements per year), filters, search, sortable and paged tables, column picker, CSV/TSV/XLSX export, and live Excel formulas.
+- **Spreadsheet**: upload xlsx/xls/ods/csv (up to 40 MB). You can pick the sheet and header row, and the ID column is detected automatically. Exports keep all your original columns.
 
-## Entry routes
-`#/id/single`, `#/id/batch`, `#/id/upload`, `#/formula`, `#/dates/{between|addsub|age|weekday|leapyears|calendars|prayer}`, `#/reference/{structure|governorates|law|dates}`
+**Dates** (`#/dates`, `/add`, `/age`, `/day`, `/convert`, `/holidays`, `/prayer`, `/leap`)
+- **Between**: day spans, working days with custom weekends and holidays, net working days, and a weekday breakdown.
+- **Add / subtract**: offsets with month-end clamping, or working-days-only mode.
+- **Age**: exact age, Hijri age and milestones.
+- **Day anatomy**: ISO week, day of year, quarter, Excel serial, JDN and Unix time.
+- **Leap years**: check one year or list a range.
+- **Calendar converter**: Gregorian ↔ Hijri ↔ Coptic ↔ Julian, plus Easter and Nayrouz.
+- **Egyptian holidays** for any year, with .ics export, and a holiday manager that understands ranges and .ics import.
+- **Prayer times**: 15 calculation methods (chosen automatically by country), Shafi/Hanafi Asr, high-latitude rules, Qibla direction, monthly table and CSV, search across 7,000+ cities, and "near me".
+
+**Formulas** (`#/formulas`): Excel/Sheets formulas for birth date, sex, governorate, age, exact age, retirement age and date, years left, and validity. Works on a single cell or a table column, with optional LET, in English or Arabic.
+
+**Reference** (`#/ref`, `/gov`, `/law`, `/dates`): ID structure, all governorate codes, the retirement schedule with a calculator comparing both readings, and the calculation methods.
+
+**Shell**: command palette (⌘/Ctrl K, which also handles pasted IDs and dates), `/` to focus the ID box, `1–4` to switch sections, global paste routing, settings (theme, 5 surface styles, 4 font pairings, Hijri method and offset, how ambiguous dates are read, week start, Arabic digits, privacy, export/import/reset settings), and offline service worker.
 
 ## Files
-`index.html` (app + base styles), `css/raqam.css` (design layer, loaded last), `sw.js` (cache `raqam-shell-v3`), `manifest.webmanifest`, `icons/`.
+```
+index.html            app shell
+css/app.css           design system
+js/core/dates.js      calendar engine and natural-language date parser
+js/core/id.js         ID parser, retirement law and Excel formula builder
+js/core/prayer.js     prayer and Qibla engine, Egyptian city list, world city loader
+js/core/holidays.js   Egyptian holiday pack, holiday text parser, .ics writer
+js/i18n.js            English and Arabic dictionaries
+js/ui.js              icons, store, formatting, toasts, menus, overlays, date field
+js/views/*.js         ID, dates, prayer, formulas, reference, settings, command palette
+js/app.js             router and global wiring
+data/cities.json      world cities (lazy-loaded)
+tests.html            engine self-tests (82 assertions)
+sw.js, manifest.webmanifest
+```
 
-## Storage
-localStorage `raqam-state-v1` (preferences); sessionStorage `raqam-session-v1` (ID numbers, only if the user turns this on). No backend tables.
+## Data & storage
+There is no backend and no table API. Settings and saved holidays are kept in `localStorage` (`raqam-v3`, existing `lxid-v3` settings are picked up automatically). IDs and birth dates are only kept if you allow it, and then only in `sessionStorage` for that tab. SheetJS and Google Fonts load from CDN.
+
+## Not implemented / caveats
+- The check digit's official algorithm is not public, so the checksum shown is a heuristic only.
+- Islamic holidays are estimates until officially announced. Cabinet decisions that move holidays to Thursdays are not applied.
+- Settings from the old v2 storage key are not migrated.
 
 ## Next steps
-- Merge the base `<style id="base-style">` into `css/raqam.css` as one stylesheet.
-- Pre-rendered PNG icons (192/512) for older Android launchers.
+- Holiday overrides per year, sourced from official decrees.
+- Charts in batch results exportable as images.
+- Web Worker for very large uploads (>200k rows).
+
+## Deploy
+Use the **Publish tab** to make it live.
