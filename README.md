@@ -18,8 +18,11 @@
 - **Motion** follows one easing set (`--ease-out`, `--spring`), and every animation respects `prefers-reduced-motion`.
 
 ## Brand
-- **Mark**: a calligraphic amber ر (first letter of رقم) with three dots along its curve in the ID's segment colours: blue for place, rose for serial/sex, cream for the check digit. It merges the letter with Raqam's original segmented-ID mark and stays legible at 16 px. One source (`MARK` in `js/ui.js`) feeds the header, the ID-card watermark and the iOS icon.
-- The dots pop in one after another when the page loads.
+- **Mark** (3.7): a segmented ring that "reads" a national ID. Three rounded arcs are sized to the ID's segments (birth date: 7 digits, place: 2 digits, shown faint, serial: 5 digits) around an amber check-digit dot. It sits on a continuous-curvature squircle tile.
+- **Adapts to the theme**: a cream tile (`#FBF8F2→#EEE7DB`) with ink arcs in light mode, a warm-dark tile (`#26201A→#13100D`) with cream arcs in dark mode. The header tile is drawn in SVG and follows the toggle; `Brand.apply()` swaps the favicon and the apple-touch PNG live, and `images/raqam.svg` follows `prefers-color-scheme` on its own.
+- **Optical sizes**: at 32 px and below the strokes are heavier, the gaps wider, the faint arc turns amber and the dot gets larger, so it stays legible at 16 px.
+- **Motion**: the arcs sweep in one after another and the dot pops in; on hover the dot pulses.
+- One source (`MARK` / `Brand` / `markSvg` in `js/ui.js`) feeds the header, the ID-card watermark, the favicon and the iOS icon.
 - **Files**: `images/raqam.svg` (favicon/app), `images/raqam-maskable.svg` (PWA maskable), `images/raqam-mono.svg` (single-colour mask icon). A PNG apple-touch-icon is drawn at runtime.
 - **Wordmark**: "Raqam." in Fraunces with an amber full stop; "رقم." in Cairo for Arabic.
 - **Palette** kept from v3: amber `#C96E39→#F6C799`, ink `#0D0A07→#2B2119`, cream `#F4ECDD`, with azure and rose as data colours.
@@ -96,3 +99,6 @@ There is no backend and no table API. Settings and saved holidays are kept in `l
 ## Next steps
 - A hosted, signed decree feed so overrides update without importing a file.
 - Streaming CSV parsing for files above 40 MB.
+
+## Deploy
+Use the **Publish tab** to make it live.

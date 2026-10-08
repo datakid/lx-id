@@ -90,7 +90,7 @@ const App=(()=>{
     if(location.hash!==h){try{history.replaceState(null,'',h);}catch(e){}cur.param=id;}
   }
   function chrome(){
-    const bm=$('#brandmark');if(bm&&!bm.firstChild)bm.innerHTML=markSvg();
+    const bm=$('#brandmark');if(bm&&!bm.firstChild)bm.innerHTML=markSvg(false,'',true);
     document.documentElement.lang=I18N.lang;document.documentElement.dir=I18N.lang==='ar'?'rtl':'ltr';
     $$('[data-i18n]').forEach(e=>e.textContent=t(e.dataset.i18n));
     $$('.mainnav [data-sec],.bottomnav [data-sec]').forEach(a=>{const S=SECTIONS[a.dataset.sec];a.innerHTML=ic(S.icon)+'<span>'+esc(t(S.label))+'</span>';a.title=t(S.label);});
@@ -112,14 +112,7 @@ const App=(()=>{
   function openSettings(focus){Settings.render(focus);Overlay.open('ov-settings');}
   function openHolidays(onDone){ViewDates.holidayDialog(onDone);Overlay.open('ov-holidays');}
   function touchIcon(){
-    try{
-      const c=document.createElement('canvas');c.width=c.height=180;const x=c.getContext('2d'),k=180/64;
-      const g=x.createRadialGradient(54,0,0,54,0,216);g.addColorStop(0,'#3A2C21');g.addColorStop(.55,'#1C1510');g.addColorStop(1,'#0D0A07');x.fillStyle=g;x.fillRect(0,0,180,180);
-      x.scale(k,k);x.translate(MARK.shift[0],MARK.shift[1]);const a=x.createLinearGradient(20,10,26,48);a.addColorStop(0,'#F8D2AA');a.addColorStop(.55,'#E39563');a.addColorStop(1,'#C2652F');
-      x.strokeStyle=a;x.lineWidth=9.5;x.lineCap='round';x.stroke(new Path2D(MARK.stroke));
-      MARK.dots.forEach(([cx,cy,c])=>{x.fillStyle=c;x.beginPath();x.arc(cx,cy,MARK.r,0,Math.PI*2);x.fill();});
-      $('#touch-icon').href=c.toDataURL('image/png');
-    }catch(e){}
+    Brand.apply(document.documentElement.classList.contains('dark'));
   }
   function init(){
     I18N.set(Store.get('lang',(navigator.language||'').startsWith('ar')?'ar':'en'));

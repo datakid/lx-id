@@ -94,7 +94,7 @@ const Settings=(()=>{
   function applyStyle(id){if(id==='buttery')document.documentElement.removeAttribute('data-style');else document.documentElement.setAttribute('data-style',id);}
   function applyTheme(){
     const pref=Store.get('theme','system'),dark=pref==='dark'||(pref==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);
-    document.documentElement.classList.toggle('dark',dark);
+    document.documentElement.classList.toggle('dark',dark);Brand.apply(dark);
     $('#meta-theme').setAttribute('content',dark?'#0E0C0A':'#F6F2EA');
     const b=$('#btn-theme');if(b){if(!b.querySelector('.theme-ic'))b.innerHTML=themeIcon();b.title=b.ariaLabel=t('theme');b.setAttribute('aria-pressed',dark);}
   }

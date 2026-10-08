@@ -67,12 +67,48 @@ const ICONS={
   pen:'<path d="M14.5 5.5l4 4"/><path d="M4.5 19.5l1-4.2L16 4.8a2 2 0 0 1 2.8 0l.4.4a2 2 0 0 1 0 2.8L8.7 18.5z"/>',
   build:'<rect x="3.5" y="6" width="17" height="12" rx="3"/><path d="M7 10h4M7 14h6"/><circle cx="16.5" cy="12" r="1.8"/>'
 };
-const MARK={stroke:'M33 12c3.8 15 1.4 26-16.5 34',dots:[[34.84,45.55,'#8FB8E3'],[45.24,37.43,'#E79DB9'],[52.23,26.23,'#F2E8D8']],r:4.4,shift:[-2.2,2.6]};
-function markSvg(mono,cls){
-  const id='mg'+Math.random().toString(36).slice(2,7);
-  const defs=mono?'':'<defs><linearGradient id="'+id+'" x1="20" y1="10" x2="26" y2="48" gradientUnits="userSpaceOnUse"><stop offset="0" stop-color="#F8D2AA"/><stop offset=".55" stop-color="#E39563"/><stop offset="1" stop-color="#C2652F"/></linearGradient></defs>';
-  return '<svg class="'+(cls||'')+'" viewBox="0 0 64 64" aria-hidden="true" focusable="false">'+defs+'<g transform="translate('+MARK.shift.join(' ')+')"><path class="bm-stroke" pathLength="1" d="'+MARK.stroke+'" fill="none" stroke="'+(mono?'currentColor':'url(#'+id+')')+'" stroke-width="9.5" stroke-linecap="round"/>'+MARK.dots.map((d,i)=>'<circle class="bm-dot" style="--i:'+i+'" cx="'+d[0]+'" cy="'+d[1]+'" r="'+MARK.r+'" fill="'+(mono?'currentColor':d[2])+'"/>').join('')+'</g></svg>';
+const MARK={
+  shape:'M32 0C58.2 0 64 5.8 64 32S58.2 64 32 64 0 58.2 0 32 5.8 0 32 0Z',
+  arcs:[[-75,135,1],[90,38.6,.42],[158.6,96.4,1]],
+  arcsS:[[-70,125,1],[85,30,0],[145,85,1]],
+  big:{r:16.5,w:6.6,dot:4.6},small:{r:17,w:9,dot:5.4},
+  light:{tile:['#FBF8F2','#EEE7DB'],edge:'#281E18',edgeO:.08,ink:'#211A13',dot:'#C6733F'},
+  dark:{tile:['#26201A','#13100D'],edge:'#F3ECDE',edgeO:.12,ink:'#F3ECDE',dot:'#E2A06E'}
+};
+function markArcs(sz,ink,dot,anim){
+  const A=sz===MARK.small?MARK.arcsS:MARK.arcs;
+  return A.map(([s,l,o],i)=>'<circle'+(anim?' class="bm-arc" style="--i:'+i+';--l:'+l+'"':'')+' cx="32" cy="32" r="'+sz.r+'" pathLength="360" fill="none" stroke="'+(o===0?dot:ink)+'" stroke-opacity="'+(o||1)+'" stroke-width="'+sz.w+'" stroke-linecap="round" stroke-dasharray="'+l+' 999" transform="rotate('+s+' 32 32)"/>').join('')+'<circle'+(anim?' class="bm-dot"':'')+' cx="32" cy="32" r="'+sz.dot+'" fill="'+dot+'"/>';
 }
+function markSvg(mono,cls,tile){
+  const t=tile?'<path class="bm-tile" d="'+MARK.shape+'"/><path class="bm-edge" d="'+MARK.shape+'" fill="none" transform="translate(32 32) scale(.984) translate(-32 -32)"/>':'';
+  const g=tile?'<g transform="translate(32 32) scale(.86) translate(-32 -32)">':'<g>';
+  return '<svg class="'+(cls||'')+'" viewBox="0 0 64 64" aria-hidden="true" focusable="false">'+t+g+markArcs(MARK.big,'currentColor',mono?'currentColor':'var(--amber)',!mono)+'</g></svg>';
+}
+const Brand=(()=>{
+  let last=null;
+  function tile(theme,bleed,small){
+    const T=MARK[theme],sz=small?MARK.small:MARK.big,sc=bleed?.72:small?.96:.86;
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="'+T.tile[0]+'"/><stop offset="1" stop-color="'+T.tile[1]+'"/></linearGradient></defs>'+(bleed?'<rect width="64" height="64" fill="url(#g)"/>':'<path d="'+MARK.shape+'" fill="url(#g)"/><path d="'+MARK.shape+'" fill="none" stroke="'+T.edge+'" stroke-opacity="'+T.edgeO+'" transform="translate(32 32) scale(.984) translate(-32 -32)"/>')+'<g transform="translate(32 32) scale('+sc+') translate(-32 -32)">'+markArcs(sz,T.ink,T.dot)+'</g></svg>';
+  }
+  function png(theme){
+    const c=document.createElement('canvas');c.width=c.height=180;const x=c.getContext('2d'),T=MARK[theme],g=x.createLinearGradient(0,0,0,180),sz=MARK.big;
+    g.addColorStop(0,T.tile[0]);g.addColorStop(1,T.tile[1]);x.fillStyle=g;x.fillRect(0,0,180,180);
+    const k=180/64*.86;x.translate(90,90);x.scale(k,k);x.translate(-32,-32);
+    x.lineWidth=sz.w;x.lineCap='round';x.strokeStyle=T.ink;
+    MARK.arcs.forEach(([s,l,o])=>{x.globalAlpha=o;x.beginPath();x.arc(32,32,sz.r,s*Math.PI/180,(s+l)*Math.PI/180);x.stroke();});
+    x.globalAlpha=1;x.fillStyle=T.dot;x.beginPath();x.arc(32,32,sz.dot,0,Math.PI*2);x.fill();
+    return c.toDataURL('image/png');
+  }
+  function apply(dark){
+    const th=dark?'dark':'light';if(th===last)return;last=th;
+    try{
+      let l=document.querySelector('link[rel="icon"]');if(!l){l=document.createElement('link');l.rel='icon';document.head.appendChild(l);}
+      l.type='image/svg+xml';l.href='data:image/svg+xml,'+encodeURIComponent(tile(th,false,true));
+      const a=document.getElementById('touch-icon');if(a)a.href=png(th);
+    }catch(e){}
+  }
+  return{tile,png,apply};
+})();
 const themeIcon=()=>'<svg class="ic theme-ic" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><g class="ti-sun">'+ICONS.sun+'</g><g class="ti-moon">'+ICONS.moon+'</g></svg>';
 const ic=(n,cls)=>'<svg class="ic'+(cls?' '+cls:'')+'" viewBox="0 0 24 24" aria-hidden="true" focusable="false">'+(ICONS[n]||ICONS.info)+'</svg>';
 const $=(s,r)=>(r||document).querySelector(s);
