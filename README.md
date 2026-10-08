@@ -99,6 +99,3 @@ There is no backend and no table API. Settings and saved holidays are kept in `l
 ## Next steps
 - A hosted, signed decree feed so overrides update without importing a file.
 - Streaming CSV parsing for files above 40 MB.
-
-## Deploy
-Use the **Publish tab** to make it live.
