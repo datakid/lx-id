@@ -1,4 +1,15 @@
-# Raqam (رقم) 3.2 — Egyptian National ID, Retirement & Date Toolkit
+# Raqam (رقم) 3.3 — Egyptian National ID, Retirement & Date Toolkit
+
+## What 3.3 changes — interface polish
+- **One component language**: every `<select class="field">` is automatically upgraded (`js/kit.js`) to a styled dropdown that opens as the same frosted menu used for column pickers and the calendar. It has a checkmark on the selected option, keyboard support (↑/↓, Home/End, type-ahead, Esc, Tab) and a native `<select>` kept underneath, so `.value` and `change` handlers keep working.
+- **Confirm dialog** (`Kit.confirm`, returns a Promise): clearing holidays, clearing a large batch, removing a processed spreadsheet, importing settings and resetting everything now ask first. On phones it opens as a bottom sheet. Every destructive action still offers Undo.
+- **Toasts** collapse smoothly with height instead of jumping, pause while hovered, merge duplicates (pulsing instead of stacking), and sit above the bottom nav on phones.
+- **No flicker**: results are painted with `paint()` (`Kit.paint`), which skips identical HTML, keeps the scroll position, and fades only when the layout really changes. Switching sub-tabs inside a section swaps only `#view`. Settings changes refresh in place (`App.soft`), keeping the scroll position and focus. Counters tween from their previous value.
+- **Gliding indicators**: segmented controls, sub-tabs, the top nav and the bottom nav share one sliding pill that is re-measured when fonts load, on resize and on RTL.
+- **Theme switch** reveals the new theme in a circle from the button (View Transitions). It falls back to a cross-fade, and the sun/moon icon morphs.
+- **Typography**: variable Fraunces (SOFT axis), Inter with optical sizing and alternate glyphs (cv05/cv08/cv11/ss03), tabular lining numbers wherever figures align, balanced headings and pretty-wrapped body text. Arabic keeps Cairo with natural spacing.
+- **SVG**: rebuilt brand files with an optically centred mark and a three-stop amber gradient. The Qibla compass has a 72-tick dial and a spring-animated needle, and the gear icon is redrawn with smooth curves.
+- **Motion** follows one easing set (`--ease-out`, `--spring`), and every animation respects `prefers-reduced-motion`.
 
 ## Brand
 - **Mark**: a calligraphic amber ر (first letter of رقم) with three dots along its curve in the ID's segment colours: blue for place, rose for serial/sex, cream for the check digit. It merges the letter with Raqam's original segmented-ID mark and stays legible at 16 px. One source (`MARK` in `js/ui.js`) feeds the header, the ID-card watermark and the iOS icon.
@@ -57,6 +68,8 @@ js/core/prayer.js     prayer and Qibla engine, Egyptian city list, world city lo
 js/core/holidays.js   Egyptian holiday pack, holiday text parser, .ics writer
 js/i18n.js            English and Arabic dictionaries
 js/ui.js              icons, store, formatting, toasts, menus, overlays, date field
+js/kit.js             custom select, confirm dialog, glide indicators, flicker-free paint, theme transition
+css/kit.css           polish layer: motion tokens, typography, menus, dialogs, toasts, focus rings
 js/views/*.js         ID, dates, prayer, formulas, reference, settings, command palette
 js/app.js             router and global wiring
 data/cities.json      world cities (lazy-loaded)

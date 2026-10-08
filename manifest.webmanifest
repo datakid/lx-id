@@ -1,23 +1,13 @@
 {
   "name": "Raqam — National ID, Retirement & Dates",
   "short_name": "Raqam",
-  "description": "Decode Egyptian national IDs, compute Law 148/2019 retirement dates, and work with Hijri, Coptic and Gregorian dates, holidays and prayer times — privately.",
-  "start_url": "./index.html#/id",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "background_color": "#0E0C0A",
-  "theme_color": "#0E0C0A",
-  "lang": "en",
-  "dir": "auto",
-  "categories": ["productivity", "utilities"],
+  "theme_color": "#F6F2EA",
   "icons": [
     {"src": "images/raqam.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"},
-    {"src": "images/raqam-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable"},
-    {"src": "images/raqam-mono.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "monochrome"}
-  ],
-  "shortcuts": [
-    {"name": "Batch", "url": "./index.html#/id/batch"},
-    {"name": "Dates", "url": "./index.html#/dates"},
-    {"name": "Prayer times", "url": "./index.html#/dates/prayer"}
+    {"src": "images/raqam-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable"}
   ]
 }

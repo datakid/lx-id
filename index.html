@@ -17,10 +17,11 @@
 <meta name="apple-mobile-web-app-title" content="Raqam">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,450;9..144,560;9..144,620;9..144,700&family=Inter:wght@400;500;550;600;650;700&family=JetBrains+Mono:wght@500;600;700&family=Cairo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..800,0..100&family=Inter:opsz,wght@14..32,300..800&family=JetBrains+Mono:wght@400..700&family=Cairo:wght@300..800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/app.css">
+<link rel="stylesheet" href="css/kit.css">
 <script>
-(function(){try{var s=JSON.parse(localStorage.getItem('raqam-v3')||'{}');var d=s.theme==='dark'||(s.theme!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');if(s.style&&s.style!=='buttery')document.documentElement.setAttribute('data-style',s.style);if(s.lang==='ar'){document.documentElement.lang='ar';document.documentElement.dir='rtl';}}catch(e){}})();
+(function(){try{var s=JSON.parse(localStorage.getItem('raqam-v3')||'{}');var d=s.theme==='dark'||(s.theme!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);if(d)document.documentElement.classList.add('dark');if(s.style&&s.style!=='buttery')document.documentElement.setAttribute('data-style',s.style);if(s.lang==='ar'){document.documentElement.lang='ar';document.documentElement.dir='rtl';}var m=document.getElementById('meta-theme');if(m&&d)m.setAttribute('content','#0E0C0A');}catch(e){}})();
 </script>
 </head>
 <body>
@@ -34,7 +35,7 @@
       <span style="min-width:0"><span class="brand-name" data-i18n="brand"></span><span class="brand-sub" data-i18n="brand_sub" style="display:block"></span></span>
     </a>
     <nav class="mainnav" id="mainnav" aria-label="Primary">
-      <span class="nav-ind" id="nav-ind"></span>
+      <span class="nav-ind" id="nav-ind" aria-hidden="true"></span>
       <a href="#/id" data-sec="id"></a>
       <a href="#/dates" data-sec="dates"></a>
       <a href="#/formulas" data-sec="formulas"></a>
@@ -63,7 +64,7 @@
 
 <div class="overlay" id="ov-cmdk" role="dialog" aria-modal="true" aria-label="Command palette">
   <div class="dialog cmdk">
-    <input class="cmdk-input" id="cmdk-input" autofocus autocomplete="off" spellcheck="false">
+    <div class="cmdk-head"><svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.75"/><path d="m20 20-4.2-4.2"/></svg><input class="cmdk-input" id="cmdk-input" autofocus autocomplete="off" spellcheck="false"><kbd>Esc</kbd></div>
     <div class="cmdk-list" id="cmdk-list" role="listbox"></div>
     <div class="cmdk-foot"><span><kbd>↑</kbd> <kbd>↓</kbd> <span data-i18n="k_nav"></span></span><span><kbd>↵</kbd> <span data-i18n="k_sel"></span></span><span><kbd>Esc</kbd> <span data-i18n="k_close"></span></span></div>
   </div>
@@ -74,6 +75,10 @@
     <div class="dialog-head"><h3 class="card-title" id="set-title" data-i18n="settings"></h3><button class="iconbtn" type="button" data-close="ov-settings"></button></div>
     <div class="dialog-body" id="settings-body"></div>
   </div>
+</div>
+
+<div class="overlay overlay-confirm" id="ov-confirm" role="alertdialog" aria-modal="true" aria-labelledby="cf-title">
+  <div class="dialog confirm"></div>
 </div>
 
 <div class="overlay" id="ov-holidays" role="dialog" aria-modal="true" aria-labelledby="hol-title">
@@ -89,6 +94,7 @@
 <script src="js/core/holidays.js"></script>
 <script src="js/i18n.js"></script>
 <script src="js/ui.js"></script>
+<script src="js/kit.js"></script>
 <script src="js/views/id.js"></script>
 <script src="js/views/dates.js"></script>
 <script src="js/views/prayer.js"></script>

@@ -23,7 +23,7 @@ const ViewFormulas=(()=>{
       const L=k=>I18N.dict(lang)[k];
       const F=LXID.F(ref,{let:uselet,lang,male:L('male'),female:L('female'),unknown:L('unknown')});
       Store.patch({fxMode:mode,fxLet:uselet,fxCell:$('#fx-cell').value,fxCol:$('#fx-col').value,fxLang:lang});
-      $('#fx-list').innerHTML=FIELDS.map(([k,l,i],n)=>`<section class="card pad stack-sm"><div class="between"><h3 class="card-title"><span class="chip amber" style="padding:.15rem .55rem">${n+1}</span>${esc(t(l))}</h3><button type="button" class="btn btn-soft btn-sm" data-cp="${k}">${ic('copy')}${esc(t('copy'))}</button></div><pre class="code" id="fx-${k}">${hl(F[k])}</pre>${k==='birth'||k==='retireDate'?`<p class="tiny faint" style="margin:0">${esc(t('fx_fmt_date'))}</p>`:''}</section>`).join('');
+      paint($('#fx-list'),FIELDS.map(([k,l,i],n)=>`<section class="card pad stack-sm"><div class="between"><h3 class="card-title"><span class="chip amber" style="padding:.15rem .55rem">${n+1}</span>${esc(t(l))}</h3><button type="button" class="btn btn-soft btn-sm" data-cp="${k}">${ic('copy')}${esc(t('copy'))}</button></div><pre class="code" id="fx-${k}">${hl(F[k])}</pre>${k==='birth'||k==='retireDate'?`<p class="tiny faint" style="margin:0">${esc(t('fx_fmt_date'))}</p>`:''}</section>`).join(''));
       $$('#fx-list [data-cp]').forEach(b=>b.onclick=()=>copyText(F[b.dataset.cp],b,t('t_formula')));
     };
     bindSeg(el,'fxm',v=>{mode=v;draw();});
@@ -51,7 +51,7 @@ const ViewRef=(()=>{
       const q=$('#g-q').value.trim().toLowerCase();
       const rows=Object.entries(LXID.GOV).filter(([k,v])=>!q||k.includes(q)||v[0].toLowerCase().includes(q)||v[1].includes(q)||v[2].toLowerCase().includes(q));
       $('#g-n').textContent=t('g_count',rows.length,Object.keys(LXID.GOV).length);
-      $('#g-t').innerHTML=`<div class="tablebox"><table class="t"><thead><tr><th>${esc(t('code'))}</th><th>${esc(t('c_gov'))}</th><th>${I18N.lang==='ar'?'English':'العربية'}</th><th>${esc(t('c_region'))}</th><th></th></tr></thead><tbody>${rows.map(([k,v])=>`<tr><td class="mono" style="font-weight:700">${k}</td><td style="font-weight:600">${esc(I18N.lang==='ar'?v[1]:v[0])}</td><td>${esc(I18N.lang==='ar'?v[0]:v[1])}</td><td class="muted small">${esc(LXID.govRegion(k,I18N.lang))}</td><td><button type="button" class="iconbtn sm rc" data-cp="${k}" aria-label="${esc(t('copy'))}">${ic('copy')}</button></td></tr>`).join('')||`<tr><td colspan="5" class="faint" style="text-align:center;padding:2rem">${esc(t('no_rows'))}</td></tr>`}</tbody></table></div>`;
+      paint($('#g-t'),`<div class="tablebox"><table class="t"><thead><tr><th>${esc(t('code'))}</th><th>${esc(t('c_gov'))}</th><th>${I18N.lang==='ar'?'English':'العربية'}</th><th>${esc(t('c_region'))}</th><th></th></tr></thead><tbody>${rows.map(([k,v])=>`<tr><td class="mono" style="font-weight:700">${k}</td><td style="font-weight:600">${esc(I18N.lang==='ar'?v[1]:v[0])}</td><td>${esc(I18N.lang==='ar'?v[0]:v[1])}</td><td class="muted small">${esc(LXID.govRegion(k,I18N.lang))}</td><td><button type="button" class="iconbtn sm rc" data-cp="${k}" aria-label="${esc(t('copy'))}">${ic('copy')}</button></td></tr>`).join('')||`<tr><td colspan="5" class="faint" style="text-align:center;padding:2rem">${esc(t('no_rows'))}</td></tr>`}</tbody></table></div>`);
       $$('#g-t [data-cp]').forEach(b=>b.onclick=()=>copyText(b.dataset.cp,b));
     };
     $('#g-q').addEventListener('input',draw);draw();
@@ -67,9 +67,9 @@ const ViewRef=(()=>{
     const f=DateField.create($('#h-lawB'),{id:'df-lawB',onChange:calc});
     function calc(){
       const b=f.get(),o=$('#law-out');
-      if(b==null){o.innerHTML=emptyState('cake',esc(t('pick_birth')));return;}
+      if(b==null){paint(o,emptyState('cake',esc(t('pick_birth'))));return;}
       const A=LXID.retirement(b,{mode:'cohort'}),B=LXID.retirement(b,{mode:'inforce'});
-      o.innerHTML=`<div class="grid-2">${stat(t('mode_cohort'),Fmt.n(A.age),{tone:LXID.settings.retireMode==='cohort'?'amber':'',s:esc(Fmt.date(A.date,'short'))})}${stat(t('mode_inforce'),Fmt.n(B.age),{tone:LXID.settings.retireMode==='inforce'?'amber':'',s:esc(Fmt.date(B.date,'short'))})}</div><div class="list" style="margin-top:.5rem">${li(t('turn60'),esc(Fmt.date(A.turn60)))}${li(t('ret_in'),A.date>now?esc(Fmt.ymd(D.diff(now,A.date))):esc(t('eligible')))}</div>`;
+      paint(o,`<div class="grid-2">${stat(t('mode_cohort'),Fmt.n(A.age),{tone:LXID.settings.retireMode==='cohort'?'amber':'',s:esc(Fmt.date(A.date,'short'))})}${stat(t('mode_inforce'),Fmt.n(B.age),{tone:LXID.settings.retireMode==='inforce'?'amber':'',s:esc(Fmt.date(B.date,'short'))})}</div><div class="list" style="margin-top:.5rem">${li(t('turn60'),esc(Fmt.date(A.turn60)))}${li(t('ret_in'),A.date>now?esc(Fmt.ymd(D.diff(now,A.date))):esc(t('eligible')))}</div>`);
     }
     calc();
   }
@@ -96,7 +96,7 @@ const Settings=(()=>{
     const pref=Store.get('theme','system'),dark=pref==='dark'||(pref==='system'&&matchMedia('(prefers-color-scheme: dark)').matches);
     document.documentElement.classList.toggle('dark',dark);
     $('#meta-theme').setAttribute('content',dark?'#0E0C0A':'#F6F2EA');
-    const b=$('#btn-theme');if(b){b.innerHTML=ic(dark?'sun':'moon');b.title=b.ariaLabel=t('theme');}
+    const b=$('#btn-theme');if(b){if(!b.querySelector('.theme-ic'))b.innerHTML=themeIcon();b.title=b.ariaLabel=t('theme');b.setAttribute('aria-pressed',dark);}
   }
   function apply(){
     applyTheme();applyStyle(Store.get('style','buttery'));applyFont(Store.get('font','fraunces'));
@@ -132,16 +132,16 @@ const Settings=(()=>{
         <div class="row-wrap" style="margin-top:.7rem"><button type="button" class="btn btn-ghost btn-sm" id="s-export">${ic('down')}${esc(t('s_export'))}</button><label class="btn btn-ghost btn-sm" style="cursor:pointer">${ic('up')}${esc(t('s_import'))}<input type="file" id="s-import" accept=".json" class="hide"></label><button type="button" class="btn btn-danger btn-sm" id="s-clear">${ic('trash')}${esc(t('s_clear'))}</button></div>
         <p class="tiny faint" style="margin:.8rem 0 0">${esc(t('s_foot'))}</p>
       </div>`;
-    bindSeg(b,'s-theme',v=>{Store.set('theme',v);applyTheme();});
+    bindSeg(b,'s-theme',v=>{Store.set('theme',v);const r=b.querySelector('[data-seg="s-theme"] .active').getBoundingClientRect();Kit.theme(applyTheme,r.left+r.width/2,r.top+r.height/2);});
     b.querySelectorAll('[data-style]').forEach(x=>x.onclick=()=>{Store.set('style',x.dataset.style);applyStyle(x.dataset.style);b.querySelectorAll('[data-style]').forEach(y=>y.classList.toggle('active',y===x));});
     b.querySelectorAll('[data-font]').forEach(x=>x.onclick=()=>{Store.set('font',x.dataset.font);applyFont(x.dataset.font);b.querySelectorAll('[data-font]').forEach(y=>y.classList.toggle('active',y===x));});
-    const on=(id,fn)=>{const e=$('#'+id,b);if(e)e.onchange=ev=>{fn(ev.target.type==='checkbox'?ev.target.checked:ev.target.value);apply();App.refresh();};};
+    const on=(id,fn)=>{const e=$('#'+id,b);if(e)e.onchange=ev=>{fn(ev.target.type==='checkbox'?ev.target.checked:ev.target.value);apply();App.soft();toast(t('t_saved'));};};
     on('s-mode',v=>Store.set('retireMode',v));on('s-round',v=>Store.set('retireRound',v));on('s-feb29',v=>Store.set('feb29',v));on('s-checksum',v=>Store.set('checksum',v));
     on('s-hijri',v=>Store.set('hijriMethod',v));on('s-hoff',v=>Store.set('hijriOffset',+v));on('s-order',v=>Store.set('dateOrder',v));on('s-week',v=>Store.set('weekStart',+v));on('s-digits',v=>Store.set('digits',v));
-    $('#s-remember',b).onchange=e=>Store.setRemember(e.target.checked);
+    $('#s-remember',b).onchange=e=>{Store.setRemember(e.target.checked);toast(t('t_saved'));};
     $('#s-export',b).onclick=()=>{const s=Store.snapshot();download(JSON.stringify(s.local,null,2),'raqam-settings.json','application/json');};
-    $('#s-import',b).onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(x=>{try{const o=JSON.parse(x);Store.restore({local:o,sess:{}});apply();App.refresh();render();toast(t('t_imported'));}catch(er){toast(t('t_parse_fail'),'bad');}});};
-    $('#s-clear',b).onclick=()=>{const s=Store.snapshot();Store.clear();apply();App.refresh();render();toast(t('t_cache_cleared'),'info',{action:t('undo'),onAction:()=>{Store.restore(s);apply();App.refresh();render();}});};
+    $('#s-import',b).onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const x=await f.text();let o;try{o=JSON.parse(x);if(!o||typeof o!=='object')throw 0;}catch(er){toast(t('t_parse_fail'),'bad');return;}if(!await Kit.confirm({title:t('cf_import_t'),body:t('cf_import_b',f.name),ok:t('s_import'),icon:'up'}))return;const s=Store.snapshot();Store.restore({local:o,sess:{}});I18N.set(Store.get('lang',I18N.lang));apply();App.refresh();render();toast(t('t_imported'),'ok',{action:t('undo'),onAction:()=>{Store.restore(s);I18N.set(Store.get('lang',I18N.lang));apply();App.refresh();render();}});};
+    $('#s-clear',b).onclick=async()=>{if(!await Kit.confirm({title:t('cf_reset_t'),body:t('cf_reset_b'),ok:t('s_clear'),danger:true}))return;const s=Store.snapshot();Store.clear();apply();App.refresh();render();toast(t('t_cache_cleared'),'info',{action:t('undo'),onAction:()=>{Store.restore(s);apply();App.refresh();render();}});};
     if(focus){const x=$('#set-'+focus,b);x&&setTimeout(()=>x.scrollIntoView({block:'start',behavior:'smooth'}),80);}
   }
   return{apply,applyTheme,render};
@@ -179,7 +179,7 @@ const Cmdk=(()=>{
     act=clamp(act,0,Math.max(0,items.length-1));
     let g='',h='';
     items.forEach((x,i)=>{if(x.g!==g){g=x.g;h+=`<div class="cmdk-group">${esc(t(g))}</div>`;}h+=`<div class="cmdk-item${i===act?' active':''}" role="option" aria-selected="${i===act}" data-i="${i}">${ic(x.i)}<span class="grow">${esc(x.l)}${x.sub?`<span class="faint small"> · ${esc(x.sub)}</span>`:''}</span></div>`;});
-    $('#cmdk-list').innerHTML=h||`<div class="empty">${esc(t('no_cmd'))}</div>`;
+    $('#cmdk-list').innerHTML=h||`<div class="empty"><span class="bubble">${ic('search')}</span><span>${esc(t('no_cmd'))}</span></div>`;
     $$('#cmdk-list [data-i]').forEach(e=>{e.onclick=()=>pick(+e.dataset.i);e.onmousemove=()=>{if(act!==+e.dataset.i){act=+e.dataset.i;$$('#cmdk-list .cmdk-item').forEach((x,j)=>x.classList.toggle('active',j===act));}};});
   }
   function pick(i){const x=items[i];if(!x)return;Overlay.close('ov-cmdk');setTimeout(()=>x.run(),30);}
@@ -188,7 +188,7 @@ const Cmdk=(()=>{
     const i=$('#cmdk-input');
     i.addEventListener('input',()=>{act=0;draw();});
     i.addEventListener('keydown',e=>{
-      if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();act=clamp(act+(e.key==='ArrowDown'?1:-1),0,items.length-1);$$('#cmdk-list .cmdk-item').forEach((x,j)=>x.classList.toggle('active',j===act));const a=$('#cmdk-list .cmdk-item.active');a&&a.scrollIntoView({block:'nearest'});}
+      if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();if(!items.length)return;act=(act+(e.key==='ArrowDown'?1:-1)+items.length)%items.length;$$('#cmdk-list .cmdk-item').forEach((x,j)=>x.classList.toggle('active',j===act));const a=$('#cmdk-list .cmdk-item.active');a&&a.scrollIntoView({block:'nearest'});}
       else if(e.key==='Enter'){e.preventDefault();pick(act);}
     });
   }

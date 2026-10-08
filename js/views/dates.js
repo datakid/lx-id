@@ -27,7 +27,7 @@ const ViewDates=(()=>{
   function workPicker(el,onChange){
     const ws=Holidays.workSet(),start=+Store.get('weekStart',I18N.lang==='ar'?6:0);
     el.innerHTML='<div class="qchips">'+Array.from({length:7},(_,i)=>{const d=(start+i)%7;return`<button type="button" class="qchip${ws.has(d)?' active':''}" data-d="${d}" aria-pressed="${ws.has(d)}">${esc(Fmt.wd(d,true))}</button>`;}).join('')+'</div>';
-    el.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{const s=Holidays.workSet(),d=+b.dataset.d;s.has(d)?s.delete(d):s.add(d);Store.set('workDays',[...s]);workPicker(el,onChange);onChange();});
+    el.querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{const s=Holidays.workSet(),d=+b.dataset.d;s.has(d)?s.delete(d):s.add(d);Store.set('workDays',[...s]);const on=s.has(d);b.classList.toggle('active',on);b.setAttribute('aria-pressed',on);onChange();});
   }
   function holChip(){const n=Holidays.size();return`<button type="button" class="chip${n?' amber':''}" data-hol style="cursor:pointer">${ic('repeat')}${esc(n?t('hol_n',n):t('hol_none'))}</button>`;}
 
@@ -55,14 +55,14 @@ const ViewDates=(()=>{
     function calc(){
       Store.patch({bStart:a.get(),bEnd:b.get()});
       const out=$('#b-out');
-      if(a.get()==null||b.get()==null){out.innerHTML=emptyState('range',esc(t('pick_two')));return;}
+      if(a.get()==null||b.get()==null){paint(out,emptyState('range',esc(t('pick_two'))));return;}
       const s=a.get(),e=b.get(),rev=e<s,lo=rev?e:s,hi=rev?s:e,incl=$('#b-incl').checked,hiEx=hi+(incl?1:0);
       const ov=D.cfg.feb29==='overflow';
       const span=D.diff(lo,hiEx,ov),total=hiEx-lo,ws=Holidays.workSet();
       const counts=D.weekdayCounts(lo,hiEx),work=[...ws].reduce((x,d)=>x+counts[d],0),hol=Holidays.countIn(lo,hiEx,ws),net=work-hol;
       const txt=`${D.iso(s)} → ${D.iso(e)}: ${total} ${t('u_days')} (${Fmt.ymd(span)}), ${work} ${t('workdays').toLowerCase()}${Holidays.size()?`, ${net} ${t('net').toLowerCase()}`:''}`;
       const wdBars=Array.from({length:7},(_,i)=>i).map(d=>`<div class="bar"><span class="bl">${esc(Fmt.wd(d,true))}</span><span class="bt"><span class="bf${ws.has(d)?'':' m'}" style="width:${Math.max(2,counts[d]/Math.max(1,...counts)*100)}%"></span></span><span class="bv">${Fmt.n(counts[d])}</span></div>`).join('');
-      out.innerHTML=`<div class="stack">
+      paint(out,`<div class="stack">
         <div class="hero"><div class="hero-act"><button type="button" class="iconbtn sm" data-cp aria-label="${esc(t('copy'))}">${ic('copy')}</button></div>
           <div class="k">${esc(t('total_days'))}${rev?' · '+esc(t('reversed')):''}</div><div class="v"><span data-count="${total}">${Fmt.n(total)}</span> ${esc(t('u_days'))}</div><div class="s">${esc(Fmt.ymd(span))} · ${esc(t('wk_d',span.weeks,span.weekDays))}</div></div>
         <div class="grid-3">${stat(t('workdays'),Fmt.n(work),{tone:'amber'})}${stat(t('weekend'),Fmt.n(total-work))}${Holidays.size()?stat(t('net'),Fmt.n(net),{tone:'mint',s:esc(t('minus_hol',hol))}):stat(t('u_weeks'),Fmt.n(total/7,1))}</div>
@@ -75,7 +75,7 @@ const ViewDates=(()=>{
           ${li(t('end'),esc(Fmt.date(hi,'short')),esc(Fmt.wd(D.dow(hi))))}
           ${li(t('hijri_span'),esc(hspan(lo,hiEx)))}
         </div><div class="well stack-sm"><div class="eyebrow">${esc(t('by_weekday'))}</div><div class="bars">${wdBars}</div></div></div>
-      </div>`;
+      </div>`);
       out.querySelector('[data-cp]').onclick=ev=>copyText(txt,ev.currentTarget);
       animateIn(out);
     }
@@ -109,10 +109,10 @@ const ViewDates=(()=>{
       const Y=n('y'),M=n('m'),W=n('w'),Dd=n('d');
       Store.patch({asStart:s.get(),as_y:Y||'',as_m:M||'',as_w:W||'',as_d:Dd||''});
       const out=$('#as-out'),start=s.get(),dir=op==='sub'?-1:1;
-      if(start==null||(biz?!Dd:!(Y||M||W||Dd))){out.innerHTML=emptyState('calplus',esc(t('as_pick')));return;}
+      if(start==null||(biz?!Dd:!(Y||M||W||Dd))){paint(out,emptyState('calplus',esc(t('as_pick'))));return;}
       let r,clamped=false,skipped=0;
       if(biz){
-        const ws=Holidays.workSet();if(!ws.size){out.innerHTML=emptyState('alert',esc(t('no_workdays')),true);return;}
+        const ws=Holidays.workSet();if(!ws.size){paint(out,emptyState('alert',esc(t('no_workdays')),true));return;}
         r=start;let left=Dd,g=0;
         while(left>0&&g<400000){r+=dir;g++;if(ws.has(D.dow(r))&&!Holidays.has(D.iso(r)))left--;else skipped++;}
       }else{
@@ -121,16 +121,16 @@ const ViewDates=(()=>{
         clamped=(Y||M)&&D.toG(r).d!==D.toG(start).d;
         r+=dir*(W*7+Dd);
       }
-      if(r<D.fromG(1,1,1)||r>D.fromG(9999,12,31)){out.innerHTML=emptyState('alert',esc(t('out_range')),true);return;}
+      if(r<D.fromG(1,1,1)||r>D.fromG(9999,12,31)){paint(out,emptyState('alert',esc(t('out_range')),true));return;}
       const shift=r-start,rel=r-D.today(),iso=D.iso(r);
-      out.innerHTML=`<div class="stack">
+      paint(out,`<div class="stack">
         <div class="hero"><div class="hero-act"><button type="button" class="iconbtn sm" data-cp aria-label="${esc(t('copy'))}">${ic('copy')}</button><button type="button" class="iconbtn sm" data-ics aria-label="${esc(t('add_cal'))}">${ic('calplus')}</button></div>
           <div class="k">${esc(t('result'))}</div><div class="v">${esc(Fmt.date(r))}</div><div class="s"><span class="mono">${iso}</span> · ${esc(Fmt.wd(D.dow(r)))}</div></div>
         <div class="grid-2">${stat(t('shift'),(shift>0?'+':'')+Fmt.n(shift),{s:esc(t('wk_d',Math.floor(Math.abs(shift)/7),Math.abs(shift)%7))})}${stat(t('from_today'),esc(Fmt.rel(rel)),{sm:1})}</div>
         <div class="list">${li(t('hijri'),esc(Fmt.hijri(r)))}${li(t('coptic'),esc(Fmt.coptic(r)))}${li(t('iso_week'),esc(D.isoWeek(r).year+'-W'+D.pad(D.isoWeek(r).week)))}${biz?li(t('skipped'),Fmt.n(skipped)):''}</div>
         ${clamped?`<div class="callout">${ic('info')}<span>${esc(t('clamped'))}</span></div>`:''}
         ${Holidays.has(iso)?`<div class="callout warn">${ic('warn')}<span>${esc(t('lands_holiday'))}</span></div>`:''}
-      </div>`;
+      </div>`);
       out.querySelector('[data-cp]').onclick=e=>copyText(iso,e.currentTarget);
       out.querySelector('[data-ics]').onclick=()=>{download(LXHolidays.ics([{rd:r,title:t('ics_target'),desc:iso}],t('brand')),'date-'+iso+'.ics','text/calendar');toast(t('t_ics'));};
     }
@@ -151,23 +151,23 @@ const ViewDates=(()=>{
     function calc(){
       Store.set('ageBirth',b.get());Store.set('ageAsOf',a.get());
       const out=$('#age-out'),bd=b.get();
-      if(bd==null){out.innerHTML=emptyState('cake',esc(t('pick_birth')));return;}
+      if(bd==null){paint(out,emptyState('cake',esc(t('pick_birth'))));return;}
       const now=a.get()??D.today();
-      if(bd>now){out.innerHTML=emptyState('alert',esc(t('birth_after')),true);return;}
+      if(bd>now){paint(out,emptyState('alert',esc(t('birth_after')),true));return;}
       const ov=D.cfg.feb29==='overflow',ag=D.diff(bd,now,ov),nb=LXID.nextBirthday(bd,now);
       const hb=D.toH(bd),hn=D.toH(now);let hy=hn.y-hb.y;if(hn.m<hb.m||(hn.m===hb.m&&hn.d<hb.d))hy--;
       const ms=[[10000,'d'],[15000,'d'],[20000,'d'],[25000,'d'],[1e9/86400,'s']].map(([n])=>bd+Math.round(n));
       const ret=LXID.retirement(bd);
       const mrow=(lbl,r)=>li(lbl,esc(Fmt.date(r,'short')),esc(Fmt.rel(r-D.today())));
       const txt=Fmt.ymd(ag);
-      out.innerHTML=`<div class="stack">
+      paint(out,`<div class="stack">
         <div class="hero"><div class="hero-act"><button type="button" class="iconbtn sm" data-cp aria-label="${esc(t('copy'))}">${ic('copy')}</button></div>
           <div class="k">${esc(t('exact_age'))}</div><div class="v">${esc(txt)}</div><div class="s">${esc(t('born_on'))} ${esc(Fmt.date(bd,'full'))}</div></div>
         <div class="grid-3">${stat(t('next_bday'),nb.days===0?esc(t('bday_today')):Fmt.n(nb.days),{tone:'amber',s:esc(t('turns',nb.turns))+' · '+esc(Fmt.wd(D.dow(nb.rd),true)),count:nb.days||null})}${stat(t('days_lived_t'),Fmt.n(ag.totalDays),{count:ag.totalDays})}${stat(t('hijri_age'),Fmt.n(hy),{s:esc(t('hijri_years'))})}</div>
         <div class="split even">
           <div class="list">${li(t('u_months'),Fmt.n(ag.totalMonths))}${li(t('u_weeks'),Fmt.n(ag.weeks),esc(t('plus_days',ag.weekDays)))}${li(t('u_hours'),Fmt.n(ag.totalDays*24))}${li(t('decimal_age'),Fmt.n(ag.totalDays/365.2425,3))}${li(t('zodiac'),esc(t('zodiac_n')[D.zodiac(bd)]))}${li(t('chinese'),esc(t('chinese_n')[D.chineseZodiac(D.toG(bd).y)]))}${li(t('born_wd'),esc(Fmt.wd(D.dow(bd))))}</div>
           <div class="list">${mrow(t('ms_10k'),ms[0])}${mrow(t('ms_15k'),ms[1])}${mrow(t('ms_20k'),ms[2])}${mrow(t('ms_25k'),ms[3])}${mrow(t('ms_1g'),ms[4])}${mrow(t('ms_ret',ret.age),ret.date)}</div>
-        </div></div>`;
+        </div></div>`);
       out.querySelector('[data-cp]').onclick=e=>copyText(txt,e.currentTarget);
       animateIn(out);
     }
@@ -183,11 +183,11 @@ const ViewDates=(()=>{
     function calc(){
       Store.set('wdDate',f.get());
       const out=$('#wd-out'),r=f.get();
-      if(r==null){out.innerHTML=emptyState('today',esc(t('pick_date')));$('#wd-mini').innerHTML='';return;}
+      if(r==null){paint(out,emptyState('today',esc(t('pick_date'))));paint($('#wd-mini'),'');return;}
       const g=D.toG(r),iw=D.isoWeek(r),doy=D.dayOfYear(r),yl=D.yearLength(g.y),q=Math.ceil(g.m/3);
       const nth=Math.ceil(g.d/7),last=g.d+7>D.dim(g.y,g.m);
       const j=D.toJ(r);
-      out.innerHTML=`<div class="stack">
+      paint(out,`<div class="stack">
         <div class="hero"><div class="k">${esc(t('weekday'))}</div><div class="v">${esc(Fmt.wd(D.dow(r)))}</div><div class="s">${esc(Fmt.date(r))} · ${esc(Fmt.rel(r-D.today()))}</div></div>
         <div class="grid-3">${stat(t('doy'),Fmt.n(doy),{s:esc(t('of_n',yl))})}${stat(t('iso_week'),'W'+D.pad(iw.week),{s:String(iw.year)})}${stat(t('quarter'),'Q'+q,{s:esc(t('pct_year',Math.round(doy/yl*100)))})}</div>
         <div class="split even"><div class="list">
@@ -205,13 +205,13 @@ const ViewDates=(()=>{
           ${li(t('excel_serial'),`<span class="mono">${D.excelSerial(r)}</span>`)}
           ${li(t('jdn'),`<span class="mono">${D.jdn(r)}</span>`)}
           ${li(t('unix'),`<span class="mono">${D.toUTCms(r)/1000}</span>`)}
-        </div></div></div>`;
+        </div></div></div>`);
       const first=D.fromG(g.y,g.m,1),ws=+Store.get('weekStart',I18N.lang==='ar'?6:0),lead=D.mod(D.dow(first)-ws,7),wset=Holidays.workSet();
       let h=`<div class="eyebrow">${esc(Fmt.date(first,'my'))}</div><div class="mini-cal">`;
       for(let i=0;i<7;i++)h+=`<b>${esc(Fmt.wd((ws+i)%7,true))}</b>`;
       for(let i=0;i<lead;i++)h+='<span></span>';
       for(let d=1;d<=D.dim(g.y,g.m);d++){const x=first+d-1;h+=`<span class="${x===r?'on':''}${wset.has(D.dow(x))?'':' wk'}">${d}</span>`;}
-      $('#wd-mini').innerHTML=h+'</div>';
+      paint($('#wd-mini'),h+'</div>');
     }
     calc();
   }
@@ -223,20 +223,20 @@ const ViewDates=(()=>{
       <section class="card pad stack"><span class="label">${esc(t('year_range'))}</span><div class="grid-2"><input class="field num" id="ly-a" type="number" min="1" max="9999" value="${st('lyA',cy-24)}" aria-label="${esc(t('from'))}"><input class="field num" id="ly-b" type="number" min="1" max="9999" value="${st('lyB',cy+26)}" aria-label="${esc(t('to'))}"></div><div id="ly-range" aria-live="polite"></div></section></div>`;
     const one=()=>{
       const y=parseInt($('#ly-y').value,10),o=$('#ly-one');Store.set('lyY',y);
-      if(!(y>=1&&y<=9999)){o.innerHTML=emptyState('alert',esc(t('bad_year')),true);return;}
+      if(!(y>=1&&y<=9999)){paint(o,emptyState('alert',esc(t('bad_year')),true));return;}
       const L=D.isLeap(y);let p=y,n=y;do p--;while(p>0&&!D.isLeap(p));do n++;while(!D.isLeap(n));
       const f29=D.fromG(Math.max(1,L?y:n),2,29);
-      o.innerHTML=`<div class="stack-sm"><div class="hero" style="${L?'':'background:var(--surface-3)'}"><div class="k">${y}</div><div class="v">${esc(L?t('is_leap'):t('not_leap'))}</div><div class="s">${esc(L?t('yes_366'):t('no_365'))}</div></div>
-        <div class="list">${li(t('rule_check'),`<span class="mono">${y%4} · ${y%100} · ${y%400}</span>`,esc(t('rule_explain')))}${li(t('prev_leap'),p>0?String(p):'—')}${li(t('next_leap'),String(n))}${li(t('feb29_on'),esc(Fmt.wd(D.dow(f29))),String(D.toG(f29).y))}${li(t('hijri_leap'),esc(t(D.hLeap(D.toH(D.fromG(y,7,1)).y)?'yes':'no')),esc(t('tabular')))}${li(t('coptic_leap'),esc(t(D.mod(D.toC(D.fromG(y,7,1)).y,4)===3?'yes':'no')))}</div></div>`;
+      paint(o,`<div class="stack-sm"><div class="hero" style="${L?'':'background:var(--surface-3)'}"><div class="k">${y}</div><div class="v">${esc(L?t('is_leap'):t('not_leap'))}</div><div class="s">${esc(L?t('yes_366'):t('no_365'))}</div></div>
+        <div class="list">${li(t('rule_check'),`<span class="mono">${y%4} · ${y%100} · ${y%400}</span>`,esc(t('rule_explain')))}${li(t('prev_leap'),p>0?String(p):'—')}${li(t('next_leap'),String(n))}${li(t('feb29_on'),esc(Fmt.wd(D.dow(f29))),String(D.toG(f29).y))}${li(t('hijri_leap'),esc(t(D.hLeap(D.toH(D.fromG(y,7,1)).y)?'yes':'no')),esc(t('tabular')))}${li(t('coptic_leap'),esc(t(D.mod(D.toC(D.fromG(y,7,1)).y,4)===3?'yes':'no')))}</div></div>`);
     };
     const range=()=>{
       let a=parseInt($('#ly-a').value,10),b=parseInt($('#ly-b').value,10),o=$('#ly-range');Store.patch({lyA:a,lyB:b});
-      if(!(a>=1&&b>=1&&a<=9999&&b<=9999)){o.innerHTML=emptyState('alert',esc(t('bad_years')),true);return;}
+      if(!(a>=1&&b>=1&&a<=9999&&b<=9999)){paint(o,emptyState('alert',esc(t('bad_years')),true));return;}
       if(a>b)[a,b]=[b,a];
-      if(b-a>2000){o.innerHTML=emptyState('alert',esc(t('range_big')),true);return;}
+      if(b-a>2000){paint(o,emptyState('alert',esc(t('range_big')),true));return;}
       const ys=[];for(let y=a;y<=b;y++)if(D.isLeap(y))ys.push(y);
       const days=D.fromG(b,12,31)-D.fromG(a,1,1)+1;
-      o.innerHTML=`<div class="stack-sm"><div class="grid-2">${stat(t('leap_found'),Fmt.n(ys.length),{tone:'amber'})}${stat(t('total_days'),Fmt.n(days))}</div><div class="leap-grid">${ys.map(y=>`<span class="${y%100===0?'c':''}">${y}</span>`).join('')||`<span class="faint">${esc(t('none'))}</span>`}</div><button type="button" class="btn btn-ghost btn-sm" data-cp style="align-self:flex-start">${ic('copy')}${esc(t('copy_list'))}</button></div>`;
+      paint(o,`<div class="stack-sm"><div class="grid-2">${stat(t('leap_found'),Fmt.n(ys.length),{tone:'amber'})}${stat(t('total_days'),Fmt.n(days))}</div><div class="leap-grid">${ys.map(y=>`<span class="${y%100===0?'c':''}">${y}</span>`).join('')||`<span class="faint">${esc(t('none'))}</span>`}</div><button type="button" class="btn btn-ghost btn-sm" data-cp style="align-self:flex-start">${ic('copy')}${esc(t('copy_list'))}</button></div>`);
       o.querySelector('[data-cp]').onclick=e=>copyText(ys.join(', '),e.currentTarget);
     };
     $('#ly-y').addEventListener('input',one);$('#ly-a').addEventListener('input',range);$('#ly-b').addEventListener('input',range);
@@ -279,14 +279,14 @@ const ViewDates=(()=>{
         else r=(y>=1&&m>=1&&m<=12&&d>=1&&d<=D.jdim(y,m))?D.fromJ(y,m,d):null;
         bad=r==null;
       }
-      if(r==null){out.innerHTML=emptyState(bad?'alert':'cal',esc(bad?t('no_such_date'):t('pick_date')),bad);return;}
+      if(r==null){paint(out,emptyState(bad?'alert':'cal',esc(bad?t('no_such_date'):t('pick_date')),bad));return;}
       const h=D.toH(r),c=D.toC(r);
       const hNext=(()=>{let y=h.y;let x=D.fromH(y,9,1);if(x==null||x<D.today())x=D.fromH(y+1,9,1);return x;})();
-      out.innerHTML=`<div class="stack">
+      paint(out,`<div class="stack">
         <div class="hero"><div class="k">${esc(t('gregorian'))}</div><div class="v">${esc(Fmt.date(r))}</div><div class="s">${esc(Fmt.wd(D.dow(r)))} · <span class="mono">${D.iso(r)}</span></div></div>
         <div class="grid-2">${stat(t('hijri'),esc(Fmt.hijri(r)),{sm:1,tone:'azure',s:esc(t('method_'+D.hijriMethod()))+' · '+esc(t('hm_len',D.hdim(h.y,h.m)))})}${stat(t('coptic'),esc(Fmt.coptic(r)),{sm:1,tone:'rose',s:esc(t('cm_len',D.cdim(c.y,c.m)))})}</div>
         <div class="list">${li(t('julian'),esc(Fmt.julian(r)))}${li(t('hijri_tab'),esc((()=>{const x=D.toHt(r+D.cfg.offset);return x.d+' '+t('hijriMonths')[x.m-1]+' '+x.y;})()))}${li(t('next_ramadan'),esc(Fmt.date(hNext,'short')),esc(Fmt.rel(hNext-D.today())))}${li(t('easter_y',D.toG(r).y),esc(Fmt.date(D.orthodoxEaster(D.toG(r).y),'short')),esc(t('western'))+' '+esc(Fmt.date(D.westernEaster(D.toG(r).y),'short')))}${li(t('nayrouz'),esc(Fmt.date(D.nayrouz(D.toG(r).y),'short')))}${li(t('jdn'),`<span class="mono">${D.jdn(r)}</span>`)}</div>
-        <button type="button" class="btn btn-ghost btn-sm" data-cp style="align-self:flex-start">${ic('copy')}${esc(t('copy_all'))}</button></div>`;
+        <button type="button" class="btn btn-ghost btn-sm" data-cp style="align-self:flex-start">${ic('copy')}${esc(t('copy_all'))}</button></div>`);
       out.querySelector('[data-cp]').onclick=e=>copyText([D.iso(r),Fmt.hijri(r),Fmt.coptic(r),Fmt.julian(r)].join('\n'),e.currentTarget);
     }
     drawIn();
@@ -302,7 +302,7 @@ const ViewDates=(()=>{
     </section>`;
     const draw=()=>{
       const list=LXHolidays.forYear(year,{includeOptional:true}),tdy=D.today();
-      $('#hp-list').innerHTML=`<div class="tablebox"><table class="t"><thead><tr><th>${esc(t('date'))}</th><th>${esc(t('weekday'))}</th><th>${esc(t('holiday'))}</th><th>${esc(t('hijri'))}</th><th></th></tr></thead><tbody>${list.map(h=>`<tr style="${h.rd<tdy?'opacity:.55':''}"><td class="mono">${D.iso(h.rd)}</td><td>${esc(Fmt.wd(D.dow(h.rd)))}</td><td style="font-weight:600">${esc(t(h.k))}${h.est?` <span class="chip sun" style="padding:.1rem .45rem">${esc(t('est'))}</span>`:''}</td><td class="small muted">${esc(Fmt.hijri(h.rd))}</td><td class="small faint">${esc(Fmt.rel(h.rd-tdy))}</td></tr>`).join('')}</tbody></table></div>`;
+      paint($('#hp-list'),`<div class="tablebox"><table class="t"><thead><tr><th>${esc(t('date'))}</th><th>${esc(t('weekday'))}</th><th>${esc(t('holiday'))}</th><th>${esc(t('hijri'))}</th><th></th></tr></thead><tbody>${list.map(h=>`<tr style="${h.rd<tdy?'opacity:.55':''}"><td class="mono">${D.iso(h.rd)}</td><td>${esc(Fmt.wd(D.dow(h.rd)))}</td><td style="font-weight:600">${esc(t(h.k))}${h.est?` <span class="chip sun" style="padding:.1rem .45rem">${esc(t('est'))}</span>`:''}</td><td class="small muted">${esc(Fmt.hijri(h.rd))}</td><td class="small faint">${esc(Fmt.rel(h.rd-tdy))}</td></tr>`).join('')}</tbody></table></div>`);
     };
     const setY=y=>{year=clamp(y,1900,2200);$('#hp-y').value=year;Store.set('hpY',year);draw();};
     el.querySelectorAll('[data-y]').forEach(b=>b.onclick=()=>setY(year+ +b.dataset.y));
@@ -317,6 +317,7 @@ const ViewDates=(()=>{
     const box=$('#holidays-body');
     const draw=()=>{
       const ents=Holidays.entries();
+      const keep=$('#hd-in')?$('#hd-in').value:'';
       box.innerHTML=`<div class="stack">
         <p class="small muted" style="margin:0">${esc(t('hol_hint'))}</p>
         <textarea class="field" id="hd-in" rows="5" placeholder="2026-01-07, Coptic Christmas&#10;25/04/2026, Sinai Liberation Day&#10;2026-03-20 → 2026-03-22, Eid al-Fitr"></textarea>
@@ -325,18 +326,28 @@ const ViewDates=(()=>{
         <div class="between"><span class="eyebrow" style="margin:0">${esc(t('hol_saved'))}</span><span class="chip">${ents.length}</span></div>
         <div class="tablebox" style="max-height:15rem">${ents.length?`<table class="t"><tbody>${ents.map(([k,l])=>`<tr><td class="mono">${k}</td><td class="small muted">${esc(Fmt.wd(D.dow(D.parseISO(k)),true))}</td><td>${esc(l||'—')}</td><td style="text-align:end"><button type="button" class="iconbtn sm" data-rm="${k}" aria-label="${esc(t('remove'))}">${ic('x')}</button></td></tr>`).join('')}</tbody></table>`:`<div class="empty" style="padding:1.5rem">${esc(t('hol_empty'))}</div>`}</div>
         <p class="tiny faint" style="margin:0">${esc(t('hol_foot'))}</p></div>`;
+      if(keep)$('#hd-in').value=keep;
       $('#hd-add').onclick=()=>{
         const v=$('#hd-in').value;if(!v.trim()){toast(t('hol_paste_first'),'info');return;}
         const r=LXHolidays.parseText(v,Holidays.keys(),Store.get('dateOrder','dmy'));
         const n=Holidays.add(r.ok);
+        $('#hd-in').value=r.issues.map(i=>i.raw).join('\n');
         draw();
         if(r.issues.length)$('#hd-issues').innerHTML=`<div class="callout warn">${ic('warn')}<div class="stack-sm" style="gap:.2rem">${r.issues.slice(0,12).map(i=>`<span><b class="mono">#${i.line}</b> ${esc(i.raw)} — ${esc(t(i.reason))}</span>`).join('')}</div></div>`;
         toast(n?t('t_hol_added',n):t('t_hol_none'),n?'ok':'info');onDone&&onDone();
       };
       $('#hd-file').onchange=e=>{const f=e.target.files[0];if(!f)return;const rd=new FileReader();rd.onload=()=>{let s=String(rd.result||'').replace(/^\uFEFF/,'');if(/BEGIN:VCALENDAR/.test(s)){const ev=[];s.replace(/\r\n[ \t]/g,'').split('BEGIN:VEVENT').slice(1).forEach(b=>{const d=/DTSTART[^:]*:(\d{8})/.exec(b),n=/SUMMARY:(.*)/.exec(b);if(d)ev.push(d[1].slice(0,4)+'-'+d[1].slice(4,6)+'-'+d[1].slice(6,8)+', '+(n?n[1].trim():''));});s=ev.join('\n');}$('#hd-in').value=s;};rd.readAsText(f,'UTF-8');e.target.value='';};
       $('#hd-ics').onclick=()=>{download(LXHolidays.ics(Holidays.entries().map(([k,l])=>({rd:D.parseISO(k),title:l||t('holiday')})),t('holidays')),'holidays.ics','text/calendar');toast(t('t_ics'));};
-      $('#hd-clear').onclick=()=>{const p=Holidays.clear();draw();onDone&&onDone();toast(t('t_hol_cleared'),'info',{action:t('undo'),onAction:()=>{Holidays.restore(p);draw();onDone&&onDone();}});};
-      box.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{Holidays.remove(b.dataset.rm);draw();onDone&&onDone();});
+      $('#hd-clear').onclick=async()=>{
+        const n=Holidays.size();
+        if(!await Kit.confirm({title:t('cf_hol_t'),body:t('cf_hol_b',n),ok:t('clear_all'),danger:true}))return;
+        const p=Holidays.clear();draw();onDone&&onDone();toast(t('t_hol_cleared'),'info',{action:t('undo'),onAction:()=>{Holidays.restore(p);draw();onDone&&onDone();}});
+      };
+      box.querySelectorAll('[data-rm]').forEach(b=>b.onclick=()=>{
+        const tr=b.closest('tr'),k=b.dataset.rm,lbl=(Holidays.entries().find(e=>e[0]===k)||[])[1]||'';
+        const done=()=>{Holidays.remove(k);draw();onDone&&onDone();toast(t('t_hol_removed',k),'info',{action:t('undo'),onAction:()=>{Holidays.add([{key:k,label:lbl}]);draw();onDone&&onDone();}});};
+        if(tr&&!matchMedia('(prefers-reduced-motion: reduce)').matches){tr.classList.add('row-out');setTimeout(done,220);}else done();
+      });
     };
     draw();
   }

@@ -31,11 +31,12 @@ const ViewPrayer=(()=>{
     $('#p-clk').onchange=e=>{Store.set('clock',e.target.value);render();};
     const q=$('#p-q'),res=$('#p-res');
     let matches=[],kb=-1;
+    const hideRes=()=>{if(res.classList.contains('hide'))return;q.setAttribute('aria-expanded','false');res.classList.remove('in');res.classList.add('hide');};
     const draw=()=>{
       matches=LXCities.search(q.value);kb=-1;
-      if(!matches.length){res.classList.add('hide');q.setAttribute('aria-expanded','false');return;}
+      if(!matches.length){hideRes();return;}
       res.innerHTML=matches.map((c,i)=>`<button type="button" class="mi" role="option" data-i="${i}">${ic('pin')}<span class="grow">${esc(label(c))}${c.province?`<span class="faint tiny"> · ${esc(c.province)}</span>`:''}</span><span class="tiny faint">${esc(country(c))}</span></button>`).join('');
-      res.classList.remove('hide');q.setAttribute('aria-expanded','true');
+      if(res.classList.contains('hide')){res.classList.remove('hide','out');res.classList.add('in');}q.setAttribute('aria-expanded','true');
       res.querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>pick(matches[+b.dataset.i]));
     };
     q.addEventListener('focus',()=>{q.select();LXCities.load().then(draw);draw();});
@@ -44,9 +45,9 @@ const ViewPrayer=(()=>{
       const items=[...res.querySelectorAll('[data-i]')];
       if(e.key==='ArrowDown'||e.key==='ArrowUp'){e.preventDefault();kb=clamp(kb+(e.key==='ArrowDown'?1:-1),0,items.length-1);items.forEach((x,i)=>x.classList.toggle('kb',i===kb));items[kb]&&items[kb].scrollIntoView({block:'nearest'});}
       else if(e.key==='Enter'){e.preventDefault();if(matches.length)pick(matches[kb<0?0:kb]);}
-      else if(e.key==='Escape'){res.classList.add('hide');}
+      else if(e.key==='Escape'){if(!res.classList.contains('hide')){e.stopPropagation();hideRes();}}
     });
-    document.addEventListener('mousedown',function h(e){if(!document.contains(q)){document.removeEventListener('mousedown',h);return;}if(!res.contains(e.target)&&e.target!==q)res.classList.add('hide');});
+    document.addEventListener('mousedown',function h(e){if(!document.contains(q)){document.removeEventListener('mousedown',h);return;}if(!res.contains(e.target)&&e.target!==q)hideRes();});
     $('#p-here').onclick=here;
     render();
   }
@@ -67,13 +68,13 @@ const ViewPrayer=(()=>{
     const out=$('#p-out');if(!out||!city)return;
     const o=opts(),tz=city.tz||'Africa/Cairo';
     let today;
-    try{today=P.forCity(city,o,0);}catch(e){out.innerHTML=`<div class="card pad">${emptyState('alert',esc(t('prayer_fail')),true)}</div>`;return;}
+    try{today=P.forCity(city,o,0);}catch(e){paint(out,`<div class="card pad">${emptyState('alert',esc(t('prayer_fail')),true)}</div>`);return;}
     const now=new Date(),nx=P.next(city,o,now);
     const qb=P.qibla(city.lat,city.lng),km=P.distKm(city.lat,city.lng,P.KAABA.lat,P.KAABA.lng);
     const icons={fajr:'moon',sunrise:'sun',dhuhr:'sun',asr:'sun',maghrib:'moon',isha:'moon'};
     const rows=P.ORDER.map(k=>{const at=today[k],isNext=!nx.tomorrow&&nx.key===k,past=at&&at<=now&&!isNext;return`<div class="pr${isNext?' next':''}${past?' past':''}">${ic(icons[k])}<b>${esc(t('pr_'+k))}</b><span>${esc(Fmt.time(at,tz))}</span></div>`;}).join('');
     const local=new Intl.DateTimeFormat(Fmt.loc(),{timeZone:tz,hour:'2-digit',minute:'2-digit',weekday:'short',hour12:Store.get('clock','24')==='12'}).format(now);
-    out.innerHTML=`
+    paint(out,`
       <div class="card pad stack">
         <div class="hero prayer-next"><div><div class="k">${esc(t('next_prayer'))}${nx.tomorrow?' · '+esc(t('tomorrow')):''}</div><div class="v">${esc(t('pr_'+nx.key))}</div><div class="s">${esc(Fmt.time(nx.at,tz))} · ${esc(label(city))}</div></div><div style="text-align:end"><div class="disp" id="p-cd" style="font-size:1.6rem;font-weight:620;color:var(--amber-text);font-variant-numeric:tabular-nums"></div><div class="tiny faint">${esc(t('local_time'))} ${esc(local)}</div></div></div>
         <div class="prayer-list">${rows}</div>
@@ -81,10 +82,10 @@ const ViewPrayer=(()=>{
         <div class="between"><span class="tiny faint">${esc(Fmt.date(today.rd,'full'))} · ${esc(Fmt.hijri(today.rd))}</span><span class="chip">${esc(t('m_'+o.method))}</span></div>
       </div>
       <div class="split even">
-        <div class="card pad"><div class="row" style="gap:1.1rem"><div class="qibla" aria-label="${esc(t('qibla'))}"><span class="n">N</span><span class="needle" style="transform:rotate(${qb+180}deg)"></span><span class="hub"></span></div><div class="stack-sm"><div class="eyebrow" style="margin:0">${esc(t('qibla'))}</div><div class="disp" style="font-size:1.5rem;font-weight:620">${Fmt.n(qb,1)}°</div><div class="tiny faint">${esc(t('from_north'))} · ${Fmt.n(km)} km</div></div></div></div>
+        <div class="card pad"><div class="row" style="gap:1.1rem"><div class="qibla" aria-label="${esc(t('qibla'))}"><span class="n">N</span><svg class="qibla-dial" viewBox="0 0 100 100" aria-hidden="true">${Array.from({length:72},(_,i)=>`<line x1="50" y1="${i%18===0?5:i%6===0?6.5:7.5}" x2="50" y2="10" transform="rotate(${i*5} 50 50)" class="${i%18===0?'tk-c':i%6===0?'tk-m':'tk'}"/>`).join('')}</svg><span class="needle" style="--q:${qb.toFixed(2)}deg"></span><span class="hub"></span></div><div class="stack-sm"><div class="eyebrow" style="margin:0">${esc(t('qibla'))}</div><div class="disp" style="font-size:1.5rem;font-weight:620">${Fmt.n(qb,1)}°</div><div class="tiny faint">${esc(t('from_north'))} · ${Fmt.n(km)} km</div></div></div></div>
         <div class="card pad list">${li(t('pr_sunset'),esc(Fmt.time(today.sunset,tz)))}${li(t('pr_midnight'),esc(Fmt.time(today.midnight,tz)))}${li(t('pr_lastthird'),esc(Fmt.time(today.lastThird,tz)))}${li(t('coords'),`<span class="mono">${city.lat.toFixed(3)}, ${city.lng.toFixed(3)}</span>`,esc(tz))}</div>
       </div>
-      <div class="card pad stack-sm"><div class="between"><h3 class="card-title">${ic('cal')}${esc(t('month_table'))}</h3><div class="row-wrap"><button type="button" class="btn btn-ghost btn-sm" id="p-mt">${esc(showMonth?t('hide'):t('show'))}</button><button type="button" class="btn btn-line btn-sm" id="p-csv">${ic('down')}CSV</button></div></div><div id="p-month"></div></div>`;
+      <div class="card pad stack-sm"><div class="between"><h3 class="card-title">${ic('cal')}${esc(t('month_table'))}</h3><div class="row-wrap"><button type="button" class="btn btn-ghost btn-sm" id="p-mt">${esc(showMonth?t('hide'):t('show'))}</button><button type="button" class="btn btn-line btn-sm" id="p-csv">${ic('down')}CSV</button></div></div><div id="p-month"></div></div>`);
     const cd=$('#p-cd'),tick=()=>{const ms=nx.at-new Date();if(ms<=0){render();return;}const s=Math.floor(ms/1000),h=Math.floor(s/3600),m=Math.floor(s%3600/60),sec=s%60;cd.textContent=(h?h+':':'')+D.pad(m)+':'+D.pad(sec);};
     tick();timer=setInterval(()=>{if(!document.contains(cd)){clearInterval(timer);return;}tick();},1000);
     const g=D.toG(today.rd);

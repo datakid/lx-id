@@ -69,10 +69,10 @@ const ViewID=(()=>{
     $('#id-paste',el).onclick=async()=>{const s=await readClipboard();if(s==null)return;const toks=LXID.tokens(s);if(toks.length>1){App.go('#/id/batch');setTimeout(()=>ViewID.loadBatch(toks.join('\n'),true),30);return;}inp.value=toks[0]||s.trim();run();};
     $('#id-sample',el).onclick=()=>{inp.value=LXID.sample();run();toast(t('t_sample'),'info');};
     $('#id-clear',el).onclick=()=>{inp.value='';run();inp.focus();};
-    $('#id-mask',el).onclick=e=>{const v=!Store.get('mask',false);Store.set('mask',v);e.currentTarget.innerHTML=ic(v?'eyeoff':'eye');e.currentTarget.setAttribute('aria-pressed',v);run();};
+    $('#id-mask',el).onclick=e=>{const v=!Store.get('mask',false);Store.set('mask',v);e.currentTarget.innerHTML=ic(v?'eyeoff':'eye');e.currentTarget.setAttribute('aria-pressed',v);run();toast(t(v?'t_masked':'t_unmasked'),'info');};
     const init=App.param||Store.get('single','');
     if(init){inp.value=init;run();}
-    else{$('#id-result',el).innerHTML=intro();bindIntro($('#id-result',el));}
+    else{paint($('#id-result',el),intro());bindIntro($('#id-result',el));}
   }
   const RKEY='recent';
   function recents(){return Store.remember()?Store.get(RKEY+'_s',[]):(window.__recent||[]);}
@@ -110,11 +110,13 @@ const ViewID=(()=>{
     const box=$('#id-result');if(!box)return;
     const n=LXID.normalize(raw);
     meter(n.digits.length);
-    if(!raw.trim()){box.innerHTML=intro();bindIntro(box);lastValid=false;App.setParam('');return;}
-    if(!n.sci&&n.digits.length>0&&n.digits.length<14){box.innerHTML=partial(n.digits);lastValid=false;return;}
+    if(!raw.trim()){paint(box,intro());bindIntro(box);lastValid=false;App.setParam('');return;}
+    if(!n.sci&&n.digits.length>0&&n.digits.length<14){paint(box,partial(n.digits));lastValid=false;return;}
     const r=LXID.parse(raw,{trace:true});
-    box.innerHTML=r.valid?result(r):invalid(r);
-    if(r.valid){pushRecent(r.id);App.setParam(Store.get('mask',false)?'':r.id);animateIn(box);if(!lastValid)box.querySelectorAll('.idcard').forEach(x=>x.style.animation='');}
+    const openTrace=!!box.querySelector('details.disclose[open]');
+    paint(box,r.valid?result(r):invalid(r));
+    if(openTrace){const d=box.querySelector('details.disclose');if(d)d.open=true;}
+    if(r.valid){pushRecent(r.id);App.setParam(Store.get('mask',false)?'':r.id);animateIn(box);}
     lastValid=r.valid;
     bind(box,r);
   }
@@ -257,8 +259,9 @@ const ViewID=(()=>{
     ta.addEventListener('keydown',e=>{if((e.metaKey||e.ctrlKey)&&e.key==='Enter'){e.preventDefault();run();}});
     $('#b-paste',el).onclick=async()=>{const s=await readClipboard();if(s==null)return;if(!s.trim()){toast(t('t_clip_empty'),'info');return;}loadBatch(s,true);};
     $('#b-sample',el).onclick=()=>{loadBatch(LXID.SAMPLES.concat(['','12345','29813451401234',LXID.SAMPLES[0]]).join('\n'),true);};
-    $('#b-clear',el).onclick=()=>{
+    $('#b-clear',el).onclick=async()=>{
       const prev=ta.value,rows=batch.rows;if(!prev&&!rows.length)return;
+      if(rows.length>20&&!await Kit.confirm({title:t('cf_batch_t'),body:t('cf_batch_b',rows.length),ok:t('clear'),danger:true}))return;
       ta.value='';batch.rows=[];cnt();Store.set('batch','');renderBatch();
       toast(t('t_cleared'),'info',{action:t('undo'),onAction:()=>{ta.value=prev;batch.rows=rows;cnt();Store.set('batch',prev);renderBatch();}});
     };
@@ -350,10 +353,11 @@ const ViewID=(()=>{
   function renderBatch(){
     const box=$('#b-result');if(!box)return;
     const R=batch.rows;
-    if(!R.length){box.innerHTML=`<div class="card pad">${emptyState('chart',esc(t('b_empty')))}</div>`;return;}
+    if(!R.length){paint(box,`<div class="card pad">${emptyState('chart',esc(t('b_empty')))}</div>`);return;}
     const nv=R.filter(r=>r.valid).length,nn=R.filter(r=>r.isNull).length,ne=R.length-nv-nn,nf=R.filter(r=>r.valid&&r.flags.length).length;
     const keys=IDCols.C.map(c=>c.k).filter(k=>batch.cols.has(k));
-    box.innerHTML=`<section class="card pad stack">
+    box._html=null;
+    paint(box,`<section class="card pad stack">
       <div class="between"><div><h3 class="card-title">${ic('chart')}${esc(t('results'))}</h3><p class="card-sub">${esc(t('b_summary',R.length,nv,ne,nn))}</p></div>
         <div class="row-wrap noprint">
           <button type="button" class="btn btn-line btn-sm" id="b-copy">${ic('copy')}${esc(t('copy'))}</button>
@@ -369,7 +373,7 @@ const ViewID=(()=>{
         <input type="search" class="field field-sm grow" id="b-q" placeholder="${esc(t('search_rows'))}" value="${esc(batch.q)}" style="max-width:18rem">
       </div>
       <div id="b-table"></div>
-    </section>`;
+    </section>`);
     bindSeg(box,'bf',v=>{batch.filter=v;batch.page=0;drawTable();});
     $('#b-q').addEventListener('input',debounce(e=>{batch.q=e.target.value;batch.page=0;drawTable();},150));
     $('#b-inject').onchange=e=>{batch.inject=e.target.checked;Store.set('inject',batch.inject);};
@@ -383,10 +387,12 @@ const ViewID=(()=>{
     const box=$('#b-table');if(!box)return;
     const rows=filtered(),keys=IDCols.C.map(c=>c.k).filter(k=>batch.cols.has(k));
     const pages=Math.max(1,Math.ceil(rows.length/PAGE));batch.page=Math.min(batch.page,pages-1);
+    const tb=box.querySelector('.tablebox'),st=tb?tb.scrollLeft:0;
     box.innerHTML=`<div class="tablebox">${tableHtml(rows,keys,batch.page*PAGE,{copy:true,sortable:true})}</div>
       <div class="pager" style="margin-top:.6rem"><span>${esc(t('showing',rows.length?batch.page*PAGE+1:0,Math.min(rows.length,(batch.page+1)*PAGE),rows.length))}</span>
       ${pages>1?`<div class="row"><button type="button" class="btn btn-ghost btn-sm" data-pg="-1"${batch.page===0?' disabled':''}>${ic(document.dir==='rtl'?'chevr':'chevl')}</button><span class="mono">${batch.page+1}/${pages}</span><button type="button" class="btn btn-ghost btn-sm" data-pg="1"${batch.page>=pages-1?' disabled':''}>${ic(document.dir==='rtl'?'chevl':'chevr')}</button></div>`:''}</div>`;
-    box.querySelectorAll('[data-pg]').forEach(b=>b.onclick=()=>{batch.page+=+b.dataset.pg;drawTable();});
+    if(st)box.querySelector('.tablebox').scrollLeft=st;
+    box.querySelectorAll('[data-pg]').forEach(b=>b.onclick=()=>{batch.page+=+b.dataset.pg;drawTable();box.querySelector('.tablebox').scrollTop=0;});
     box.querySelectorAll('[data-sort]').forEach(th=>th.onclick=()=>{const k=th.dataset.sort;batch.sort=batch.sort&&batch.sort.k===k?(batch.sort.dir>0?{k,dir:-1}:null):{k,dir:1};drawTable();});
     box.querySelectorAll('[data-rc]').forEach(b=>b.onclick=()=>{const r=rows[+b.dataset.rc];copyText(keys.map(k=>IDCols.MAP[k].v(r)).join('\t'),b,t('t_row'));});
   }
@@ -493,7 +499,7 @@ const ViewID=(()=>{
       <div class="between"><div class="row-wrap"><span class="small muted">${esc(t('u_out'))}</span><button type="button" class="btn btn-line btn-sm" id="u-cols">${ic('cols')}${esc(t('columns'))} · ${up.cols.size}</button></div>
       <button type="button" class="btn btn-primary" id="u-go">${ic('bolt')}${esc(t('u_process'))}</button></div>
       <div class="progress hide" id="u-prog"><i></i></div>`;
-    $('#u-rm').onclick=()=>{up.wb=null;up.res=[];box.classList.add('hide');$('#u-res').classList.add('hide');};
+    $('#u-rm').onclick=async()=>{if(up.res.length&&!await Kit.confirm({title:t('cf_file_t'),body:t('cf_file_b',up.name),ok:t('remove'),danger:true}))return;up.wb=null;up.res=[];box.classList.add('hide');$('#u-res').classList.add('hide');};
     const sh=$('#u-sheet');if(sh)sh.onchange=e=>{up.sheet=e.target.value;up.hdr=1;loadSheet();renderMap();};
     $('#u-hdr').onchange=e=>{up.hdr=Math.max(1,parseInt(e.target.value,10)||1);loadSheet();renderMap();};
     $('#u-col').onchange=e=>{up.idCol=+e.target.value;renderMap();};
@@ -545,14 +551,14 @@ const ViewID=(()=>{
       const gov=$('#bld-gov').value,ser=$('#bld-ser').value.replace(/\D/g,''),n=clamp(parseInt($('#bld-n').value,10)||1,1,1000),bd=b.get();
       Store.set('bld',{gov,gender:g,serial:ser});Store.set('bldN',n);Store.set('bldB',bd);
       const out=$('#bld-out');
-      if(bd==null){out.innerHTML=emptyState('build',esc(t('pick_birth')));return;}
-      const gy=D.toG(bd).y;if(gy<1900||gy>2099||bd>D.today()){out.innerHTML=emptyState('alert',esc(t('bld_range')),true);return;}
+      if(bd==null){paint(out,emptyState('build',esc(t('pick_birth'))));return;}
+      const gy=D.toG(bd).y;if(gy<1900||gy>2099||bd>D.today()){paint(out,emptyState('alert',esc(t('bld_range')),true));return;}
       const set=new Set();let guard=0;
       while(set.size<n&&guard<n*20){const id=LXID.compose({birth:bd,gov,gender:g,serial:ser&&set.size===0?ser:null});if(id)set.add(id);guard++;}
       const ids=[...set];
-      out.innerHTML=`<div class="hero"><div class="hero-act"><button type="button" class="iconbtn sm" data-cp aria-label="${esc(t('copy'))}">${ic('copy')}</button><button type="button" class="iconbtn sm" data-re aria-label="${esc(t('regen'))}">${ic('repeat')}</button></div><div class="k">${esc(t('bld_result'))}</div><div class="builder-out" style="margin-top:.35rem">${ids[0]}</div><div class="s">${esc(Fmt.date(bd))} · ${esc(LXID.govName(gov,I18N.lang))} · ${esc(t(g==='M'?'male':'female'))}</div></div>
+      paint(out,`<div class="hero"><div class="hero-act"><button type="button" class="iconbtn sm" data-cp aria-label="${esc(t('copy'))}">${ic('copy')}</button><button type="button" class="iconbtn sm" data-re aria-label="${esc(t('regen'))}">${ic('repeat')}</button></div><div class="k">${esc(t('bld_result'))}</div><div class="builder-out" style="margin-top:.35rem">${ids[0]}</div><div class="s">${esc(Fmt.date(bd))} · ${esc(LXID.govName(gov,I18N.lang))} · ${esc(t(g==='M'?'male':'female'))}</div></div>
         ${ids.length>1?`<div class="tablebox" style="max-height:18rem"><table class="t"><tbody>${ids.map((x,i)=>`<tr><td class="faint mono">${i+1}</td><td class="mono" style="font-weight:600">${x}</td></tr>`).join('')}</tbody></table></div>`:''}
-        <div class="row-wrap"><button type="button" class="btn btn-primary btn-sm" data-open>${ic('id')}${esc(t('bld_inspect'))}</button>${ids.length>1?`<button type="button" class="btn btn-line btn-sm" data-batch>${ic('rows')}${esc(t('bld_batch'))}</button>`:''}</div>`;
+        <div class="row-wrap"><button type="button" class="btn btn-primary btn-sm" data-open>${ic('id')}${esc(t('bld_inspect'))}</button>${ids.length>1?`<button type="button" class="btn btn-line btn-sm" data-batch>${ic('rows')}${esc(t('bld_batch'))}</button>`:''}</div>`);
       out.querySelector('[data-cp]').onclick=e=>copyText(ids.join('\n'),e.currentTarget);
       out.querySelector('[data-re]').onclick=make;
       out.querySelector('[data-open]').onclick=()=>App.go('#/id/'+ids[0]);
