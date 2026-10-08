@@ -231,7 +231,18 @@ const ViewID=(()=>{
     const m=act('mode');if(m)m.onclick=()=>App.openSettings('retire');
   }
 
-  let batch={rows:[],filter:'all',q:'',sort:null,page:0,cols:null,inject:false};
+  let batch={rows:[],filter:'all',q:'',sort:null,page:0,cols:null,inject:false,scope:RowScope.make()};
+  const charts={};
+  const abort={v:false};
+  function busyBtn(btn,on,label){
+    if(on){btn.classList.add('busy');btn.disabled=false;btn.style.setProperty('--p',0);btn.innerHTML=ic('x')+'<span>'+esc(t('cancel'))+'</span><span class="num bpct">0%</span>';}
+    else{btn.classList.remove('busy');btn.style.removeProperty('--p');btn.innerHTML=label;}
+  }
+  function prog(btn,p){if(!btn)return;btn.style.setProperty('--p',p);const s=btn.querySelector('.bpct');if(s)s.textContent=Math.round(p*100)+'%';}
+  const scopeLbl=(s,rows)=>RowScope.active(s)?t('sc_of',Fmt.n(RowScope.apply(s,rows).length),Fmt.n(rows.length)):t('sc_all');
+  const scopeBtn=(id,s,rows)=>`<button type="button" class="btn btn-line btn-sm${RowScope.active(s)?' scoped':''}" id="${id}" aria-haspopup="menu">${ic('filter')}<span>${esc(t('rows_btn'))}</span><span class="bcount num">${esc(scopeLbl(s,rows))}</span></button>`;
+  const colsBtn=(id,set)=>`<button type="button" class="btn btn-line btn-sm" id="${id}" aria-haspopup="menu">${ic('cols')}<span>${esc(t('columns'))}</span><span class="bcount num">${Fmt.n(set.size)}</span></button>`;
+  function bindCharts(box){box.querySelectorAll('[data-png]').forEach(b=>b.onclick=()=>{const s=charts[b.dataset.png];if(s)ChartPNG.save(s,'raqam-'+b.dataset.png+'-'+LXDate.iso(LXDate.today()));});}
   const PAGE=100;
   function batchView(el){
     batch.cols=batch.cols||new Set(Store.get('batchCols',IDCols.C.filter(c=>c.def).map(c=>c.k)));
@@ -267,35 +278,47 @@ const ViewID=(()=>{
     };
     $('#b-nulls',el).onchange=e=>{Store.set('bNulls',e.target.checked);if(batch.rows.length)run();};
     $('#b-extract',el).onchange=e=>{Store.set('bExtract',e.target.checked);cnt();};
-    $('#b-run',el).onclick=run;
+    $('#b-run',el).onclick=()=>{const b=$('#b-run');if(b.classList.contains('busy')){abort.v=true;Jobs.cancel();return;}run();};
     renderBatch();
   }
   function loadBatch(text,go){const ta=$('#b-input');if(!ta)return;ta.value=text;ta.dispatchEvent(new Event('input'));Store.set('batch',text);if(go)setTimeout(run,10);}
   function chunk(items,fn,onProg){
     return new Promise(res=>{
       const out=new Array(items.length);let i=0;
-      const step=()=>{const st=performance.now();while(i<items.length&&performance.now()-st<14){out[i]=fn(items[i],i);i++;}onProg&&onProg(i/items.length);if(i<items.length)setTimeout(step,0);else res(out);};
+      const step=()=>{if(abort.v){res(null);return;}const st=performance.now();while(i<items.length&&performance.now()-st<14){out[i]=fn(items[i],i);i++;}onProg&&onProg(i/items.length);if(i<items.length)setTimeout(step,0);else res(out);};
       step();
     });
+  }
+  const WORKER_MIN=1500;
+  async function analyse(items,opts){
+    abort.v=false;
+    const today=D.today(),pick=x=>x;
+    if(Jobs.ok()&&items.length>=WORKER_MIN){
+      try{return(await Jobs.run(opts.msg,{onProg:opts.onProg})).rows;}
+      catch(e){if(e.message==='cancelled'||abort.v)return null;}
+    }
+    let src=items;
+    if(opts.skipNull)src=items.filter(s=>!LXID.parse(pick(s)).isNull);
+    const rows=await chunk(src,s=>LXID.parse(pick(s),{today}),opts.onProg);
+    return rows&&LXID.finalize(rows);
   }
   async function run(){
     const ta=$('#b-input');if(!ta)return;
     let lines=$('#b-extract').checked?LXID.tokens(ta.value):LXID.splitLines(ta.value);
     if(!lines.length){toast(t('t_need_ids'),'info');return;}
-    const btn=$('#b-run');btn.disabled=true;btn.innerHTML=ic('clock','spin')+esc(t('working'));
-    const today=D.today();
-    let rows=await chunk(lines,s=>LXID.parse(s,{today}),p=>{btn.innerHTML=ic('clock','spin')+esc(t('working'))+' '+Math.round(p*100)+'%';});
-    if($('#b-nulls').checked)rows=rows.filter(r=>!r.isNull);
-    const seen=new Map();
-    rows.forEach((r,i)=>{r.line=i+1;if(r.valid){if(seen.has(r.id)){r.flags.push('dup');const f=rows[seen.get(r.id)];if(!f.flags.includes('dup'))f.flags.push('dup');}else seen.set(r.id,i);}});
-    LXID.twins(rows);
-    batch.rows=rows;batch.page=0;batch.filter='all';batch.q='';batch.sort=null;
-    btn.disabled=false;btn.innerHTML=ic('play')+esc(t('b_run'));
+    const btn=$('#b-run'),label=ic('play')+esc(t('b_run'));
+    busyBtn(btn,true);
+    const skip=$('#b-nulls').checked;
+    const rows=await analyse(lines,{skipNull:skip,msg:{type:'lines',lines,skipNull:skip},onProg:p=>prog(btn,p)});
+    busyBtn(btn,false,label);
+    if(!rows){toast(t('t_cancelled'),'info');return;}
+    batch.rows=rows;batch.page=0;batch.filter='all';batch.q='';batch.sort=null;batch.scope=RowScope.make();
     renderBatch();
     toast(t('t_analyzed',rows.length));
     $('#b-result').scrollIntoView({behavior:'smooth',block:'start'});
   }
-  function insights(rows){
+  function insights(rows,pfx){
+    pfx=pfx||'b';
     const v=rows.filter(r=>r.valid);if(v.length<2)return'';
     const m=v.filter(r=>r.gender==='M').length,f=v.length-m,pm=m/v.length*100;
     const gc={};v.forEach(r=>gc[r.govCode]=(gc[r.govCode]||0)+1);
@@ -305,20 +328,27 @@ const ViewID=(()=>{
     const y0=D.toG(D.today()).y,yrs=Array.from({length:11},(_,i)=>y0+i),hy=yrs.map(y=>v.filter(r=>D.toG(r.ret.date).y===y).length),mh=Math.max(1,...hy);
     const ages=v.map(r=>r.age.years).sort((a,b)=>a-b),med=ages[Math.floor(ages.length/2)];
     const avg=v.reduce((s,r)=>s+r.age.totalDays/365.2425,0)/v.length;
+    const sub=t('i_based',Fmt.n(v.length));
+    charts[pfx+'-gender']={title:t('i_gender'),sub,items:[{l:t('male'),v:m,c:'--azure'},{l:t('female'),v:f,c:'--rose'}]};
+    charts[pfx+'-gov']={title:t('i_gov'),sub,items:Object.entries(gc).sort((a,b)=>b[1]-a[1]).slice(0,12).map(([c,n])=>({l:LXID.govName(c,I18N.lang)||c,v:n}))};
+    charts[pfx+'-age']={title:t('i_age'),sub,items:bands.map(([l,n])=>({l,v:n}))};
+    charts[pfx+'-ret']={kind:'hist',title:t('i_ret_by_year'),sub,items:yrs.map((y,i)=>({l:String(y),v:hy[i]}))};
+    const png=k=>`<button type="button" class="btn btn-ghost btn-sm chart-png noprint" data-png="${pfx}-${k}" title="${esc(t('png_h'))}">${ic('image')}<span>PNG</span></button>`;
+    const head=(k,lbl)=>`<div class="chart-head"><span class="eyebrow" style="margin:0">${esc(lbl)}</span>${png(k)}</div>`;
     const bar=(l,n,mx2,cls)=>`<div class="bar"><span class="bl" title="${esc(l)}">${esc(l)}</span><span class="bt"><span class="bf ${cls||''}" style="width:${Math.max(2,n/mx2*100)}%"></span></span><span class="bv">${Fmt.n(n)}</span></div>`;
     const due12=v.filter(r=>r.daysToRetire>0&&r.daysToRetire<=365).length,due5=v.filter(r=>r.daysToRetire>0&&r.daysToRetire<=1826).length,elig=v.filter(r=>r.retired).length;
     return `<div class="split even" style="margin-top:.2rem">
-      <div class="well stack-sm"><div class="eyebrow">${esc(t('i_gender'))}</div><div class="split-bar"><span class="m" style="width:${pm}%"></span><span class="f" style="width:${100-pm}%"></span></div>
+      <div class="well stack-sm">${head('gender',t('i_gender'))}<div class="split-bar"><span class="m" style="width:${pm}%"></span><span class="f" style="width:${100-pm}%"></span></div>
         <div class="bars">${bar(t('male'),m,v.length,'m')}${bar(t('female'),f,v.length,'f')}</div>
         <div class="list">${li(t('i_avg'),Fmt.n(avg,1))}${li(t('i_median'),Fmt.n(med))}${li(t('i_range'),Fmt.n(ages[0])+' – '+Fmt.n(ages[ages.length-1]))}</div></div>
-      <div class="well stack-sm"><div class="eyebrow">${esc(t('i_gov'))}</div><div class="bars">${top.map(([c,n])=>bar(LXID.govName(c,I18N.lang)||c,n,mx)).join('')}</div>
-        <div class="eyebrow" style="margin-top:.5rem">${esc(t('i_age'))}</div><div class="bars">${bands.map(([l,n])=>bar(l,n,mb)).join('')}</div></div>
-      <div class="well stack-sm"><div class="eyebrow">${esc(t('i_ret_by_year'))}</div><div class="hist">${hy.map((n,i)=>`<div style="height:${n?Math.max(6,n/mh*100):2}%;animation-delay:${i*30}ms" title="${yrs[i]}: ${n}"></div>`).join('')}</div><div class="hist-axis"><span>${yrs[0]}</span><span>${yrs[5]}</span><span>${yrs[10]}</span></div></div>
+      <div class="well stack-sm">${head('gov',t('i_gov'))}<div class="bars">${top.map(([c,n])=>bar(LXID.govName(c,I18N.lang)||c,n,mx)).join('')}</div>
+        <div style="margin-top:.5rem">${head('age',t('i_age'))}</div><div class="bars">${bands.map(([l,n])=>bar(l,n,mb)).join('')}</div></div>
+      <div class="well stack-sm">${head('ret',t('i_ret_by_year'))}<div class="hist">${hy.map((n,i)=>`<div style="height:${n?Math.max(6,n/mh*100):2}%;animation-delay:${i*30}ms" title="${yrs[i]}: ${n}"></div>`).join('')}</div><div class="hist-axis"><span>${yrs[0]}</span><span>${yrs[5]}</span><span>${yrs[10]}</span></div></div>
       <div class="well stack-sm"><div class="eyebrow">${esc(t('i_ret'))}</div><div class="list">${li(t('i_due12'),'<span style="color:var(--amber-text)">'+Fmt.n(due12)+'</span>')}${li(t('i_due5'),Fmt.n(due5))}${li(t('i_elig'),'<span style="color:var(--mint)">'+Fmt.n(elig)+'</span>')}${li(t('i_dupes'),Fmt.n(v.filter(r=>r.flags.includes('dup')).length))}${li(t('i_twins'),Fmt.n(v.filter(r=>r.flags.includes('twin')).length))}${li(t('i_unknown_gov'),Fmt.n(v.filter(r=>r.flags.includes('gov')).length))}</div></div>
     </div>`;
   }
   function filtered(){
-    let rows=batch.rows;
+    let rows=RowScope.apply(batch.scope,batch.rows);
     if(batch.filter==='valid')rows=rows.filter(r=>r.valid);
     else if(batch.filter==='error')rows=rows.filter(r=>!r.valid&&!r.isNull);
     else if(batch.filter==='null')rows=rows.filter(r=>r.isNull);
@@ -363,10 +393,10 @@ const ViewID=(()=>{
           <button type="button" class="btn btn-line btn-sm" id="b-copy">${ic('copy')}${esc(t('copy'))}</button>
           <button type="button" class="btn btn-soft btn-sm" id="b-xlsx">${ic('down')}Excel</button>
           <button type="button" class="btn btn-ghost btn-sm" id="b-csv">${ic('down')}CSV</button>
-          <button type="button" class="iconbtn" id="b-cols" title="${esc(t('columns'))}" aria-label="${esc(t('columns'))}" aria-haspopup="menu">${ic('cols')}</button>
         </div></div>
+      <div class="row-wrap noprint tool-row">${scopeBtn('b-scope',batch.scope,R)}${colsBtn('b-cols',batch.cols)}</div>
       <div class="grid-auto">${stat(t('k_total'),Fmt.n(R.length),{icon:'rows'})}${stat(t('k_valid'),Fmt.n(nv),{tone:'mint',icon:'checkc'})}${stat(t('k_err'),Fmt.n(ne),{tone:ne?'scarlet':'',icon:'alert'})}${nn?stat(t('k_null'),Fmt.n(nn),{tone:'sun',icon:'minus'}):''}${stat(t('k_flag'),Fmt.n(nf),{icon:'warn'})}</div>
-      ${insights(R)}
+      <div id="b-ins">${insights(RowScope.apply(batch.scope,R))}</div>
       <div class="between noprint">
         <div class="scrollx">${seg('bf',[['all',t('f_all')],['valid',t('f_valid')],['error',t('f_error')],['flag',t('f_flag')]].concat(nn?[['null',t('f_null')]]:[]),batch.filter)}</div>
         <div class="row grow" style="max-width:22rem">${sw('b-inject',t('inject'),batch.inject,t('inject_h'))}</div>
@@ -380,7 +410,9 @@ const ViewID=(()=>{
     $('#b-copy').onclick=e=>{const rows=filtered(),k=keys;if(!rows.length){toast(t('t_no_rows'),'info');return;}copyText(toTSV([k.map(x=>t(IDCols.MAP[x].l))].concat(rows.map(r=>k.map(x=>IDCols.MAP[x].v(r))))),e.currentTarget,t('t_rows_copied',rows.length));};
     $('#b-csv').onclick=()=>exportRows(filtered(),keys,'csv','raqam-batch');
     $('#b-xlsx').onclick=()=>exportRows(filtered(),keys,'xlsx','raqam-batch',batch.inject);
-    $('#b-cols').onclick=e=>colsMenu(e.currentTarget,batch.cols,()=>{Store.set('batchCols',[...batch.cols]);renderBatch();});
+    $('#b-cols').onclick=e=>colsMenu(e.currentTarget,batch.cols,()=>{Store.set('batchCols',[...batch.cols]);$('#b-cols .bcount').textContent=Fmt.n(batch.cols.size);drawTable();});
+    $('#b-scope').onclick=e=>RowScope.menu(e.currentTarget,batch.scope,R,debounce(()=>{const b=$('#b-scope');b.classList.toggle('scoped',RowScope.active(batch.scope));b.querySelector('.bcount').textContent=scopeLbl(batch.scope,R);batch.page=0;paint($('#b-ins'),insights(RowScope.apply(batch.scope,R)));bindCharts($('#b-ins'));drawTable();},60));
+    bindCharts(box);
     drawTable();
   }
   function drawTable(){
@@ -409,13 +441,13 @@ const ViewID=(()=>{
     const stamp=D.iso(D.today());
     if(kind==='csv'){
       const head=(base?base.head:[]).concat(keys.map(k=>t(IDCols.MAP[k].l)));
-      const body=rows.map((r,i)=>(base?base.rows[i]:[]).concat(keys.map(k=>IDCols.MAP[k].v(r))));
+      const body=rows.map((r,i)=>(base?base.rows[r.line-1]||[]:[]).concat(keys.map(k=>IDCols.MAP[k].v(r))));
       download(toCSV([head].concat(body)),name+'-'+stamp+'.csv','text/csv;charset=utf-8');toast(t('t_downloaded',rows.length));return;
     }
     let X;try{X=await XL.need();}catch(e){return;}
     const head=(base?base.head:[]).concat(keys.map(k=>t(IDCols.MAP[k].l)));
     const aoa=[head];
-    rows.forEach((r,i)=>aoa.push((base?base.rows[i]:[]).concat(keys.map(k=>{const c=IDCols.MAP[k];if(c.xl&&r.valid)return c.xl(r);return c.v(r);}))));
+    rows.forEach((r,i)=>aoa.push((base?base.rows[r.line-1]||[]:[]).concat(keys.map(k=>{const c=IDCols.MAP[k];if(c.xl&&r.valid)return c.xl(r);return c.v(r);}))));
     const ws=X.utils.aoa_to_sheet(aoa);
     const off=base?base.head.length:0;
     const idCol=base&&base.idCol!=null?base.idCol:keys.indexOf('id')+off;
@@ -439,7 +471,15 @@ const ViewID=(()=>{
     toast(t('t_downloaded',rows.length));
   }
 
-  let up={wb:null,name:'',sheet:'',hdr:1,data:[],head:[],idCol:-1,res:[],cols:null,inject:false};
+  let up={wb:null,sheets:[],viaWorker:false,name:'',sheet:'',hdr:1,data:[],head:[],idCol:-1,res:[],cols:null,inject:false,scope:RowScope.make()};
+  function heads(h,width){const seen={};return Array.from({length:width},(_,i)=>{let n=(h[i]||'').trim()||t('u_col_n',i+1);const b=n;let k=2;while(seen[n.toLowerCase()]){n=b+' ('+k+')';k++;}seen[n.toLowerCase()]=1;return n;});}
+  function fileBusy(on,label,p){
+    const d=$('#u-drop');if(!d)return;
+    d.classList.toggle('busy',on);
+    let s=d.querySelector('.drop-prog');
+    if(on){if(!s){s=document.createElement('span');s.className='drop-prog';s.innerHTML='<span class="progress"><i></i></span><span class="tiny faint dp-l"></span><button type="button" class="btn btn-ghost btn-sm" data-cx>'+esc(t('cancel'))+'</button>';d.appendChild(s);s.querySelector('[data-cx]').onclick=e=>{e.preventDefault();e.stopPropagation();abort.v=true;Jobs.cancel();};}s.querySelector('.dp-l').textContent=label||'';s.querySelector('i').style.width=((p||0)*100)+'%';s.querySelector('.progress').classList.toggle('indet',p==null);}
+    else if(s)s.remove();
+  }
   function upload(el){
     up.cols=up.cols||new Set(Store.get('upCols',['status','birth','age','gender','gov','retireAge','retireDate','flags','error']));
     el.innerHTML=`
@@ -458,28 +498,45 @@ const ViewID=(()=>{
     ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');}));
     ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');}));
     drop.addEventListener('drop',e=>{const f=e.dataTransfer.files[0];if(f)readFile(f);});
-    if(up.wb){renderMap();if(up.res.length)renderUpRes();}
+    if(up.sheets.length){renderMap();if(up.res.length)renderUpRes();}
     XL.load().catch(()=>{});
   }
   async function readFile(f){
     if(f.size>40*1024*1024){toast(t('t_too_big'),'bad');return;}
-    toast(t('t_reading',f.name),'info');
-    let X;try{X=await XL.need();}catch(e){return;}
+    if(Jobs.busy())return;
+    abort.v=false;
+    const raw=/\.csv$|\.txt$/i.test(f.name);
+    fileBusy(true,t('t_reading',f.name),null);
     try{
       const buf=await f.arrayBuffer();
-      up.wb=X.read(buf,{type:'array',cellDates:false,raw:/\.csv$|\.txt$/i.test(f.name)});
-      up.name=f.name;up.sheet=up.wb.SheetNames[0];up.hdr=1;up.res=[];
-      loadSheet();renderMap();$('#u-res').classList.add('hide');
-    }catch(e){toast(t('t_parse_fail'),'bad');}
+      up.name=f.name;up.hdr=1;up.res=[];up.scope=RowScope.make();
+      if(Jobs.ok()){
+        try{
+          const m=await Jobs.run({type:'file',buf,raw,xlsxUrl:XL.SRC},{transfer:[buf],until:['book']});
+          up.viaWorker=true;up.wb=null;up.sheets=m.sheets;up.sheet=m.sheets[0];
+          await loadSheet();
+        }catch(e){if(abort.v||e.message==='cancelled'){fileBusy(false);toast(t('t_cancelled'),'info');return;}up.viaWorker=false;}
+      }
+      if(!up.viaWorker){
+        let X;try{X=await XL.need();}catch(e){fileBusy(false);return;}
+        const b2=buf.byteLength?buf:await f.arrayBuffer();
+        up.wb=X.read(b2,{type:'array',cellDates:false,raw});up.sheets=up.wb.SheetNames;up.sheet=up.sheets[0];
+        await loadSheet();
+      }
+      fileBusy(false);renderMap();$('#u-res').classList.add('hide');
+    }catch(e){fileBusy(false);toast(t('t_parse_fail'),'bad');}
   }
   function cellStr(v){if(v==null)return'';if(typeof v==='number')return Number.isInteger(v)?v.toFixed(0):String(v);return String(v);}
-  function loadSheet(){
+  async function loadSheet(){
+    if(up.viaWorker){
+      const m=await Jobs.run({type:'sheet',sheet:up.sheet,hdr:up.hdr},{until:['sheet']});
+      up.head=heads(m.head,m.width);up.data=m.data;up.idCol=m.idCol;return;
+    }
     const X=window.XLSX,ws=up.wb.Sheets[up.sheet];
     const aoa=X.utils.sheet_to_json(ws,{header:1,raw:true,defval:'',blankrows:false});
     const h=(aoa[up.hdr-1]||[]).map(cellStr);
-    const width=Math.max(h.length,...aoa.slice(up.hdr,up.hdr+50).map(r=>r.length));
-    const seen={};
-    up.head=Array.from({length:width},(_,i)=>{let n=(h[i]||'').trim()||t('u_col_n',i+1);const b=n;let k=2;while(seen[n.toLowerCase()]){n=b+' ('+k+')';k++;}seen[n.toLowerCase()]=1;return n;});
+    const width=Math.max(h.length,...aoa.slice(up.hdr,up.hdr+50).map(r=>r.length),1);
+    up.head=heads(h,width);
     up.data=aoa.slice(up.hdr).map(r=>Array.from({length:width},(_,i)=>cellStr(r[i])));
     let best=-1,bs=0;
     for(let c=0;c<width;c++){const s=up.data.slice(0,300).reduce((a,r)=>a+(LXID.normalize(r[c]).digits.length===14?1:0),0)+(/national|id|رقم|قومي|هوية/i.test(up.head[c])?3:0);if(s>bs){bs=s;best=c;}}
@@ -491,44 +548,51 @@ const ViewID=(()=>{
     box.innerHTML=`
       <div class="filecard"><span class="fi">${ic('file')}</span><div class="grow"><div style="font-weight:640;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(up.name)}</div><div class="tiny faint">${esc(t('u_rows',up.data.length,up.head.length))}</div></div><button type="button" class="iconbtn sm" id="u-rm" aria-label="${esc(t('remove'))}">${ic('x')}</button></div>
       <div class="grid-3">
-        ${up.wb.SheetNames.length>1?`<div><label class="label" for="u-sheet">${esc(t('u_sheet'))}</label><select class="field" id="u-sheet">${up.wb.SheetNames.map(s=>`<option${s===up.sheet?' selected':''}>${esc(s)}</option>`).join('')}</select></div>`:''}
+        ${up.sheets.length>1?`<div><label class="label" for="u-sheet">${esc(t('u_sheet'))}</label><select class="field" id="u-sheet">${up.sheets.map(s=>`<option${s===up.sheet?' selected':''}>${esc(s)}</option>`).join('')}</select></div>`:''}
         <div><label class="label" for="u-hdr">${esc(t('u_hdr'))}</label><input class="field" id="u-hdr" type="number" min="1" value="${up.hdr}"></div>
         <div><label class="label" for="u-col">${esc(t('u_idcol'))}</label><select class="field" id="u-col">${up.head.map((h,i)=>`<option value="${i}"${i===up.idCol?' selected':''}>${esc(h)}</option>`).join('')}</select></div>
       </div>
       <div><div class="eyebrow">${esc(t('u_preview'))}</div><div class="tablebox" style="max-height:16rem"><table class="t"><thead><tr>${up.head.map((h,i)=>`<th class="${i===up.idCol?'hl':''}">${esc(h)}</th>`).join('')}</tr></thead><tbody>${prev.map(r=>'<tr>'+r.map((v,i)=>`<td class="${i===up.idCol?'hl mono':''}">${esc(v)}</td>`).join('')+'</tr>').join('')}</tbody></table></div></div>
-      <div class="between"><div class="row-wrap"><span class="small muted">${esc(t('u_out'))}</span><button type="button" class="btn btn-line btn-sm" id="u-cols">${ic('cols')}${esc(t('columns'))} · ${up.cols.size}</button></div>
-      <button type="button" class="btn btn-primary" id="u-go">${ic('bolt')}${esc(t('u_process'))}</button></div>
-      <div class="progress hide" id="u-prog"><i></i></div>`;
-    $('#u-rm').onclick=async()=>{if(up.res.length&&!await Kit.confirm({title:t('cf_file_t'),body:t('cf_file_b',up.name),ok:t('remove'),danger:true}))return;up.wb=null;up.res=[];box.classList.add('hide');$('#u-res').classList.add('hide');};
-    const sh=$('#u-sheet');if(sh)sh.onchange=e=>{up.sheet=e.target.value;up.hdr=1;loadSheet();renderMap();};
-    $('#u-hdr').onchange=e=>{up.hdr=Math.max(1,parseInt(e.target.value,10)||1);loadSheet();renderMap();};
+      <div class="between"><div class="row-wrap"><span class="small muted">${esc(t('u_out'))}</span>${colsBtn('u-cols',up.cols)}</div>
+      <button type="button" class="btn btn-primary" id="u-go">${ic('bolt')}${esc(t('u_process'))}</button></div>`;
+    $('#u-rm').onclick=async()=>{if(up.res.length&&!await Kit.confirm({title:t('cf_file_t'),body:t('cf_file_b',up.name),ok:t('remove'),danger:true}))return;up.wb=null;up.sheets=[];up.data=[];up.res=[];box.classList.add('hide');$('#u-res').classList.add('hide');};
+    const reload=async()=>{if(up.viaWorker&&!Jobs.alive()){toast(t('t_reload_file'),'info');return;}try{await loadSheet();up.res=[];$('#u-res').classList.add('hide');renderMap();}catch(e){toast(t('t_parse_fail'),'bad');}};
+    const sh=$('#u-sheet');if(sh)sh.onchange=e=>{up.sheet=e.target.value;up.hdr=1;reload();};
+    $('#u-hdr').onchange=e=>{up.hdr=Math.max(1,parseInt(e.target.value,10)||1);reload();};
     $('#u-col').onchange=e=>{up.idCol=+e.target.value;renderMap();};
-    $('#u-cols').onclick=e=>colsMenu(e.currentTarget,up.cols,()=>{Store.set('upCols',[...up.cols]);$('#u-cols').innerHTML=ic('cols')+esc(t('columns'))+' · '+up.cols.size;});
-    $('#u-go').onclick=processUp;
+    $('#u-cols').onclick=e=>colsMenu(e.currentTarget,up.cols,()=>{Store.set('upCols',[...up.cols]);$('#u-cols .bcount').textContent=Fmt.n(up.cols.size);});
+    $('#u-go').onclick=()=>{const b=$('#u-go');if(b.classList.contains('busy')){abort.v=true;Jobs.cancel();return;}processUp();};
   }
   async function processUp(){
-    const pg=$('#u-prog');pg.classList.remove('hide');
-    const today=D.today();
-    up.res=await chunk(up.data,r=>LXID.parse(r[up.idCol],{today}),p=>pg.firstChild.style.width=(p*100)+'%');
-    const seen=new Set();up.res.forEach(r=>{if(r.valid){if(seen.has(r.id))r.flags.push('dup');seen.add(r.id);}});
-    LXID.twins(up.res);
-    pg.classList.add('hide');renderUpRes();toast(t('t_processed'));
+    const btn=$('#u-go'),label=ic('bolt')+esc(t('u_process'));
+    busyBtn(btn,true);
+    const col=up.data.map(r=>r[up.idCol]);
+    const rows=await analyse(col,{msg:{type:'lines',lines:col},onProg:p=>prog(btn,p)});
+    busyBtn(btn,false,label);
+    if(!rows){toast(t('t_cancelled'),'info');return;}
+    up.res=rows;up.scope=RowScope.make();
+    renderUpRes();toast(t('t_processed'));
+    $('#u-res').scrollIntoView({behavior:'smooth',block:'start'});
   }
   function renderUpRes(){
     const box=$('#u-res');box.classList.remove('hide');
     const R=up.res,nv=R.filter(r=>r.valid).length,nn=R.filter(r=>r.isNull).length;
-    const keys=IDCols.C.map(c=>c.k).filter(k=>up.cols.has(k)&&k!=='id');
+    const K=()=>IDCols.C.map(c=>c.k).filter(k=>up.cols.has(k)&&k!=='id');
     up.inject=Store.get('inject',false);
+    const S=()=>RowScope.apply(up.scope,R);
+    const body=()=>{const r=S();return`${insights(r,'u')}<div class="tablebox">${tableHtml(r,['id'].concat(K()),0)}</div><p class="tiny faint" style="margin:0">${esc(t('u_shown',Math.min(PAGE,r.length),r.length))}</p>`;};
     box.innerHTML=`<div class="between"><div><h3 class="card-title">${ic('file')}${esc(t('u_results'))}</h3><p class="card-sub">${esc(t('b_summary',R.length,nv,R.length-nv-nn,nn))}</p></div>
       <div class="row-wrap">${sw('u-inject',t('inject'),up.inject,t('inject_h'))}<button type="button" class="btn btn-primary btn-sm" id="u-xlsx">${ic('down')}Excel</button><button type="button" class="btn btn-ghost btn-sm" id="u-csv">${ic('down')}CSV</button></div></div>
-      ${insights(R)}
-      <div class="tablebox">${tableHtml(R,['id'].concat(keys),0)}</div>
-      <p class="tiny faint" style="margin:0">${esc(t('u_shown',Math.min(PAGE,R.length),R.length))}</p>`;
+      <div class="row-wrap tool-row">${scopeBtn('u-scope',up.scope,R)}${colsBtn('u-cols2',up.cols)}</div>
+      <div id="u-body" class="stack">${body()}</div>`;
+    const ub=$('#u-body');bindCharts(ub);
     const base={head:up.head,rows:up.data,idCol:up.idCol};
     $('#u-inject').onchange=e=>{up.inject=e.target.checked;Store.set('inject',up.inject);};
     const nm=up.name.replace(/\.[^.]+$/,'')+'-raqam';
-    $('#u-xlsx').onclick=()=>exportRows(R,keys,'xlsx',nm,up.inject,base);
-    $('#u-csv').onclick=()=>exportRows(R,keys,'csv',nm,false,base);
+    $('#u-xlsx').onclick=()=>exportRows(S(),K(),'xlsx',nm,up.inject,base);
+    $('#u-csv').onclick=()=>exportRows(S(),K(),'csv',nm,false,base);
+    $('#u-cols2').onclick=e=>colsMenu(e.currentTarget,up.cols,debounce(()=>{Store.set('upCols',[...up.cols]);$('#u-cols2 .bcount').textContent=Fmt.n(up.cols.size);const c1=$('#u-cols .bcount');if(c1)c1.textContent=Fmt.n(up.cols.size);paint(ub,body());bindCharts(ub);},120));
+    $('#u-scope').onclick=e=>RowScope.menu(e.currentTarget,up.scope,R,debounce(()=>{const b=$('#u-scope');b.classList.toggle('scoped',RowScope.active(up.scope));b.querySelector('.bcount').textContent=scopeLbl(up.scope,R);paint(ub,body());bindCharts(ub);},80));
   }
   function builder(el){
     const st=Store.get('bld',{gov:'01',gender:'M',serial:'',sex:''});

@@ -20,8 +20,22 @@ const LXHolidays=(()=>{
     {k:'h_adha2',kind:'hijri',m:12,d:11},
     {k:'h_adha3',kind:'hijri',m:12,d:12}
   ];
-  function forYear(y,opts){
-    opts=opts||{};
+  let OV={};
+  const isoOK=s=>typeof s==='string'&&D.parseISO(s)!=null;
+  function clean(o){
+    const out={};if(!o||typeof o!=='object')return out;
+    const ys=o.years&&typeof o.years==='object'?o.years:o;
+    for(const y in ys){
+      if(!/^\d{4}$/.test(y))continue;const v=ys[y]||{},r={set:{},extra:[]};
+      if(v.set&&typeof v.set==='object')for(const k in v.set){const e=v.set[k]||{},d=(Array.isArray(e)?e:e.d||[]).filter(isoOK);if(PACK.some(p=>p.k===k))r.set[k]={d,src:String(e.src||'').slice(0,200)};}
+      if(Array.isArray(v.extra))v.extra.forEach(e=>{if(e&&isoOK(e.d))r.extra.push({d:e.d,label:String(e.label||'').slice(0,120),src:String(e.src||'').slice(0,200)});});
+      if(Object.keys(r.set).length||r.extra.length)out[y]=r;
+    }
+    return out;
+  }
+  function setOverrides(o){OV=clean(o);}
+  const overrides=()=>OV;
+  function computed(y,opts){
     const out=[];
     for(const h of PACK){
       if(h.optional&&!opts.includeOptional)continue;
@@ -30,7 +44,25 @@ const LXHolidays=(()=>{
       else if(h.kind==='easter')out.push({rd:D.orthodoxEaster(y)+h.off,k:h.k,est:false});
       else D.hijriInGYear(y,h.m,h.d).forEach(r=>out.push({rd:r,k:h.k,est:true}));
     }
-    return out.sort((a,b)=>a.rd-b.rd);
+    return out;
+  }
+  function forYear(y,opts){
+    opts=opts||{};
+    let out=computed(y,opts);
+    const o=!opts.raw&&OV[y];
+    if(o){
+      const keep=[];
+      out.forEach(h=>{const s=o.set[h.k];if(!s)keep.push(h);});
+      for(const k in o.set){
+        const p=PACK.find(x=>x.k===k);if(!p||(p.optional&&!opts.includeOptional))continue;
+        const was=out.filter(h=>h.k===k).map(h=>h.rd),s=o.set[k];
+        if(!s.d.length&&opts.withCancelled)keep.push({rd:was[0],k,est:false,ov:true,cancelled:true,src:s.src,was});
+        s.d.forEach(d=>keep.push({rd:D.parseISO(d),k,est:false,ov:true,src:s.src,was}));
+      }
+      o.extra.forEach((e,i)=>keep.push({rd:D.parseISO(e.d),k:null,label:e.label,est:false,ov:true,extra:i,src:e.src}));
+      out=keep;
+    }
+    return out.filter(h=>h.rd!=null).sort((a,b)=>a.rd-b.rd);
   }
   function parseLine(line,order){
     const s=line.trim();if(!s||s.startsWith('#'))return null;
@@ -80,5 +112,5 @@ const LXHolidays=(()=>{
     L.push('END:VCALENDAR');
     return L.join('\r\n');
   }
-  return{PACK,forYear,parseLine,parseText,ics};
+  return{PACK,forYear,computed,setOverrides,overrides,clean,parseLine,parseText,ics};
 })();

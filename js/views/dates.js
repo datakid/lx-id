@@ -298,21 +298,67 @@ const ViewDates=(()=>{
       <div class="between"><div><h3 class="card-title">${ic('party')}${esc(t('eg_hol'))}</h3><p class="card-sub">${esc(t('eg_hol_d'))}</p></div>
         <div class="row"><button type="button" class="iconbtn sm" data-y="-1" aria-label="${esc(t('prev'))}">${ic(document.dir==='rtl'?'chevr':'chevl')}</button><input class="field field-sm num" id="hp-y" type="number" min="1900" max="2200" value="${year}" style="width:6rem;text-align:center"><button type="button" class="iconbtn sm" data-y="1" aria-label="${esc(t('next'))}">${ic(document.dir==='rtl'?'chevl':'chevr')}</button></div></div>
       <div id="hp-list"></div>
-      <div class="row-wrap"><button type="button" class="btn btn-primary btn-sm" id="hp-add">${ic('plus')}${esc(t('hol_add_year'))}</button><button type="button" class="btn btn-line btn-sm" id="hp-ics">${ic('calplus')}${esc(t('export_ics'))}</button><button type="button" class="btn btn-ghost btn-sm" id="hp-manage">${ic('repeat')}${esc(t('hol_manage'))}</button></div>
+      <div class="row-wrap"><button type="button" class="btn btn-primary btn-sm" id="hp-add">${ic('plus')}${esc(t('hol_add_year'))}</button><button type="button" class="btn btn-line btn-sm" id="hp-ics">${ic('calplus')}${esc(t('export_ics'))}</button><button type="button" class="btn btn-ghost btn-sm" id="hp-manage">${ic('repeat')}${esc(t('hol_manage'))}</button><span class="grow"></span><button type="button" class="btn btn-ghost btn-sm" id="hp-new">${ic('gavel')}${esc(t('ho_new'))}</button><button type="button" class="btn btn-ghost btn-sm" id="hp-imp" title="${esc(t('ho_imp_h'))}">${ic('up')}${esc(t('ho_imp'))}</button><button type="button" class="btn btn-ghost btn-sm" id="hp-exp">${ic('down')}${esc(t('ho_exp'))}</button><input type="file" id="hp-file" accept=".json" class="hide"></div>
     </section>`;
     const draw=()=>{
-      const list=LXHolidays.forYear(year,{includeOptional:true}),tdy=D.today();
-      paint($('#hp-list'),`<div class="tablebox"><table class="t"><thead><tr><th>${esc(t('date'))}</th><th>${esc(t('weekday'))}</th><th>${esc(t('holiday'))}</th><th>${esc(t('hijri'))}</th><th></th></tr></thead><tbody>${list.map(h=>`<tr style="${h.rd<tdy?'opacity:.55':''}"><td class="mono">${D.iso(h.rd)}</td><td>${esc(Fmt.wd(D.dow(h.rd)))}</td><td style="font-weight:600">${esc(t(h.k))}${h.est?` <span class="chip sun" style="padding:.1rem .45rem">${esc(t('est'))}</span>`:''}</td><td class="small muted">${esc(Fmt.hijri(h.rd))}</td><td class="small faint">${esc(Fmt.rel(h.rd-tdy))}</td></tr>`).join('')}</tbody></table></div>`);
+      const list=LXHolidays.forYear(year,{includeOptional:true,withCancelled:true}),tdy=D.today(),ov=LXHolidays.overrides()[year];
+      const nm=h=>h.k?t(h.k):(h.label||t('holiday'));
+      const tag=h=>h.cancelled?`<span class="chip scarlet hchip">${esc(t('ho_cancel_tag'))}</span>`:h.ov?`<span class="chip mint hchip" title="${esc(h.src||t('ho_decree'))}">${ic('gavel')}${esc(t('ho_decree'))}</span>`:h.est?`<span class="chip sun hchip">${esc(t('est'))}</span>`:'';
+      const moved=h=>h.ov&&h.was&&h.was.length&&!h.cancelled&&!h.was.includes(h.rd)?`<small class="faint mono">${esc(t('ho_was',D.iso(h.was[0])))}</small>`:'';
+      paint($('#hp-list'),`${ov?`<div class="callout ho-bar">${ic('gavel')}<span class="grow">${esc(t('ho_active',Object.keys(ov.set).length+ov.extra.length))}</span><button type="button" class="btn btn-ghost btn-sm" data-ho-reset>${esc(t('ho_reset_y'))}</button></div>`:''}<div class="tablebox"><table class="t"><thead><tr><th>${esc(t('date'))}</th><th>${esc(t('weekday'))}</th><th>${esc(t('holiday'))}</th><th>${esc(t('hijri'))}</th><th></th><th></th></tr></thead><tbody>${list.map((h,i)=>`<tr class="${h.cancelled?'h-cancel':''}" style="${h.rd<tdy&&!h.cancelled?'opacity:.55':''}"><td class="mono">${D.iso(h.rd)}${moved(h)?'<br>'+moved(h):''}</td><td>${esc(Fmt.wd(D.dow(h.rd)))}</td><td style="font-weight:600">${esc(nm(h))} ${tag(h)}</td><td class="small muted">${esc(Fmt.hijri(h.rd))}</td><td class="small faint">${h.cancelled?'':esc(Fmt.rel(h.rd-tdy))}</td><td style="text-align:end"><button type="button" class="iconbtn sm rc" data-ho="${i}" aria-label="${esc(t('ho_edit'))}" title="${esc(t('ho_edit'))}">${ic('pen')}</button></td></tr>`).join('')}</tbody></table></div>`);
+      const box=$('#hp-list');
+      box.querySelectorAll('[data-ho]').forEach(b=>b.onclick=()=>ovDialog(year,list[+b.dataset.ho],draw));
+      const rs=box.querySelector('[data-ho-reset]');if(rs)rs.onclick=async()=>{if(!await Kit.confirm({title:t('ho_reset_t',year),body:t('ho_reset_b'),ok:t('ho_reset_y'),danger:true}))return;const prev=JSON.parse(JSON.stringify(Store.get('hOverrides',{})));const o=Store.get('hOverrides',{});delete o[year];saveOv(o);draw();toast(t('ho_reset_done'),'info',{action:t('undo'),onAction:()=>{saveOv(prev);draw();}});};
     };
     const setY=y=>{year=clamp(y,1900,2200);$('#hp-y').value=year;Store.set('hpY',year);draw();};
     el.querySelectorAll('[data-y]').forEach(b=>b.onclick=()=>setY(year+ +b.dataset.y));
     $('#hp-y').onchange=e=>setY(parseInt(e.target.value,10)||cy);
-    $('#hp-add').onclick=()=>{const n=Holidays.add(LXHolidays.forYear(year).map(h=>({key:D.iso(h.rd),label:t(h.k)+(h.est?' '+t('est_tag'):'')})));toast(n?t('t_hol_added',n):t('t_hol_none'),n?'ok':'info');};
-    $('#hp-ics').onclick=()=>{download(LXHolidays.ics(LXHolidays.forYear(year,{includeOptional:true}).map(h=>({rd:h.rd,title:t(h.k)+(h.est?' '+t('est_tag'):'')})),t('eg_hol')+' '+year),'egypt-holidays-'+year+'.ics','text/calendar');toast(t('t_ics'));};
+    $('#hp-new').onclick=()=>ovDialog(year,null,draw);
+    $('#hp-imp').onclick=()=>$('#hp-file').click();
+    $('#hp-file').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;let o;try{o=LXHolidays.clean(JSON.parse(await f.text()));}catch(er){toast(t('t_parse_fail'),'bad');return;}const ys=Object.keys(o);if(!ys.length){toast(t('ho_none_file'),'info');return;}if(!await Kit.confirm({title:t('ho_imp_t'),body:t('ho_imp_b',ys.join(', ')),ok:t('s_import'),icon:'gavel'}))return;const prev=JSON.parse(JSON.stringify(Store.get('hOverrides',{})));saveOv(Object.assign({},prev,o));draw();toast(t('ho_imp_done',ys.length),'ok',{action:t('undo'),onAction:()=>{saveOv(prev);draw();}});};
+    $('#hp-exp').onclick=()=>{const o=Store.get('hOverrides',{});if(!Object.keys(o).length){toast(t('ho_none'),'info');return;}download(JSON.stringify({format:'raqam-holiday-overrides',version:1,years:o},null,2),'raqam-holiday-overrides.json','application/json');};
+    $('#hp-add').onclick=()=>{const n=Holidays.add(LXHolidays.forYear(year).map(h=>({key:D.iso(h.rd),label:(h.k?t(h.k):h.label)+(h.est?' '+t('est_tag'):'')})));toast(n?t('t_hol_added',n):t('t_hol_none'),n?'ok':'info');};
+    $('#hp-ics').onclick=()=>{download(LXHolidays.ics(LXHolidays.forYear(year,{includeOptional:true}).map(h=>({rd:h.rd,title:(h.k?t(h.k):h.label)+(h.est?' '+t('est_tag'):''),desc:h.src||''})),t('eg_hol')+' '+year),'egypt-holidays-'+year+'.ics','text/calendar');toast(t('t_ics'));};
     $('#hp-manage').onclick=()=>App.openHolidays();
     draw();
   }
 
+  function saveOv(o){Store.set('hOverrides',o);LXHolidays.setOverrides(o);}
+  function ovDialog(year,h,redraw){
+    const all=JSON.parse(JSON.stringify(Store.get('hOverrides',{})));
+    const y=all[year]=all[year]||{set:{},extra:[]};y.set=y.set||{};y.extra=y.extra||[];
+    const isNew=!h,isExtra=h&&h.extra!=null,k=h&&h.k;
+    const cur=isExtra?y.extra[h.extra]:k?y.set[k]:null;
+    const calc=k?LXHolidays.computed(year,{includeOptional:true}).filter(x=>x.k===k).map(x=>x.rd):[];
+    const days=cur?(isExtra?[D.parseISO(cur.d)]:cur.d.map(D.parseISO)):h&&!h.cancelled?[h.rd]:calc;
+    let start=days.length?Math.min(...days):(calc[0]??D.fromG(year,1,1)),len=Math.max(1,days.length?Math.max(...days)-start+1:1),cancel=!!(cur&&!isExtra&&!cur.d.length);
+    $('#hov-title').textContent=isNew?t('ho_new'):(k?t(k):h.label);
+    const b=$('#hov-body');
+    b.innerHTML=`<div class="stack">
+      ${k?`<p class="small muted" style="margin:0">${esc(t('ho_calc'))} <b class="mono">${calc.map(D.iso).join(', ')||'—'}</b></p>`:''}
+      ${isNew||isExtra?`<div><label class="label" for="hov-l">${esc(t('ho_label'))}</label><input class="field" id="hov-l" value="${esc(isExtra?cur.label:'')}" placeholder="${esc(t('ho_label_ph'))}"></div>`:''}
+      ${k?seg('hov-m',[['on',t('ho_mode_on'),'calplus'],['off',t('ho_mode_off'),'x']],cancel?'off':'on'):''}
+      <div id="hov-dates" class="grid-2"><div><label class="label" for="df-hovD">${esc(t('ho_first'))}</label><div id="h-hovD"></div></div><div><label class="label" for="hov-n">${esc(t('ho_days'))}</label><input class="field num" id="hov-n" type="number" min="1" max="10" value="${len}"></div></div>
+      <div><label class="label" for="hov-s">${esc(t('ho_src'))}</label><input class="field" id="hov-s" value="${esc(cur&&cur.src||'')}" placeholder="${esc(t('ho_src_ph'))}"></div>
+      <div class="row-wrap">${cur?`<button type="button" class="btn btn-ghost btn-sm" id="hov-rm">${ic('repeat')}${esc(t(isExtra?'remove':'ho_revert'))}</button>`:''}<span class="grow"></span><button type="button" class="btn btn-primary" id="hov-ok">${ic('check')}${esc(t('ho_save'))}</button></div>
+    </div>`;
+    const f=DateField.create($('#h-hovD'),{id:'df-hovD'});f.set(start,true);
+    const sync=()=>$('#hov-dates').classList.toggle('hide',cancel);sync();
+    bindSeg(b,'hov-m',v=>{cancel=v==='off';sync();});
+    const prev=JSON.parse(JSON.stringify(Store.get('hOverrides',{})));
+    const done=msg=>{if(!y.extra.length&&!Object.keys(y.set).length)delete all[year];saveOv(all);Overlay.close('ov-hov');redraw();toast(msg,'ok',{action:t('undo'),onAction:()=>{saveOv(prev);redraw();}});};
+    $('#hov-ok').onclick=()=>{
+      const src=$('#hov-s').value.trim(),n=clamp(parseInt($('#hov-n').value,10)||1,1,10),s0=f.get();
+      if(!cancel&&s0==null){f.input.classList.add('invalid');return;}
+      if(!cancel&&D.toG(s0).y!==year){toast(t('ho_wrong_year',year),'bad');return;}
+      const ds=cancel?[]:Array.from({length:n},(_,i)=>D.iso(s0+i));
+      if(k)y.set[k]={d:ds,src};
+      else{const lbl=($('#hov-l').value||'').trim();if(!lbl){$('#hov-l').classList.add('invalid');return;}const items=ds.map(d=>({d,label:lbl,src}));if(isExtra)y.extra.splice(h.extra,1,...items);else y.extra.push(...items);}
+      done(t('ho_saved'));
+    };
+    const rm=$('#hov-rm');if(rm)rm.onclick=()=>{if(isExtra)y.extra.splice(h.extra,1);else delete y.set[k];done(t('ho_reverted'));};
+    Overlay.open('ov-hov');
+  }
   function holidayDialog(onDone){
     const box=$('#holidays-body');
     const draw=()=>{

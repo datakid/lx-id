@@ -63,6 +63,8 @@ const ICONS={
   eyeoff:'<path d="M9.9 5.75A9.6 9.6 0 0 1 12 5.5c5.75 0 9.25 6.5 9.25 6.5a16 16 0 0 1-2.4 3.2M6.4 7.2C4.1 8.9 2.75 12 2.75 12S6.25 18.5 12 18.5a8.7 8.7 0 0 0 4.1-1"/><path d="M10 10.1a2.75 2.75 0 0 0 3.9 3.9"/><path d="M3.5 3.5l17 17"/>',
   wand:'<path d="m4 20 11-11"/><path d="m13.5 7.5 3 3"/><path d="M17.5 2.8c.3 1.6.8 2.1 2.4 2.4-1.6.3-2.1.8-2.4 2.4-.3-1.6-.8-2.1-2.4-2.4 1.6-.3 2.1-.8 2.4-2.4Z"/><path d="M8 3.5v2M7 4.5h2M19.5 14v2M18.5 15h2"/>',
   users:'<circle cx="9" cy="8.5" r="3.25"/><path d="M3 19.5a6 6 0 0 1 12 0"/><path d="M15.5 5.5a3.25 3.25 0 0 1 0 6.3M17.5 14.2a6 6 0 0 1 3.5 5.3"/>',
+  image:'<rect x="3.5" y="4.5" width="17" height="15" rx="3"/><circle cx="9" cy="9.75" r="1.6"/><path d="m20.5 15.5-4.6-4.6a1.5 1.5 0 0 0-2.1 0L5 19.5"/>',
+  pen:'<path d="M14.5 5.5l4 4"/><path d="M4.5 19.5l1-4.2L16 4.8a2 2 0 0 1 2.8 0l.4.4a2 2 0 0 1 0 2.8L8.7 18.5z"/>',
   build:'<rect x="3.5" y="6" width="17" height="12" rx="3"/><path d="M7 10h4M7 14h6"/><circle cx="16.5" cy="12" r="1.8"/>'
 };
 const MARK={stroke:'M33 12c3.8 15 1.4 26-16.5 34',dots:[[34.84,45.55,'#8FB8E3'],[45.24,37.43,'#E79DB9'],[52.23,26.23,'#F2E8D8']],r:4.4,shift:[-2.2,2.6]};
@@ -187,15 +189,16 @@ function toCSV(rows){
 const toTSV=rows=>rows.map(r=>r.map(v=>String(v??'').replace(/[\t\r\n]+/g,' ')).join('\t')).join('\n');
 
 const XL=(()=>{
+  const SRC='https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';
   let p=null;
   function load(){
     if(window.XLSX)return Promise.resolve(window.XLSX);
     if(p)return p;
-    p=new Promise((res,rej)=>{const s=document.createElement('script');s.src='https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';s.async=true;s.onload=()=>res(window.XLSX);s.onerror=()=>{p=null;s.remove();rej(new Error('xlsx'));};document.head.appendChild(s);});
+    p=new Promise((res,rej)=>{const s=document.createElement('script');s.src=SRC;s.async=true;s.onload=()=>res(window.XLSX);s.onerror=()=>{p=null;s.remove();rej(new Error('xlsx'));};document.head.appendChild(s);});
     return p;
   }
   async function need(){try{return await load();}catch(e){toast(t('t_xlsx_fail'),'bad');throw e;}}
-  return{load,need};
+  return{load,need,SRC};
 })();
 
 const Overlay=(()=>{
@@ -270,7 +273,12 @@ const Menu=(()=>{
   const owns=n=>!!(cur&&cur.contains(n));
   document.addEventListener('mousedown',e=>{if(cur&&!cur.contains(e.target)&&anchor&&!anchor.contains(e.target))close();});
   addEventListener('resize',()=>close());
-  addEventListener('scroll',e=>{if(!cur||cur.contains(e.target))return;const tg=e.target;if(tg===document||tg===document.documentElement||(tg.contains&&anchor&&tg.contains(anchor)))close();},true);
+  let raf=0;
+  addEventListener('scroll',e=>{
+    if(!cur||cur.contains(e.target))return;const tg=e.target;
+    if(!(tg===document||tg===document.documentElement||(tg.contains&&anchor&&tg.contains(anchor))))return;
+    if(raf)return;raf=requestAnimationFrame(()=>{raf=0;if(!cur||!anchor)return;const r=anchor.getBoundingClientRect();if(r.bottom<0||r.top>innerHeight||!anchor.isConnected){close();return;}cur.style.animation='none';place(cur,anchor);});
+  },true);
   return{open,close,isOpen,owns};
 })();
 

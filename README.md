@@ -1,5 +1,11 @@
 # Raqam (رقم) 3.3 — Egyptian National ID, Retirement & Date Toolkit
 
+## What 3.4 adds
+- **Holiday decree overrides** (`#/dates/holidays`): use the pen on any row to move a holiday, extend it to several days or mark it *Not observed*, with an optional decree reference. **Add by decree** creates extra holidays such as bridge days. Overridden rows show a *Decree* chip and the date they were computed for, and cancelled rows are struck through. **Import decrees / Export** exchange a JSON file (`{format:'raqam-holiday-overrides',version:1,years:{2026:{set:{h_june30:{d:['2026-07-02'],src:'…'}},extra:[{d,label,src}]}}}`) so HR can publish one file. Overrides feed the year table, .ics export and "Add year to my holidays". Stored in `localStorage` as `hOverrides`.
+- **Rows control** next to **Columns** (both labelled buttons with a live count) in Batch and Spreadsheet results. Include or exclude groups by status, sex, age band, governorate or flag, or keep only the first occurrence of each duplicate. Insights, charts, the table, copy and exports all follow the selection.
+- **Charts as images**: every insight panel has a **PNG** button that renders a crisp 2× chart in the current theme and language (RTL aware).
+- **Web Worker** (`js/worker.js`, `js/jobs.js`): spreadsheets are read and parsed off the main thread, and batches of 1,500+ IDs are analysed there, so the page stays responsive at 200k+ rows. Results are slimmed before transfer, progress shows on the button, and **Cancel** stops cleanly. It falls back to chunked main-thread parsing if Workers are unavailable. `tests.html` checks worker output against the main thread on 60,000 rows.
+
 ## What 3.3 changes — interface polish
 - **One component language**: every `<select class="field">` is automatically upgraded (`js/kit.js`) to a styled dropdown that opens as the same frosted menu used for column pickers and the calendar. It has a checkmark on the selected option, keyboard support (↑/↓, Home/End, type-ahead, Esc, Tab) and a native `<select>` kept underneath, so `.value` and `change` handlers keep working.
 - **Confirm dialog** (`Kit.confirm`, returns a Promise): clearing holidays, clearing a large batch, removing a processed spreadsheet, importing settings and resetting everything now ask first. On phones it opens as a bottom sheet. Every destructive action still offers Undo.
@@ -69,6 +75,8 @@ js/core/holidays.js   Egyptian holiday pack, holiday text parser, .ics writer
 js/i18n.js            English and Arabic dictionaries
 js/ui.js              icons, store, formatting, toasts, menus, overlays, date field
 js/kit.js             custom select, confirm dialog, glide indicators, flicker-free paint, theme transition
+js/jobs.js            worker job runner, chart PNG renderer, row scope (Rows menu)
+js/worker.js          off-thread spreadsheet reading and ID parsing
 css/kit.css           polish layer: motion tokens, typography, menus, dialogs, toasts, focus rings
 js/views/*.js         ID, dates, prayer, formulas, reference, settings, command palette
 js/app.js             router and global wiring
@@ -86,9 +94,8 @@ There is no backend and no table API. Settings and saved holidays are kept in `l
 - Settings from the old v2 storage key are not migrated.
 
 ## Next steps
-- Holiday overrides per year, sourced from official decrees.
-- Charts in batch results exportable as images.
-- Web Worker for very large uploads (>200k rows).
+- A hosted, signed decree feed so overrides update without importing a file.
+- Streaming CSV parsing for files above 40 MB.
 
 ## Deploy
 Use the **Publish tab** to make it live.

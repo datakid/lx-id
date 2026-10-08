@@ -237,5 +237,16 @@ const LXID=(()=>{
     g.forEach(list=>{const ids=new Set(list.map(r=>r.id));if(ids.size>1){list.forEach(r=>{if(!r.flags.includes('twin'))r.flags.push('twin');});n+=ids.size;}});
     return n;
   }
-  return{GOV,STEPS,SAMPLES,CHECKS,settings,ageInForce,retirementAge,retirement,normalize,luhn,isFake,parse,nextBirthday,tokens,splitLines,govName,govRegion,sample,F,suggest,compose,twins};
+  function finalize(rows,dupMode){
+    const seen=new Map();
+    rows.forEach((r,i)=>{
+      r.line=i+1;delete r.trace;delete r.warn;delete r.checks;delete r.nextBirthday;
+      if(!r.valid)return;
+      if(seen.has(r.id)){r.dupFirst=false;r.flags.push('dup');if(dupMode!=='later'){const f=rows[seen.get(r.id)];if(!f.flags.includes('dup'))f.flags.push('dup');}}
+      else seen.set(r.id,i);
+    });
+    twins(rows);
+    return rows;
+  }
+  return{finalize,GOV,STEPS,SAMPLES,CHECKS,settings,ageInForce,retirementAge,retirement,normalize,luhn,isFake,parse,nextBirthday,tokens,splitLines,govName,govRegion,sample,F,suggest,compose,twins};
 })();

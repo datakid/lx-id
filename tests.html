@@ -4,4 +4,20 @@
 <body><h1>Raqam engine tests</h1><div id="out"></div>
 <script src="js/core/dates.js"></script><script src="js/core/id.js"></script><script src="js/core/prayer.js"></script><script src="js/core/holidays.js"></script>
 <script src="js/tests.js"></script>
+<script>
+(function(){
+  var N=60000,ids=[],raw=['29805121401234','30101011509876','27510202100001','','12345','29813451401234','28802290101235','3abc'];
+  for(var i=0;i<N;i++)ids.push(raw[i%raw.length]);
+  var t0=performance.now(),w=new Worker('js/worker.js'),today=LXDate.today();
+  w.onmessage=function(e){
+    var m=e.data;if(m.type!=='done')return;
+    var dt=Math.round(performance.now()-t0),main=LXID.finalize(ids.map(function(s){return LXID.parse(s,{today:today});}));
+    var pick=function(r){return [r.valid,r.isNull,r.id||'',r.birth||0,r.gender||'',r.ret?r.ret.date:0,r.flags.slice().sort().join(),r.dupFirst===false,r.error?r.error.k:''].join('|');};
+    var bad=0;for(var j=0;j<N;j++)if(pick(m.rows[j])!==pick(main[j])){if(!bad)console.log('DIFF',j,pick(m.rows[j]),'VS',pick(main[j]));bad++;}
+    var d=document.createElement('div');d.className=bad?'bad':'ok';d.textContent=(bad?'✗ ':'✓ ')+'worker parity '+N+' rows in '+dt+' ms — '+bad+' mismatches';
+    document.getElementById('out').appendChild(d);console.log('WORKER',bad,dt);w.terminate();
+  };
+  w.postMessage({type:'lines',job:1,lines:ids,today:today,cfg:{date:{},id:{}}});
+})();
+</script>
 </body></html>

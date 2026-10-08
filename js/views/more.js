@@ -100,6 +100,7 @@ const Settings=(()=>{
   }
   function apply(){
     applyTheme();applyStyle(Store.get('style','buttery'));applyFont(Store.get('font','fraunces'));
+    LXHolidays.setOverrides(Store.get('hOverrides',{}));
     LXDate.cfg.hijri=Store.get('hijriMethod','umalqura');LXDate.cfg.offset=+Store.get('hijriOffset',0);LXDate.cfg.feb29=Store.get('feb29','clamp');
     LXID.settings.retireMode=Store.get('retireMode','inforce');LXID.settings.retireRound=Store.get('retireRound','exact');LXID.settings.checksum=Store.get('checksum',false);
   }

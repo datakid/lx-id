@@ -1,5 +1,5 @@
-const CACHE_NAME='raqam-shell-v3.3';
-const APP_SHELL=['./','./index.html','./manifest.webmanifest','./css/app.css','./css/kit.css','./js/core/dates.js','./js/core/id.js','./js/core/prayer.js','./js/core/holidays.js','./js/i18n.js','./js/ui.js','./js/kit.js','./js/views/id.js','./js/views/dates.js','./js/views/prayer.js','./js/views/more.js','./js/app.js','./images/raqam.svg','./images/raqam-maskable.svg','./images/raqam-mono.svg'];
+const CACHE_NAME='raqam-shell-v3.4';
+const APP_SHELL=['./','./index.html','./manifest.webmanifest','./css/app.css','./css/kit.css','./js/core/dates.js','./js/core/id.js','./js/core/prayer.js','./js/core/holidays.js','./js/i18n.js','./js/ui.js','./js/kit.js','./js/jobs.js','./js/worker.js','./js/views/id.js','./js/views/dates.js','./js/views/prayer.js','./js/views/more.js','./js/app.js','./images/raqam.svg','./images/raqam-maskable.svg','./images/raqam-mono.svg'];
 const RUNTIME_HOSTS=['cdn.sheetjs.com','fonts.googleapis.com','fonts.gstatic.com'];
 
 self.addEventListener('install',event=>{
